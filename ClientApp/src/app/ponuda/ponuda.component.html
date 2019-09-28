@@ -1,0 +1,24 @@
+<h1 id="tableLabel">Ponude</h1>
+
+<p>Korisnici</p>
+
+<p *ngIf="!ponude"><em>Učitavanje...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="ponude">
+  <thead>
+    <tr>
+      <th>Broj</th>
+      <th>Datum</th>
+      <th>Partner</th>
+      <th>Predmet</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let ponuda of ponude">
+      <td>{{ ponuda.broj }}</td>
+      <td>{{ ponuda.datum }}</td>
+      <td>{{ ponuda.partner_naziv }}</td>
+      <td>{{ ponuda.predmet }}</td>
+    </tr>
+  </tbody>
+</table>

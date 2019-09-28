@@ -1,0 +1,24 @@
+<h1 id="tableLabel">Korisnici</h1>
+
+<p>Korisnici</p>
+
+<p *ngIf="!korisnici"><em>Učitavanje...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="korisnici">
+  <thead>
+    <tr>
+      <th>Ime</th>
+      <th>Prezime</th>
+      <th>Email</th>
+      <th>Admin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let korisnik of korisnici">
+      <td>{{ korisnik.ime }}</td>
+      <td>{{ korisnik.prezime }}</td>
+      <td>{{ korisnik.email }}</td>
+      <td>{{ korisnik.admin }}</td>
+    </tr>
+  </tbody>
+</table>
