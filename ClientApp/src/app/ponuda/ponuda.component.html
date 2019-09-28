@@ -3,7 +3,7 @@
 <p>Korisnici</p>
 
 <p *ngIf="!ponude"><em>Učitavanje...</em></p>
-
+<button (click)="load()">Ucitaj</button>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="ponude">
   <thead>
     <tr>

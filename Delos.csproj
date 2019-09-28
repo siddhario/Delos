@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+	<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+	 <PublishSingleFile>true</PublishSingleFile>
+	   <PublishTrimmed>true</PublishTrimmed>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>

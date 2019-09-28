@@ -5,11 +5,17 @@ import { HttpClient } from '@angular/common/http';
     selector: 'app-ponuda',
     templateUrl: './ponuda.component.html'
 })
+
+
 export class PonudaComponent {
     public ponude: Ponuda[];
 
-    constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-        http.get<Ponuda[]>(baseUrl + 'ponuda').subscribe(result => {
+    constructor(public http: HttpClient, @Inject('BASE_URL') public baseUrl: string) {
+        this.load();
+    }
+
+    load() {
+        this.http.get<Ponuda[]>(this.baseUrl + 'ponuda').subscribe(result => {
             this.ponude = result;
         }, error => console.error(error));
     }
