@@ -25,5 +25,11 @@ interface Ponuda {
     broj: string;
     datum: Date;
     partner_naziv: string;
+    partner_adresa: string;
+    partner_telefon: string;
+    partner_email: string;
+    iznos_sa_rabatom: number;
+    pdv: number;
+    iznos_sa_pdv: number;
     predmet: string;
 }

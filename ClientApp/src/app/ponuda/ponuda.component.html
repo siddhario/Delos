@@ -1,6 +1,6 @@
 <h1 id="tableLabel">Ponude</h1>
 
-<p>Korisnici</p>
+<!--<p>Korisnici</p>-->
 
 <p *ngIf="!ponude"><em>Učitavanje...</em></p>
 <button (click)="load()">Ucitaj</button>
@@ -10,7 +10,13 @@
       <th>Broj</th>
       <th>Datum</th>
       <th>Partner</th>
-      <th>Predmet</th>
+      <th>Adresa</th>
+      <th>Telefon</th>
+      <!--<th>Email</th>-->
+      <th>Iznos bez pdv-a</th>
+      <th>Pdv</th>
+      <th>Iznos sa pdv-om</th>
+
     </tr>
   </thead>
   <tbody>
@@ -18,6 +24,12 @@
       <td>{{ ponuda.broj }}</td>
       <td>{{ ponuda.datum }}</td>
       <td>{{ ponuda.partner_naziv }}</td>
+      <td>{{ ponuda.partner_adresa }}</td>
+      <td>{{ ponuda.partner_telefon}}/td>
+      <!--<td>{{ ponuda.partner_email }}</td>-->
+      <td>{{ ponuda.iznos_sa_rabatom }}</td>
+      <td>{{ ponuda.pdv }}</td>
+      <td>{{ ponuda.iznos_sa_pdv }}</td>
       <td>{{ ponuda.predmet }}</td>
     </tr>
   </tbody>
