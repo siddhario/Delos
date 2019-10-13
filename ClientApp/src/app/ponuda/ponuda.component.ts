@@ -21,8 +21,46 @@ export class PonudaComponent {
 
     calculate() {
         this.stavka.iznos_bez_pdv = this.stavka.kolicina * this.stavka.cijena_bez_pdv;
+
+        this.stavka.vrijednost_nabavna = this.stavka.kolicina * this.stavka.cijena_nabavna;
+
+        this.stavka.rabat_iznos = this.stavka.iznos_bez_pdv * this.stavka.rabat_procenat / 100;
+        this.stavka.cijena_bez_pdv_sa_rabatom = (this.stavka.iznos_bez_pdv - this.stavka.rabat_iznos) / this.stavka.kolicina;
+        this.stavka.iznos_bez_pdv_sa_rabatom = this.stavka.cijena_bez_pdv_sa_rabatom * this.stavka.kolicina;
+
+        this.stavka.ruc = this.stavka.vrijednost_nabavna * this.stavka.marza_procenat / 100;
+        this.stavka.cijena_bez_pdv = this.stavka.vrijednost_nabavna / this.stavka.kolicina;
+
+        this.stavka.iznos_bez_pdv_sa_rabatom = this.stavka.kolicina * this.stavka.cijena_bez_pdv_sa_rabatom;
+
+        this.stavka.iznos_sa_pdv = this.stavka.iznos_bez_pdv_sa_rabatom * (1 + this.stavka.pdv_stopa / 100);
+        this.stavka.pdv = this.stavka.iznos_sa_pdv - this.stavka.iznos_bez_pdv_sa_rabatom;
     }
 
+    calculateNabavnaVrijednost() {
+        this.stavka.vrijednost_nabavna = this.stavka.kolicina * this.stavka.cijena_nabavna;
+    }
+    calculateRabat() {
+        this.stavka.rabat_iznos = this.stavka.iznos_bez_pdv * this.stavka.rabat_procenat / 100;
+        this.stavka.cijena_bez_pdv_sa_rabatom = (this.stavka.iznos_bez_pdv - this.stavka.rabat_iznos) / this.stavka.kolicina;
+        this.stavka.iznos_bez_pdv_sa_rabatom = this.stavka.cijena_bez_pdv_sa_rabatom * this.stavka.kolicina;
+    }
+    calculateMarza() {
+        this.stavka.ruc = this.stavka.vrijednost_nabavna * this.stavka.marza_procenat / 100;
+        this.stavka.iznos_bez_pdv = this.stavka.vrijednost_nabavna + this.stavka.ruc;
+        this.stavka.cijena_bez_pdv = this.stavka.iznos_bez_pdv / this.stavka.kolicina;
+    }
+    calculateIznosSaRabatom() {
+        this.stavka.iznos_bez_pdv_sa_rabatom = this.stavka.kolicina * this.stavka.cijena_bez_pdv_sa_rabatom;
+    }
+
+    calculatePdv() {
+        this.stavka.iznos_sa_pdv = this.stavka.iznos_bez_pdv_sa_rabatom * (1 + this.stavka.pdv_stopa / 100);
+        this.stavka.pdv = this.stavka.iznos_sa_pdv - this.stavka.iznos_bez_pdv_sa_rabatom;
+    }
+
+   
+    
     selectItem(ponuda: Ponuda) {
         this.http.get<PonudaStavka[]>(this.baseUrl + 'ponuda_stavka?ponuda_broj=' + ponuda.broj).subscribe(result => {
             ponuda.stavke = result;

@@ -48,13 +48,14 @@
                 <div>
                   <table class="table table-light table-hover table-bordered" style="padding:5px;">
                     <tr>
-                      <th style="max-width:400px;min-width:400px"> <label class="headerLabel">Naziv <br/>Opis</label></th>
+                      <th style="max-width:400px;min-width:400px"> <label class="headerLabel">Naziv <br />Opis</label></th>
                       <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Količina JM</label></th>
                       <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Nabavna cijena</label></th>
+
+                      <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Marža</label></th>
                       <th style="max-width:110px;min-width:110px"> <label class="headerLabel">Cijena bez PDV-a</label></th>
                       <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Rabat</label></th>
                       <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Cijena sa popustom</label></th>
-                      <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Marža</label></th>
                       <th style="max-width:100px;min-width:100px"> <label class="headerLabel">PDV</label></th>
                       <th style="max-width:100px;min-width:100px"> <label class="headerLabel">Iznos sa PDV-om</label></th>
                       <th>
@@ -74,58 +75,59 @@
                       </td>
 
                       <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate(stavka)" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.kolicina}}</div>                     
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.jedinica_mjere" type="text" />
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.kolicina}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
                         <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.jedinica_mjere}}</div>
                       </td>
 
 
-                      <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.cijena_nabavna" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_nabavna}}</div>
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.vrijednost_nabavna" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.vrijednost_nabavna}}</div>
+                      <td style="max-width:80px;min-width:80px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit;">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit;">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
                       </td>
 
-                      <td style="max-width:90px;min-width:90px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate(stavka)" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv}}</div>
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.iznos_bez_pdv" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv}}</div>
+                      <td style="max-width:80px;min-width:80px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.marza_procenat | number : '1.2-2'}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.ruc" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.ruc | number : '1.2-2'}}</div>
                       </td>
 
-                      <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.rabat_procenat" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_procenat}}</div>
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.rabat_iznos" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_iznos}}</div>
+                      <td style="max-width:90px;min-width:90px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
                       </td>
 
-                      <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv_sa_rabatom}}</div>                   
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.iznos_bez_pdv_sa_rabatom" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv_sa_rabatom}}</div>
+                      <td style="max-width:80px;min-width:80px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.rabat_iznos" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_iznos| number : '1.2-2'}}</div>
                       </td>
 
-                      <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.marza_procenat" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.marza_procenat}}</div>
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.ruc" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.ruc}}</div>
+                      <td style="max-width:80px;min-width:80px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.iznos_bez_pdv_sa_rabatom" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
                       </td>
 
-                      <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" [(ngModel)]="stavka.pdv_stopa" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv_stopa}}</div>
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.pdv" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv}}</div>
+
+                      <td style="max-width:80px;min-width:80px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate()" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.pdv" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv| number : '1.2-2'}}</div>
                       </td>
 
-                      <td style="max-width:80px;min-width:80px">
-                        <input *ngIf="stavka.editing" style="max-width:inherit" disabled [(ngModel)]="stavka.iznos_sa_pdv" type="text" />
-                        <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_sa_pdvs}}</div>
+                      <td style="max-width:80px;min-width:80px;text-align:right">
+                        <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.iznos_sa_pdv" type="text" />
+                        <div *ngIf="!stavka.editing" style="max-width:inherit;text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
                       </td>
                       <td><img (click)="startItemEdit(stavka)" src="/assets/img/edit-24px.svg" /></td>
                     </tr>
