@@ -10,7 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { KorisnikComponent } from './korisnik/korisnik.component';
-import { PonudaComponent } from './ponuda/ponuda.component';
+import { PonudaComponent, FilterPipe } from './ponuda/ponuda.component';
 
 @NgModule({
     declarations: [
@@ -20,7 +20,8 @@ import { PonudaComponent } from './ponuda/ponuda.component';
         CounterComponent,
         FetchDataComponent,
         KorisnikComponent,
-        PonudaComponent
+        PonudaComponent,
+        FilterPipe
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

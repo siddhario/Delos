@@ -28,9 +28,18 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.ToList();
+            var ponude = _dbContext.ponuda.Include(p=>p.stavke).ToList();
             return ponude;
         
+        }
+
+        [HttpGet]
+        [Route("/ponuda_stavka")]
+        public IEnumerable<ponuda_stavka> GetStavke(string ponuda_broj)
+        {
+            var stavke = _dbContext.ponuda_stavka.Where(sp=> sp.ponuda_broj==ponuda_broj).ToList();
+            return stavke;
+
         }
     }
 }
