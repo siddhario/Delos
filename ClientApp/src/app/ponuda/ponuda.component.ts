@@ -19,7 +19,7 @@ export class PonudaComponent {
         this.stavka.editing = !this.stavka.editing;
     }
 
-    calculate() {
+    calculateIznosBezPdv() {
         this.stavka.iznos_bez_pdv = this.stavka.kolicina * this.stavka.cijena_bez_pdv;
 
         this.stavka.vrijednost_nabavna = this.stavka.kolicina * this.stavka.cijena_nabavna;
@@ -29,11 +29,12 @@ export class PonudaComponent {
         this.stavka.iznos_bez_pdv_sa_rabatom = this.stavka.cijena_bez_pdv_sa_rabatom * this.stavka.kolicina;
 
         this.stavka.ruc = this.stavka.vrijednost_nabavna * this.stavka.marza_procenat / 100;
-        this.stavka.cijena_bez_pdv = this.stavka.vrijednost_nabavna / this.stavka.kolicina;
+        this.stavka.iznos_bez_pdv = this.stavka.vrijednost_nabavna + this.stavka.ruc;
+        this.stavka.cijena_bez_pdv = this.stavka.iznos_bez_pdv / this.stavka.kolicina;
 
         this.stavka.iznos_bez_pdv_sa_rabatom = this.stavka.kolicina * this.stavka.cijena_bez_pdv_sa_rabatom;
 
-        this.stavka.iznos_sa_pdv = this.stavka.iznos_bez_pdv_sa_rabatom * (1 + this.stavka.pdv_stopa / 100);
+         this.stavka.iznos_sa_pdv = this.stavka.iznos_bez_pdv_sa_rabatom * (1 + this.stavka.pdv_stopa / 100);
         this.stavka.pdv = this.stavka.iznos_sa_pdv - this.stavka.iznos_bez_pdv_sa_rabatom;
     }
 
