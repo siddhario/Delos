@@ -13,10 +13,18 @@ export class PonudaComponent {
     public ponude: Ponuda[];
 
     public stavka: PonudaStavka;
+    public selectedPonuda: Ponuda;
     itemEdit: boolean = false;
     startItemEdit(stavka: PonudaStavka) {
         this.stavka = stavka;
         this.stavka.editing = !this.stavka.editing;
+    }
+
+    startItemAdd() {
+        var newStavka = new PonudaStavka();
+        newStavka.ponuda_broj = this.selectedPonuda.broj;
+        this.selectedPonuda.stavke.push(newStavka);
+        this.startItemEdit(newStavka);
     }
 
 
@@ -38,6 +46,12 @@ export class PonudaComponent {
         stavka.pdv_stopa = +stavka.pdv_stopa;
         stavka.cijena_bez_pdv = +stavka.cijena_bez_pdv;
         stavka.cijena_bez_pdv_sa_rabatom = +stavka.cijena_bez_pdv_sa_rabatom;
+        if (stavka.stavka_broj == undefined)
+            this.http.post<Ponuda>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
+                console.log("OK");
+                stavka.editing = false;
+            }, error => console.error(error));        
+        else 
         this.http.post<Ponuda>(this.baseUrl + 'ponuda/stavka_update', stavka).subscribe(result => {
             console.log("OK");
             stavka.editing = false;
@@ -90,6 +104,8 @@ export class PonudaComponent {
         }, error => console.error(error));
         this.ponude.filter(dd => dd.broj != ponuda.broj).forEach((value) => { value.selected = false });
         ponuda.selected = !ponuda.selected;
+        if (ponuda.selected == true)
+            this.selectedPonuda = ponuda;
     }
     rowClass(ponuda: Ponuda) {
         if (ponuda.selected)

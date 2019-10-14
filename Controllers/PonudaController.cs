@@ -33,7 +33,17 @@ namespace WebApplication3.Controllers
             return ponude;
         
         }
+        [HttpPost]
+        [Route("stavka_add")]
+        public IActionResult InsertStavkaPonuda(ponuda_stavka stavka)
+        {
+            int? ponuda_stavka = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == stavka.ponuda_broj).Max(ps => ps.stavka_broj);
 
+            stavka.stavka_broj = ponuda_stavka==null? 1:(ponuda_stavka.Value+1);
+            _dbContext.Add(stavka);
+            _dbContext.SaveChanges();
+            return Ok();
+        }
         [HttpPost]
         [Route("stavka_update")]
         public IActionResult UpdateStavkaPonuda(ponuda_stavka stavka)

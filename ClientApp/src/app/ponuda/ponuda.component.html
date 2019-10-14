@@ -132,6 +132,7 @@
                         <div *ngIf="!stavka.editing" style="max-width:inherit;text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
                       </td>
                       <td>
+                        <img (click)="startItemAdd()" src="/assets/img/add-24px.svg" />
                         <img (click)="startItemEdit(stavka)" src="/assets/img/edit-24px.svg" />
                         <img (click)="save(stavka)" src="/assets/img/save-24px.svg" />
                         <img (click)="deleteStavka(stavka)" src="/assets/img/delete-24px.svg" />
