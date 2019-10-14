@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Delos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -31,6 +32,32 @@ namespace WebApplication3.Controllers
             var ponude = _dbContext.ponuda.Include(p=>p.stavke).ToList();
             return ponude;
         
+        }
+
+        [HttpPost]
+        [Route("stavka_update")]
+        public IActionResult UpdateStavkaPonuda(ponuda_stavka stavka)
+        {
+            var ponuda_stavka = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == stavka.ponuda_broj && ps.stavka_broj == stavka.stavka_broj).FirstOrDefault();
+            if (ponuda_stavka == null)
+                return NotFound();
+
+            Helper.CopyPropertiesTo<ponuda_stavka, ponuda_stavka>(stavka, ponuda_stavka);
+            _dbContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("stavka_delete")]
+        public IActionResult DeleteStavkaPonuda(string ponuda_broj, int stavka_broj)
+        {
+            var ponuda_stavka = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == ponuda_broj && ps.stavka_broj == stavka_broj).FirstOrDefault();
+            if (ponuda_stavka == null)
+                return NotFound();
+
+            _dbContext.Remove(ponuda_stavka);
+            _dbContext.SaveChanges();
+            return Ok();
         }
 
         [HttpGet]

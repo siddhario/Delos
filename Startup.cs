@@ -1,5 +1,7 @@
+using Delos.CustomExceptionMiddleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +11,10 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace WebApplication3
 {
@@ -27,6 +31,8 @@ namespace WebApplication3
             writer.WriteStringValue(value.ToUniversalTime().ToString("dd.MM.yyyy"));
         }
     }
+
+    
 
     public class Startup
     {

@@ -90,7 +90,8 @@ namespace WebApplication3
         public decimal marza_procenat { get; set; }
         public decimal ruc { get; set; }
         public decimal pdv_stopa { get; set; }
-        public decimal pdv { get; set; }
+        public decimal pdv { get; set; }        
+        public decimal cijena_sa_pdv { get; set; }
         public decimal iznos_sa_pdv { get; set; }
 
         [JsonIgnore]
