@@ -33,6 +33,16 @@ namespace WebApplication3.Controllers
             return ponude;
         
         }
+
+        [HttpGet]
+        [Route("getbybroj")]
+        public ponuda GetByBroj(string broj)
+        {
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).FirstOrDefault(p=>p.broj==broj);
+            return ponuda;
+
+        }
+
         [HttpPost]
         [Route("stavka_add")]
         public IActionResult InsertStavkaPonuda(ponuda_stavka stavka)

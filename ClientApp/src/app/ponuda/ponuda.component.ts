@@ -49,13 +49,22 @@ export class PonudaComponent {
         if (stavka.stavka_broj == undefined)
             this.http.post<Ponuda>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
                 console.log("OK");
+                this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
+                    this.selectedPonuda = result;
+                }, error => console.error(error));
                 stavka.editing = false;
             }, error => console.error(error));        
         else 
         this.http.post<Ponuda>(this.baseUrl + 'ponuda/stavka_update', stavka).subscribe(result => {
             console.log("OK");
+            this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
+                this.selectedPonuda = result;
+            }, error => console.error(error));
             stavka.editing = false;
         }, error => console.error(error));
+      
+        
+        
     }
 
     calculate() {
