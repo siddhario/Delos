@@ -12,19 +12,19 @@ using System.Text.Json.Serialization;
 
 namespace WebApplication3
 {
-    public class DateTimeConverter : JsonConverter<DateTime>
-    {
-        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            Debug.Assert(typeToConvert == typeof(DateTime));
-            return DateTime.Parse(reader.GetString());
-        }
+    //public class DateTimeConverter : JsonConverter<DateTime>
+    //{
+    //    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    //    {
+    //        Debug.Assert(typeToConvert == typeof(DateTime));
+    //        return DateTime.Parse(reader.GetString());
+    //    }
 
-        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToUniversalTime().ToString("dd.MM.yyyy"));
-        }
-    }
+    //    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    //    {
+    //        writer.WriteStringValue(value.ToUniversalTime().ToString("dd.MM.yyyy"));
+    //    }
+    //}
 
     
 
@@ -40,10 +40,12 @@ namespace WebApplication3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
-            });
+            services.AddControllersWithViews()
+            //.AddJsonOptions(options =>
+            //{
+            //    options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+            //})
+            ;
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {

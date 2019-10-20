@@ -1,6 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Provide sufficient contrast against white background */
+
+body {
+  font-family: Arial;
+  font-size:small   
+}
 a {
   color: #0366d6;
 }
@@ -43,4 +48,78 @@ code {
 
 .table-bordered {padding:10px;}
 
-input {padding:2px}
+input {padding:2px;border-radius:4px;}
+
+.email {
+  background: url('assets/img/email-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.print {
+  background: url('assets/img/print-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.confirm {
+  background: url('assets/img/check_circle-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.delete {
+  background: url('assets/img/delete-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.deepcopy {
+  background: url('assets/img/deepcopy-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.status {
+  background: url('assets/img/status-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+.add {
+  background: url('assets/img/add-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 40px;
+  height: 40px;
+  background-position-x: right;
+  background-position-y: center;
+}
+.save {
+  background: url('assets/img/save-24px.svg') no-repeat;
+  background-color:gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.cancel {
+  background: url('assets/img/cancel-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+.modal-xl {
+  max-width: 95% !important;
+}

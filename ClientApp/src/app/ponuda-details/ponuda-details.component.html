@@ -1,0 +1,175 @@
+
+
+<div style="width:100%;padding:10px;">
+
+  <div style="text-align:end;padding:4px;">
+    <button class="confirm">Zaključi</button>
+    <button class="print">Štampaj</button>
+    <button class="email">E-mail</button>
+    <button class="deepcopy">Kopiraj</button>
+    <button class="status">Statusiraj</button>
+    <button class="delete">Obriši</button>
+  </div>
+  <!--<form class="form-inline">-->
+
+  <div class="form-group">
+
+    <div class="form-row">
+      <div class="col-sm-1"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
+      <div class="col-sm-2">
+        <label>Datum</label> <div class="input-group">
+          <input class="form-control form-control-sm" placeholder="yyyy-mm-dd"
+                 name="dp" [(ngModel)]="selectedPonuda.datum" ngbDatepicker #d="ngbDatepicker">
+
+          <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+        </div>
+        </div>
+      </div>
+
+
+    <div class="form-row">
+      <div class="col-sm-2"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
+      <div class="col-sm-2"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
+      <div class="col-sm-2"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
+      <div class="col-sm-2"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
+      <div class="col-sm-1"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-sm-1"><label>Valuta</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
+      <div class="col-sm-1"><label>Opcija</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
+      <div class="col-sm-1"><label>Rok isporuke</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
+      <div class="col-sm-1"><label>Paritet</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.paritet" type="text" /></div>
+      <div class="col-sm-2"><label>Predmet</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
+      <div class="col-sm-1"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
+      <div class="col-sm-1"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-sm-1"><label>Nab. vrijednost</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.nabavna_vrijednost" type="text" /></div>
+      <div class="col-sm-1"><label>RUC</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.ruc" type="text" /></div>
+      <div class="col-sm-1"><label>Iznos bez rabata</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_bez_rabata" type="text" /></div>
+      <div class="col-sm-1"><label>Rabat</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.rabat" type="text" /></div>
+      <div class="col-sm-1"><label>Iznos sa rabatom</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_sa_rabatom" type="text" /></div>
+      <div class="col-sm-1"><label>PDV</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.pdv" type="text" /></div>
+      <div class="col-sm-1"><label>Iznos sa PDV-om</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_sa_pdv" type="text" /></div>
+    </div>
+    <div class="form-row">
+      <div class="col-sm-7"><label>Napomena</label><textarea class="form-control form-control-sm" [(ngModel)]="selectedPonuda.napomena"></textarea></div>
+    </div>
+  </div>
+  <!--</form>-->
+  <div style="text-align:end;padding:4px;">
+    <button class="save" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
+    <button class="cancel" (click)="cancel()">Odustani</button>
+  </div>
+
+  <div style="display:inline-block;vertical-align:top;width:1400px" *ngIf="selectedPonuda.stavke">
+
+    <table>
+      <tr>
+        <td style="padding:0px">
+          <div>
+            <table class="table table-bordered" style="padding:5px;">
+              <tr>
+                <th style=" max-width:460px;min-width:460px"> <label class="headerLabel">Naziv <br />Opis</label></th>
+                <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Količina JM</label></th>
+                <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Nabavna cijena</label></th>
+
+                <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Marža</label></th>
+                <th style=" max-width:140px;min-width:140px"> <label class="headerLabel">Cijena bez PDV-a</label></th>
+                <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Rabat</label></th>
+                <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Cijena sa rabatom</label></th>
+                <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">PDV</label></th>
+                <th style=" max-width:120px;min-width:120px"> <label class="headerLabel">Cijena sa PDV-om</label></th>
+                <th>
+                  <button [disabled]="itemAdd==true" class="add" (click)="startItemAdd()"></button>
+                  <!--<a href="/check"><img alt="Lock" src="/assets/img/check_circle-24px.svg" /></a>
+                  <a href="/delete"><img alt="Delete" src="/assets/img/delete-24px.svg" /></a>
+                  <a href="/print"><img alt="Print" src="/assets/img/print-24px.svg" /></a>
+                  <a href="/email"><img alt="Send e-mail" src="/assets/img/email-24px.svg" /></a>-->
+                </th>
+              </tr>
+              <tr *ngFor="let stavka of selectedPonuda.stavke" (dblclick)="startItemEdit(stavka)">
+                <td style="min-width:440px;max-width:440px">
+
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="min-width:inherit;max-width:inherit" [(ngModel)]="stavka.artikal_naziv" type="text" />
+                  <div *ngIf="!stavka.editing" style="min-width:inherit;max-width:inherit">{{stavka.artikal_naziv}}</div>
+                  <textarea class="form-control form-control-sm" rows="2" style="width:440px" *ngIf="stavka.editing" [(ngModel)]="stavka.opis"></textarea>
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.opis}}</div>
+                </td>
+
+                <td style="max-width:80px;min-width:80px">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.kolicina}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.jedinica_mjere}}</div>
+                </td>
+
+
+                <td style="max-width:80px;min-width:80px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit;">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit;">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
+                </td>
+
+                <td style="max-width:80px;min-width:80px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.marza_procenat | number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.ruc | number : '1.2-2'}}</div>
+                </td>
+
+                <td style="max-width:90px;min-width:90px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
+                </td>
+
+                <td style="max-width:80px;min-width:80px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3()" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.rabat_iznos | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_iznos| number : '1.2-2'}}</div>
+                </td>
+
+                <td style="max-width:110px;min-width:110px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
+                </td>
+
+
+                <td style="max-width:80px;min-width:80px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv| number : '1.2-2'}}</div>
+                </td>
+
+                <td style="max-width:100px;min-width:100px;text-align:right">
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="text" />
+                  <div *ngIf="!stavka.editing" style="max-width:inherit;text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
+                </td>
+                <td>
+                  <!--<img (click)="startItemAdd()" src="/assets/img/add-24px.svg" />
+                  <img (click)="startItemEdit(stavka)" src="/assets/img/edit-24px.svg" />-->
+                  <img *ngIf="stavka.editing" (click)="save(stavka,false)" src="/assets/img/save-24px.svg" />
+                  <img *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" src="/assets/img/playlist_add-24px.svg" /><br *ngIf="stavka.editing" />
+                  <img *ngIf="stavka.editing" (click)="startItemEdit(stavka)" src="/assets/img/cancel-24px.svg" />
+                  <img *ngIf="!stavka.editing" (click)="startItemEdit(stavka)" src="/assets/img/edit-24px.svg" /><br *ngIf="stavka.editing" />
+                  <img *ngIf="!stavka.editing" (click)="deleteStavka(stavka)" src="/assets/img/delete-24px.svg" />
+                </td>
+              </tr>
+            </table>
+          </div>
+      </tr>
+    </table>
+  </div>
+
+</div>

@@ -16,15 +16,17 @@ namespace Delos
 
             foreach (var sourceProp in sourceProps)
             {
-                if (destProps.Any(x => x.Name == sourceProp.Name))
+                if (sourceProp.Name != "stavke")
                 {
-                    var p = destProps.First(x => x.Name == sourceProp.Name);
-                    if (p.CanWrite)
-                    { // check if the property can be set or no.
-                        p.SetValue(dest, sourceProp.GetValue(source, null), null);
+                    if (destProps.Any(x => x.Name == sourceProp.Name))
+                    {
+                        var p = destProps.First(x => x.Name == sourceProp.Name);
+                        if (p.CanWrite)
+                        { // check if the property can be set or no.
+                            p.SetValue(dest, sourceProp.GetValue(source, null), null);
+                        }
                     }
                 }
-
             }
 
         }

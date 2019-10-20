@@ -30,9 +30,10 @@ namespace WebApplication3.Controllers
         {
 
             var ponude = _dbContext.ponuda.Include(p=>p.stavke).ToList();
-            return ponude;
-        
+            return ponude;        
         }
+
+
 
         [HttpGet]
         [Route("getbybroj")]
@@ -40,21 +41,90 @@ namespace WebApplication3.Controllers
         {
             var ponuda = _dbContext.ponuda.Include(p => p.stavke).FirstOrDefault(p=>p.broj==broj);
             return ponuda;
+        }
 
+        [HttpPost]
+        public IActionResult InsertPonuda(ponuda ponuda)
+        {
+            try
+            {
+                var ponude = _dbContext.ponuda.Where(p => p.datum.Year == DateTime.Now.Year);
+                string maxPonudaBroj = null;
+                int year = ponuda.datum.Year;
+                int? broj = null;
+                if (ponude != null && ponude.Count() > 0)
+                {
+                    maxPonudaBroj = ponude.Max(p => p.broj);
+                    int dbroj = int.Parse(maxPonudaBroj.Split("/")[0]);
+                    broj = dbroj + 1;
+                }
+                else
+                    broj = 0;
+                ponuda.radnik = "dario";
+                ponuda.status = "E";
+                ponuda.partner_sifra = 14;
+                ponuda.broj = broj.Value.ToString("D5") + "/" + year.ToString();
+                _dbContext.ponuda.Add(ponuda);
+                _dbContext.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult UpdatePonuda(ponuda ponuda)
+        {
+            //var ponude = _dbContext.ponuda.Where(p => p.datum.Year == DateTime.Now.Year);
+            //string maxPonudaBroj = null;
+            //int year = ponuda.datum.Year;
+            //int? broj = null;
+            //if (ponude != null && ponude.Count() > 0)
+            //{
+            //    maxPonudaBroj = ponude.Max(p => p.broj);
+            //    int dbroj = int.Parse(maxPonudaBroj.Split("/")[0]);
+            //    broj = dbroj + 1;
+            //}
+            //else
+            //    broj = 0;
+
+            //ponuda.broj = broj.Value.ToString("D5") + "/" + year.ToString();
+
+            var pon = _dbContext.ponuda.FirstOrDefault(p =>p.broj== ponuda.broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    Helper.CopyPropertiesTo<ponuda, ponuda>(ponuda, pon);
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
         }
 
         [HttpPost]
         [Route("stavka_add")]
         public IActionResult InsertStavkaPonuda(ponuda_stavka stavka)
         {
-            int? ponuda_stavka = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == stavka.ponuda_broj).Max(ps => ps.stavka_broj);
+            int? ponuda_stavka = null;
+            var stavke = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == stavka.ponuda_broj);
+            if(stavke!=null&&stavke.Count()>0)
+                ponuda_stavka = stavke.Max(ps => ps.stavka_broj);
 
             stavka.stavka_broj = ponuda_stavka==null? 1:(ponuda_stavka.Value+1);
             _dbContext.Add(stavka);
             _dbContext.SaveChanges();
             return Ok();
         }
-        [HttpPost]
+        [HttpPut]
         [Route("stavka_update")]
         public IActionResult UpdateStavkaPonuda(ponuda_stavka stavka)
         {

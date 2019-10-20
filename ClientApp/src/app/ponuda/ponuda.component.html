@@ -1,203 +1,49 @@
-<h1 id="tableLabel">Ponude</h1>
+<div style="width:100%">
+  <h1 id="tableLabel">Ponude</h1>
 
-<!--<p>Korisnici</p>-->
+  <!--<p>Korisnici</p>-->
 
-<p *ngIf="!ponude"><em>Učitavanje...</em></p>
-<input style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
-<button (click)="load()">Ucitaj</button>
-<table class='table table-hover' aria-labelledby="tableLabel" *ngIf="ponude">
-  <thead>
-    <!--<tr>
-        <th>Broj</th>
-        <th>Datum</th>
-        <th>Partner</th>
-        <th>Adresa</th>
-        <th>Telefon</th>
-        <th>Email</th>
-        <th>Iznos bez pdv-a</th>
-        <th>Pdv</th>
-        <th>Iznos sa pdv-om</th>
+  <p *ngIf="!ponude"><em>Učitavanje...</em></p>
+  <input  class="form-control" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+  <button (click)="load()">Ucitaj</button>
+  <button (click)="add()">Unos nove ponude</button>
+  <table class='table table-hover' aria-labelledby="tableLabel" *ngIf="ponude">
+    <thead>
+      <!--<tr>
+          <th>Broj</th>
+          <th>Datum</th>
+          <th>Partner</th>
+          <th>Adresa</th>
+          <th>Telefon</th>
+          <th>Email</th>
+          <th>Iznos bez pdv-a</th>
+          <th>Pdv</th>
+          <th>Iznos sa pdv-om</th>
 
-      </tr>
-    </thead>-->
-  <tbody>
-    <tr *ngFor="let ponuda of ponude | filter : searchText">
-      <td style="padding:0px">
+        </tr>
+      </thead>-->
+    <tbody>
+      <tr *ngFor="let ponuda of ponude | filter : searchText">
+        <td style="padding:0px">
 
-        <div (click)="selectItem(ponuda)">
-          <table [ngClass]="rowClass(ponuda)">
-            <tr>
-              <td style="min-width:100px;max-width:100px">{{ ponuda.broj }}</td>
-              <td style="min-width:100px;max-width:100px">{{ ponuda.datum }}</td>
-              <td style="min-width:350px;max-width:350px">{{ ponuda.partner_naziv }}</td>
-              <td style="min-width:300px;max-width:300px">{{ ponuda.partner_adresa }}</td>
-              <td style="min-width:250px;max-width:250px">{{ ponuda.partner_telefon}}</td>
-              <td style="min-width:100px;max-width:100px">{{ ponuda.iznos_sa_rabatom }}</td>
-              <td style="min-width:100px;max-width:100px">{{ ponuda.pdv }}</td>
-              <td style="min-width:100px;max-width:100px">{{ ponuda.iznos_sa_pdv }}</td>
-            </tr>
-          </table>
-        </div>
-
-
-        <div style="padding:10px" *ngIf="ponuda.selected">
-
-          <div style="text-align:end;padding:4px;background-color:rosybrown">
-            <button style="width:150px">Zaključi</button>
-            <button style="width:150px">Štampaj</button>
-            <button style="width:150px">E-mail</button>
-            <button style="width:150px">Kopiraj</button>
-            <button style="width:150px">Statusiraj</button>
-            <button style="width:150px">Obriši</button>
-          </div>
-          <div style="vertical-align:top;padding:0px">
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Broj</label><input disabled style="width:90px" [(ngModel)]="selectedPonuda.broj" type="text" /></div></div>
-
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Datum</label><input style="width:90px" [(ngModel)]="selectedPonuda.datum" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Partner</label><input style="width:290px" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Adresa</label><input style="width:290px" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Telefon</label><input style="width:190px" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Email</label><input style="width:190px" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>JIB</label><input style="width:190px" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div></div>
-          </div>
-          <div style="vertical-align:top;padding:0px">
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Valuta</label><input style="width:90px" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Opcija</label><input style="width:190px" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Rok isp.</label><input style="width:190px" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Paritet</label><input style="width:190px" [(ngModel)]="selectedPonuda.paritet" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Predmet</label><input style="width:290px" [(ngModel)]="selectedPonuda.predmet" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Izradio</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.radnik" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Status</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.status" type="text" /></div></div>
-          </div>
-          <div style="vertical-align:top;padding:0px">
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Nabavna vrijednost</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.nabavna_vrijednost" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>RUC</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.ruc" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Iznos bez rabata</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.iznos_bez_rabata" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Rabat</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.rabat" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Iznos sa rabatom</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.iznos_sa_rabatom" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>PDV</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.pdv" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Iznos sa PDV-om</label><input disabled style="width:190px" [(ngModel)]="selectedPonuda.iznos_sa_pdv" type="text" /></div></div>
-            <div style="display:inline-block;padding:5px"><div style="display:grid"><label>Napomena</label><textarea style="width:1390px" [(ngModel)]="selectedPonuda.napomena"></textarea></div></div>
-          </div>
-
-          <div style="display:inline-block;vertical-align:top" *ngIf="ponuda.selected&&ponuda.stavke">
-            <div style="text-align:end;padding:4px;background-color:rosybrown">            
-              <button style="width:150px" (click)="startItemAdd()">Dodaj</button>
-              <button style="width:150px">Kopiraj</button>
-              <button style="width:150px" (click)="deleteStavka(stavka)">Obriši</button>
-            </div>
-            <table>
+          <div (click)="selectItem(ponuda)">
+            <table [ngClass]="rowClass(ponuda)">
               <tr>
-                <td style="padding:0px">
-                  <div>
-                    <table class="table table-bordered" style="padding:5px;">
-                      <tr>
-                        <th style=" max-width:460px;min-width:460px"> <label class="headerLabel">Naziv <br />Opis</label></th>
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Količina JM</label></th>
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Nabavna cijena</label></th>
-
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Marža</label></th>
-                        <th style=" max-width:110px;min-width:110px"> <label class="headerLabel">Cijena bez PDV-a</label></th>
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Rabat</label></th>
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Cijena sa rabatom</label></th>
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">PDV</label></th>
-                        <th style=" max-width:100px;min-width:100px"> <label class="headerLabel">Cijena sa PDV-om</label></th>
-                        <th>
-                <!--<a href="/check"><img alt="Lock" src="/assets/img/check_circle-24px.svg" /></a>
-                <a href="/delete"><img alt="Delete" src="/assets/img/delete-24px.svg" /></a>
-                <a href="/print"><img alt="Print" src="/assets/img/print-24px.svg" /></a>
-                <a href="/email"><img alt="Send e-mail" src="/assets/img/email-24px.svg" /></a>-->
-              </th>
-                      </tr>
-                      <tr *ngFor="let stavka of selectedPonuda.stavke" (click)="startItemEdit(stavka)">
-                        <td style="min-width:440px;max-width:440px">
-
-                          <input *ngIf="stavka.editing" style="min-width:inherit;max-width:inherit" [(ngModel)]="stavka.artikal_naziv" type="text" />
-                          <div *ngIf="!stavka.editing" style="min-width:inherit;max-width:inherit">{{stavka.artikal_naziv}}</div>
-                          <textarea rows="2" style="width:440px" *ngIf="stavka.editing" [(ngModel)]="stavka.opis"></textarea>
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.opis}}</div>
-                        </td>
-
-                        <td style="max-width:80px;min-width:80px">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.kolicina}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.jedinica_mjere}}</div>
-                        </td>
-
-
-                        <td style="max-width:80px;min-width:80px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit;">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit;">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
-                        </td>
-
-                        <td style="max-width:80px;min-width:80px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.marza_procenat | number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.ruc | number : '1.2-2'}}</div>
-                        </td>
-
-                        <td style="max-width:90px;min-width:90px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
-                        </td>
-
-                        <td style="max-width:80px;min-width:80px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3()" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.rabat_iznos | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.rabat_iznos| number : '1.2-2'}}</div>
-                        </td>
-
-                        <td style="max-width:80px;min-width:80px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
-                        </td>
-
-
-                        <td style="max-width:80px;min-width:80px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.pdv| number : '1.2-2'}}</div>
-                        </td>
-
-                        <td style="max-width:80px;min-width:80px;text-align:right">
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
-                          <input *ngIf="stavka.editing" style="max-width:inherit;text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="text" />
-                          <div *ngIf="!stavka.editing" style="max-width:inherit;text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
-                        </td>
-                        <td>
-                          <!--<img (click)="startItemAdd()" src="/assets/img/add-24px.svg" />
-  <img (click)="startItemEdit(stavka)" src="/assets/img/edit-24px.svg" />-->
-                          <img *ngIf="stavka.editing" (click)="save(stavka)" src="/assets/img/save-24px.svg" /><br/>
-                          <img *ngIf="stavka.editing" (click)="cancelEdit(stavka)" src="/assets/img/cancel-24px.svg" />
-                          <img *ngIf="!stavka.editing" (click)="startItemEdit(stavka)" src="/assets/img/delete-24px.svg" />
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
+                <td style="min-width:100px;max-width:100px">{{ ponuda.broj }}</td>
+                <td style="min-width:100px;max-width:100px">{{ ponuda.datum }}</td>
+                <td style="min-width:350px;max-width:350px">{{ ponuda.partner_naziv }}</td>
+                <td style="min-width:300px;max-width:300px">{{ ponuda.partner_adresa }}</td>
+                <td style="min-width:250px;max-width:250px">{{ ponuda.partner_telefon}}</td>
+                <td style="min-width:100px;max-width:100px">{{ ponuda.iznos_sa_rabatom }}</td>
+                <td style="min-width:100px;max-width:100px">{{ ponuda.pdv }}</td>
+                <td style="min-width:100px;max-width:100px">{{ ponuda.iznos_sa_pdv }}</td>
               </tr>
             </table>
           </div>
-          <!--<div style="display:inline-block;vertical-align:top" *ngIf="ponuda.selected">
-            <button>Zaključi</button>
-            <button>Štampaj</button>
-            <button>E-mail</button><br />
-            <button>Kopiraj</button>
-            <button>Statusiraj</button>
-            <button>Obriši</button>
-          </div>-->
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
