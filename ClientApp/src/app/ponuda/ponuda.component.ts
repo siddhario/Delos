@@ -136,6 +136,11 @@ class Ponuda {
     partner_telefon: string;
     partner_email: string;
     iznos_sa_rabatom: number;
+    partner_jib: string;
+    rok_vazenja: string;
+    rok_isporuke: string;
+    paritet: string;
+    valuta_placanja: string;
     pdv: number;
     iznos_sa_pdv: number;
     predmet: string;

@@ -16,7 +16,7 @@ code {
 }
 
 .container{
-  max-width:1600px;
+  max-width:1450px;
 }
 .filter-green {
   filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
@@ -42,3 +42,5 @@ code {
 }
 
 .table-bordered {padding:10px;}
+
+input {padding:2px}
