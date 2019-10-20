@@ -2,66 +2,66 @@
 
 <div style="width:100%;padding:10px;">
 
-  <div style="text-align:end;padding:4px;">
-    <button class="confirm">Zaključi</button>
-    <button class="print">Štampaj</button>
-    <button class="email">E-mail</button>
-    <button class="deepcopy">Kopiraj</button>
-    <button class="status">Statusiraj</button>
-    <button class="delete">Obriši</button>
+  <div style="text-align:end;padding:4px;background-color:darkcyan;border-radius:10px">
+    <button type="button" class="btn btn-info">Zaključi</button>
+    <button type="button" class="btn btn-info">Štampaj</button>
+    <button type="button" class="btn btn-info">E-mail</button>
+    <button type="button" class="btn btn-info">Kopiraj</button>
+    <button type="button" class="btn btn-info">Statusiraj</button>
+    <button type="button" class="btn btn-info">Obriši</button>
   </div>
   <!--<form class="form-inline">-->
 
-  <div class="form-group">
 
-    <div class="form-row">
-      <div class="col-sm-1"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
-      <div class="col-sm-2">
-        <label>Datum</label> <div class="input-group">
-          <input class="form-control form-control-sm" placeholder="yyyy-mm-dd"
-                 name="dp" [(ngModel)]="selectedPonuda.datum" ngbDatepicker #d="ngbDatepicker">
+  <div class="form-row form-group">
+    <div class="col-sm-1"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
+    <div class="col-sm-1">
+      <label>Datum</label> <div class="input-group">
+        <input class="form-control form-control-sm" placeholder="yyyy-mm-dd"
+               name="dp" [(ngModel)]="selectedPonuda.datum" ngbDatepicker #d="ngbDatepicker">
 
-          <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-        </div>
-        </div>
+        <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
       </div>
-
-
-    <div class="form-row">
-      <div class="col-sm-2"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
-      <div class="col-sm-2"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
-      <div class="col-sm-2"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
-      <div class="col-sm-2"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
-      <div class="col-sm-1"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
     </div>
-
-    <div class="form-row">
-      <div class="col-sm-1"><label>Valuta</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
-      <div class="col-sm-1"><label>Opcija</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
-      <div class="col-sm-1"><label>Rok isporuke</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
-      <div class="col-sm-1"><label>Paritet</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.paritet" type="text" /></div>
-      <div class="col-sm-2"><label>Predmet</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
-      <div class="col-sm-1"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
-      <div class="col-sm-1"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
-    </div>
-
-    <div class="form-row">
-      <div class="col-sm-1"><label>Nab. vrijednost</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.nabavna_vrijednost" type="text" /></div>
-      <div class="col-sm-1"><label>RUC</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.ruc" type="text" /></div>
-      <div class="col-sm-1"><label>Iznos bez rabata</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_bez_rabata" type="text" /></div>
-      <div class="col-sm-1"><label>Rabat</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.rabat" type="text" /></div>
-      <div class="col-sm-1"><label>Iznos sa rabatom</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_sa_rabatom" type="text" /></div>
-      <div class="col-sm-1"><label>PDV</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.pdv" type="text" /></div>
-      <div class="col-sm-1"><label>Iznos sa PDV-om</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_sa_pdv" type="text" /></div>
-    </div>
-    <div class="form-row">
-      <div class="col-sm-7"><label>Napomena</label><textarea class="form-control form-control-sm" [(ngModel)]="selectedPonuda.napomena"></textarea></div>
-    </div>
+    <div class="col-sm-1"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
+    <div class="col-sm-1"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
+    <div class="col-sm-1"><label>Valuta</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
+    <div class="col-sm-1"><label>Opcija</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
+    <div class="col-sm-1"><label>Rok isporuke</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
+    <div class="col-sm-1"><label>Paritet</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.paritet" type="text" /></div>
   </div>
+
+
+
+  <div class="form-row form-group">
+    <div class="col-sm-2"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
+    <div class="col-sm-2"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
+    <div class="col-sm-2"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
+    <div class="col-sm-2"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
+    <div class="col-sm-1"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
+  </div>
+
+  <div class="form-row form-group">
+    
+    <div class="col-sm-5"><label>Napomena</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
+    <div hidden class="col-sm-3"><label>Napomena</label><textarea class="form-control form-control-sm" [(ngModel)]="selectedPonuda.napomena"></textarea></div>
+  </div>
+
+  <div class="form-row form-group" hidden>
+    <div class="col-sm-1"><label>Nab. vrijednost</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.nabavna_vrijednost" type="text" /></div>
+    <div class="col-sm-1"><label>RUC</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.ruc" type="text" /></div>
+    <div class="col-sm-1"><label>Iznos bez rabata</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_bez_rabata" type="text" /></div>
+    <div class="col-sm-1"><label>Rabat</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.rabat" type="text" /></div>
+    <div class="col-sm-1"><label>Iznos sa rabatom</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_sa_rabatom" type="text" /></div>
+    <div class="col-sm-1"><label>PDV</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.pdv" type="text" /></div>
+    <div class="col-sm-1"><label>Iznos sa PDV-om</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.iznos_sa_pdv" type="text" /></div>
+  </div>
+
+
   <!--</form>-->
-  <div style="text-align:end;padding:4px;">
-    <button class="save" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
-    <button class="cancel" (click)="cancel()">Odustani</button>
+  <div style="text-align:end;padding:4px;background-color:darkcyan;border-radius:10px">
+    <button type="button" class="btn btn-info" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
+    <button type="button" class="btn btn-info" (click)="cancel()">Odustani</button>
   </div>
 
   <div style="display:inline-block;vertical-align:top;width:1400px" *ngIf="selectedPonuda.stavke">
