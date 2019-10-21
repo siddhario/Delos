@@ -3,7 +3,7 @@
 /* Provide sufficient contrast against white background */
 
 body {
-  font-family: Arial;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-size:small   
 }
 a {
@@ -121,5 +121,6 @@ input {padding:2px;border-radius:4px;}
   background-position-y: center;
 }
 .modal-xl {
-  max-width: 95% !important;
+  max-width: 90% !important;
+  padding-left: 5%;
 }

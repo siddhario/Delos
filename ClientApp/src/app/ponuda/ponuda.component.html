@@ -1,48 +1,33 @@
 <div style="width:100%">
   <h1 id="tableLabel">Ponude</h1>
-
-  <!--<p>Korisnici</p>-->
-
   <p *ngIf="!ponude"><em>Učitavanje...</em></p>
-  <input  class="form-control" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
-  <button (click)="load()">Ucitaj</button>
-  <button (click)="add()">Unos nove ponude</button>
+
+  <input class="form-control" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+  <button type="button" class="btn btn-info" (click)="load()">Ucitaj</button>
+  <button type="button" class="btn btn-info" (click)="add()">Unos nove ponude</button>
   <table class='table table-hover' aria-labelledby="tableLabel" *ngIf="ponude">
     <thead>
-      <!--<tr>
-          <th>Broj</th>
-          <th>Datum</th>
-          <th>Partner</th>
-          <th>Adresa</th>
-          <th>Telefon</th>
-          <th>Email</th>
-          <th>Iznos bez pdv-a</th>
-          <th>Pdv</th>
-          <th>Iznos sa pdv-om</th>
-
-        </tr>
-      </thead>-->
+      <tr>
+        <th>Broj</th>
+        <th>Datum</th>
+        <th>Partner</th>
+        <th>Adresa</th>
+        <th>Telefon</th>
+        <th>Iznos bez pdv-a</th>
+        <th>Pdv</th>
+        <th>Iznos sa pdv-om</th>
+      </tr>
+    </thead>
     <tbody>
-      <tr *ngFor="let ponuda of ponude | filter : searchText">
-        <td style="padding:0px">
-
-          <div (click)="selectItem(ponuda)">
-            <table [ngClass]="rowClass(ponuda)">
-              <tr>
-                <td style="min-width:100px;max-width:100px">{{ ponuda.broj }}</td>
-                <td style="min-width:100px;max-width:100px">{{ ponuda.datum }}</td>
-                <td style="min-width:350px;max-width:350px">{{ ponuda.partner_naziv }}</td>
-                <td style="min-width:300px;max-width:300px">{{ ponuda.partner_adresa }}</td>
-                <td style="min-width:250px;max-width:250px">{{ ponuda.partner_telefon}}</td>
-                <td style="min-width:100px;max-width:100px">{{ ponuda.iznos_sa_rabatom }}</td>
-                <td style="min-width:100px;max-width:100px">{{ ponuda.pdv }}</td>
-                <td style="min-width:100px;max-width:100px">{{ ponuda.iznos_sa_pdv }}</td>
-              </tr>
-            </table>
-          </div>
-
-
-        </td>
+      <tr *ngFor="let ponuda of ponude | filter : searchText" (click)="selectItem(ponuda)">
+        <td>{{ ponuda.broj }}</td>
+        <td>{{ ponuda.datum }}</td>
+        <td>{{ ponuda.partner_naziv }}</td>
+        <td>{{ ponuda.partner_adresa }}</td>
+        <td>{{ ponuda.partner_telefon}}</td>
+        <td>{{ ponuda.iznos_sa_rabatom }}</td>
+        <td>{{ ponuda.pdv }}</td>
+        <td>{{ ponuda.iznos_sa_pdv }}</td>
       </tr>
     </tbody>
   </table>

@@ -21,16 +21,13 @@ export class PonudaComponent {
         let modalRef = this.modalService.open(PonudaDetailsComponent
             , {
                 size: "xl",
-                windowClass: 'modal-xl',
-                centered: true,
-                scrollable: false,
-                keyboard: true
+                windowClass: 'modal-xl'
             }
         );
     }
 
     selectItem(ponuda: Ponuda) {
-      
+
         this.ponude.filter(dd => dd.broj != ponuda.broj).forEach((value) => { value.selected = false });
         ponuda.selected = !ponuda.selected;
         if (ponuda.selected == true)
@@ -39,12 +36,8 @@ export class PonudaComponent {
         let modalRef = this.modalService.open(PonudaDetailsComponent
             , {
                 size: "xl",
-                windowClass: 'modal-xl',
-                centered: true,
-                scrollable: false,
-                keyboard: true
-            }
-        );
+                windowClass: 'modal-xl'
+            });
         modalRef.componentInstance.selectedPonuda = ponuda;
     }
     rowClass(ponuda: Ponuda) {
