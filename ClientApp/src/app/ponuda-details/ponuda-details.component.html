@@ -1,6 +1,5 @@
 <div style="width:100%;padding:10px;">
-  <div style="text-align:end;border:1px solid;border-color:gainsboro;border-radius:.2rem">
-    <div style="display: inline-block;text-align: left;width: 35%;font-size: 24px;vertical-align: middle;">PONUDA</div>
+  <div style="text-align:start;border:1px solid;border-color:gainsboro;border-radius:.2rem">
     <button type="button" class="btn btn-outline-primary" style="margin:3px;">Zaključi</button>
     <button type="button" class="btn btn-outline-primary" style="margin:3px;">Štampaj</button>
     <button type="button" class="btn btn-outline-primary" style="margin:3px;">E-mail</button>
@@ -60,11 +59,11 @@
         <div class="form-row">
           <div class="col-sm-2">
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
-            <div *ngIf="!stavka.editing">{{stavka.artikal_naziv}}</div>
+            <div *ngIf="!stavka.editing" style="font-weight:bold">{{stavka.artikal_naziv}}</div>
           </div>
           <div class="col-sm-6">
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.opis"></textarea>
-            <div *ngIf="!stavka.editing" style="">{{stavka.opis}}</div>
+            <div *ngIf="!stavka.editing" style="font-weight:bold">{{stavka.opis}}</div>
           </div>
 
         </div>
@@ -126,7 +125,7 @@
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-3" *ngIf="false">
             <button *ngIf="stavka.editing" (click)="save(stavka,false)" class="btn btn-outline-primary">S</button>
             <button *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary">SC</button><br *ngIf="stavka.editing" />
             <button *ngIf="stavka.editing" (click)="startItemEdit(stavka)" class="btn btn-outline-primary">E</button><br *ngIf="stavka.editing" />
@@ -160,7 +159,7 @@
       </div>
 
     </div>
-    <div style="text-align:end;border:1px solid;border-color:gainsboro;border-radius:.2rem">
+    <div style="text-align:end;border:1px solid;border-color:gainsboro;border-radius:.2rem" >
       <button type="button" [disabled]="itemAdd==true" class="btn btn-outline-success" style="margin:3px;" (click)="startItemAdd()">Unos stavki</button>
       <button type="button" class="btn btn-outline-success" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
       <button type="button" class="btn btn-outline-warning" style="margin:3px;" (click)="cancel()">Odustani</button>
