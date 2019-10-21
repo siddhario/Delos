@@ -32,16 +32,21 @@
       <div class="form-row form-group" style="border-top: solid 1px gainsboro;padding-top: 10px;">
         <div class="col-sm-3"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
         <div class="col-sm-3"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
+        <div class="col-sm-2"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
+      </div>
+
+      <div class="form-row form-group">
         <div class="col-sm-2"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
         <div class="col-sm-2"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
         <div class="col-sm-2"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
+        <div class="col-sm-2"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
       </div>
 
       <div class="form-row form-group">
 
-        <div class="col-sm-6"><label>Napomena</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
-        <div class="col-sm-2"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
-        <div class="col-sm-2"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
+        <div class="col-sm-8"><label>Napomena</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
+       
+ 
 
       </div>
 
