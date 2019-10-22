@@ -84,10 +84,10 @@
     <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary" style="margin:3px;" (click)="startItemAdd()">Stavke</button></div>
     <div style="float:right"><button type="button" [disabled]="false" class="btn btn-outline-primary" style="margin:3px;" (click)="startItemAdd()">+</button></div>
 </div>
-  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8" *ngIf="selectedPonuda.stavke.length>0">
+  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke.length>0">
     <div>
       <div *ngFor="let stavka of selectedPonuda.stavke" (dblclick)="startItemEdit(stavka)">
-        <div class="form-row" style="border-bottom: solid 1px gainsboro;padding-top: 10px;padding-bottom:5px;font-size:14px">
+        <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
             <label>Naziv</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
@@ -106,7 +106,7 @@
           <div class="col-sm-1">
             <label>Količina/JM</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.kolicina}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.kolicina}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.jedinica_mjere}}</div>
           </div>
@@ -114,7 +114,7 @@
           <div class="col-sm-2" style="text-align:right">
             <label>Nabavna cijena</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
           </div>
@@ -122,7 +122,7 @@
           <div class="col-sm-1" style="text-align:right">
             <label>Marža</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.marza_procenat | number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.marza_procenat | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.ruc | number : '1.2-2'}}</div>
           </div>
@@ -130,7 +130,7 @@
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
           </div>
@@ -138,7 +138,7 @@
           <div class="col-sm-1" style="text-align:right">
             <label>Rabat</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3()" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.rabat_iznos | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.rabat_iznos| number : '1.2-2'}}</div>
           </div>
@@ -146,7 +146,7 @@
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena bez PDV-a</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
           </div>
@@ -154,7 +154,7 @@
           <div class="col-sm-1" style="text-align:right">
             <label>PDV</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv| number : '1.2-2'}}</div>
           </div>
@@ -162,7 +162,7 @@
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena sa PDV-om</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="text" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
           </div>
