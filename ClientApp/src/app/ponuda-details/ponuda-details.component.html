@@ -81,8 +81,8 @@
   </div>
 
   <div style="margin:10px;background-color:beige;font-size:16px;border-radius:.2rem;padding:3px;overflow:auto">
-    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-outline-primary" style="margin:3px;" (click)="startItemAdd()">Stavke</button></div>
-    <div style="float:right"><button type="button" [disabled]="false" class="btn btn-primary" style="margin:3px;" (click)="startItemAdd()">+</button></div>
+    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary" style="margin:3px;" (click)="startItemAdd()">Stavke</button></div>
+    <div style="float:right"><button type="button" [disabled]="false" class="btn btn-outline-primary" style="margin:3px;" (click)="startItemAdd()">+</button></div>
 </div>
   <div style="margin:10px;border-top:2px solid;border-color:#17a2b8" *ngIf="selectedPonuda.stavke.length>0">
     <div>
@@ -169,11 +169,11 @@
 
         </div>
         <div class="form-row" *ngIf="stavka.editing">
-          <div style="text-align:center;" class="col-sm-12">
-            <button *ngIf="stavka.editing" (click)="save(stavka,false)" class="btn btn-outline-primary" style="margin:3px">Sačuvaj</button>
-            <button *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" class="btn btn-secondary" style="margin:3px">Sačuvaj i nastavi unos</button>
-            <button *ngIf="stavka.editing" (click)="startItemEdit(stavka)" class="btn btn-warning" style="margin:3px">Odustani</button>
-            <button *ngIf="!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-danger" style="margin:3px">Obriši</button>
+          <div style="text-align:right;padding-right:15px" class="col-sm-12">
+            <button *ngIf="stavka.editing" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="margin:3px">Sačuvaj</button>
+            <button *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="margin:3px">Sačuvaj i nastavi unos</button>
+            <button *ngIf="stavka.editing" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Odustani</button>
+            <button *ngIf="!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="margin:3px">Obriši</button>
           </div>
         </div>
       </div>
@@ -206,7 +206,7 @@
 
   </div>
   <div style="text-align:center;border:1px solid;border-color:gainsboro;border-radius:.2rem">
-    <button type="button" class="btn btn-primary" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
-    <button type="button" class="btn btn-primary" style="margin:3px;" (click)="cancel()">Odustani</button>
+    <button type="button" class="btn btn-outline-success" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
+    <button type="button" class="btn btn-outline-warning" style="margin:3px;" (click)="cancel()">Odustani</button>
   </div>
 </div>

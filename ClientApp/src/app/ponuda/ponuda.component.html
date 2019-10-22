@@ -2,9 +2,15 @@
   <h1 id="tableLabel">Ponude</h1>
   <p *ngIf="!ponude"><em>Učitavanje...</em></p>
 
-  <input class="form-control" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
-  <button type="button" class="btn btn-info" (click)="load()">Ucitaj</button>
-  <button type="button" class="btn btn-info" (click)="add()">Unos nove ponude</button>
+  <div style="overflow:auto">
+    <div style="float:left">
+      <button type="button" class="btn btn-info" (click)="load()">Učitaj</button>
+      <button type="button" class="btn btn-info" (click)="add()">+</button>
+    </div>
+    <div style="float:right">
+      <input class="form-control" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+    </div>
+  </div>
   <table class='table table-hover' aria-labelledby="tableLabel" *ngIf="ponude">
     <thead>
       <tr>
