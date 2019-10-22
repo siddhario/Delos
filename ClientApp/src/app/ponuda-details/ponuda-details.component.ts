@@ -21,7 +21,7 @@ export class PonudaDetailsComponent implements OnInit {
     public stavka: PonudaStavka;
     public selectedPonuda: Ponuda;
     itemEdit: boolean = false;
-    itemAdd: boolean = false;
+    public itemAdd: boolean = false;
     startItemEdit(stavka: PonudaStavka) {
         this.stavka = stavka;
         this.stavka.editing = !this.stavka.editing;
@@ -167,6 +167,7 @@ export class PonudaDetailsComponent implements OnInit {
         this.selectedPonuda.status = "E";
         this.selectedPonuda.radnik = "dario";
         this.selectedPonuda.datum = (new Date());
+        
     }
 
 

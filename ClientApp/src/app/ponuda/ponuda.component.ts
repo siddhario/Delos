@@ -24,6 +24,7 @@ export class PonudaComponent {
                 windowClass: 'modal-xl'
             }
         );
+        modalRef.componentInstance.itemAdd = true;
     }
 
     selectItem(ponuda: Ponuda) {
