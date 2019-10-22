@@ -26,7 +26,7 @@ export class PonudaDetailsComponent implements OnInit {
         this.stavka = stavka;
         this.stavka.editing = !this.stavka.editing;
         if (this.stavka.editing == false && stavka.stavka_broj == null) {
-            this.selectedPonuda.stavke.pop();
+            this.selectedPonuda.stavke.splice(0, 1);
             this.itemAdd = false;
         }
     }
@@ -46,7 +46,7 @@ export class PonudaDetailsComponent implements OnInit {
                 //this.reloadItem(false);
                 //stavka.editing = false;
             }, error => console.error(error));
-        this.activeModal.close();
+        //this.activeModal.close();
     }
 
 
@@ -61,7 +61,7 @@ export class PonudaDetailsComponent implements OnInit {
         newStavka.jedinica_mjere = "KOM";
         newStavka.kolicina = 1;
         newStavka.ponuda_broj = this.selectedPonuda.broj;
-        this.selectedPonuda.stavke.push(newStavka);
+        this.selectedPonuda.stavke = (new Array<PonudaStavka>(newStavka)).concat(this.selectedPonuda.stavke);
         this.startItemEdit(newStavka);
     }
 

@@ -1,39 +1,81 @@
 <div style="width:100%;padding:10px;">
-  <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem">
-    <button type="button" class="btn btn-outline-primary" style="margin:3px;">Zaključi</button>
-    <button type="button" class="btn btn-outline-primary" style="margin:3px;">Štampaj</button>
-    <button type="button" class="btn btn-outline-primary" style="margin:3px;">E-mail</button>
-    <button type="button" class="btn btn-outline-primary" style="margin:3px;">Kopiraj</button>
-    <button type="button" class="btn btn-outline-primary" style="margin:3px;">Statusiraj</button>
-    <button type="button" class="btn btn-outline-primary" style="margin:3px;">Obriši</button>
+  <div style="text-align:center;border:1px solid;border-color:gainsboro;border-radius:.2rem">
+    <button type="button" class="btn btn-info" style="margin:3px;">Zaključi</button>
+    <button type="button" class="btn btn-info" style="margin:3px;">Štampaj</button>
+    <button type="button" class="btn btn-info" style="margin:3px;">E-mail</button>
+    <button type="button" class="btn btn-info" style="margin:3px;">Kopiraj</button>
+    <button type="button" class="btn btn-info" style="margin:3px;">Statusiraj</button>
+    <button type="button" class="btn btn-info" style="margin:3px;">Obriši</button>
   </div>
   <div style="margin:10px">
     <div class="form-row form-group">
-      <div class="col-sm-1"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
+      <div class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-          <input class="form-control form-control-sm" placeholder="yyyy-mm-dd" name="dp" [(ngModel)]="selectedPonuda.datum" ngbDatepicker #d="ngbDatepicker">
+          <input class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum" ngbDatepicker #d="ngbDatepicker">
           <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
         </div>
       </div>
-      <div class="col-sm-1"><label>Valuta</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
-      <div class="col-sm-1"><label>Opcija</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
-      <div class="col-sm-1"><label>Rok isporuke</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
-      <div class="col-sm-2"><label>Paritet</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.paritet" type="text" /></div>
+      <div class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
+      <div class="col-sm-4"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
+
     </div>
     <div class="form-row form-group" style="border-top: solid 1px gainsboro;padding-top: 10px;">
-      <div class="col-sm-3"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
-      <div class="col-sm-3"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
-      <div class="col-sm-2"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
+      <div class="col-sm-6"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
+      <div class="col-sm-6"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
     </div>
     <div class="form-row form-group">
-      <div class="col-sm-2"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
-      <div class="col-sm-2"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
-      <div class="col-sm-2"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
-      <div class="col-sm-2"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
+      <div class="col-sm-4"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
+      <div class="col-sm-4"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
+      <div class="col-sm-4"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
     </div>
     <div class="form-row form-group">
-      <div class="col-sm-8"><label>Napomena</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
+      <div class="col-sm-2"><label>Valuta</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
+      <div class="col-sm-2"><label>Opcija</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
+      <div class="col-sm-2"><label>Rok isporuke</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
+      <div class="col-sm-6">
+        <label>Paritet</label>
+        <select class="form-control form-control-sm" id="sel1" [(ngModel)]="selectedPonuda.paritet">
+          <option>--Izaberi--</option>
+          <option>EXW - Franko fabrika</option>
+          <option>FCA - Franko prevoznik
+          <option>
+            FAS - Franko uz bok broda (u naznačenoj luci)
+          </option>
+          <option>
+            FOB - Franko utovareno na brod (u naznačenoj luci)
+          </option>
+          <option>
+            CFR - Troškovi i vozarina plaćeni (do naznačene luke)
+          </option>
+          <option>
+            CIF - Troškovi, vozarina i osiguranje (do naznačene luke)
+          </option>
+          <option>
+            CPT - Transport plaćen (do naznačene destinacije)
+          </option>
+          <option>
+            CIP - Transport i osiguranje plaćeni (do naznačene destinacije)
+          </option>
+          <option>
+            DAF - Isporučeno na granici
+          </option>
+          <option>
+            DES - Isporučeno na brodu (u naznačenoj luci)
+          </option>
+          <option>
+            DEQ - Isporučeno na obali ocarinjeno (u naznačenoj luci)
+          <option>
+            DDU - Isporučeno neocarinjen (na naznačenu destinaciju)
+          </option>
+          <option>
+            DDP - Isporučeno ocarinjeno (na naznačenu destinaciju)
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-12"><label>Napomena</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.predmet" type="text" /></div>
     </div>
 
   </div>
@@ -56,110 +98,123 @@
 
 
       <div *ngFor="let stavka of selectedPonuda.stavke" (dblclick)="startItemEdit(stavka)">
-        <div class="form-row">
-          <div class="col-sm-2">
+        <div class="form-row" style="border-bottom: solid 1px gainsboro;padding-top: 10px;padding-bottom:5px;font-size:14px">
+          <div class="col-sm-3">
+            <label>Naziv</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
-            <div *ngIf="!stavka.editing" style="font-weight:bold">{{stavka.artikal_naziv}}</div>
+            <div *ngIf="!stavka.editing" style="font-style:italic;font-size:15px">{{stavka.artikal_naziv}}</div>
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-9">
+            <label>Opis</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.opis"></textarea>
-            <div *ngIf="!stavka.editing" style="font-weight:bold">{{stavka.opis}}</div>
+            <div *ngIf="!stavka.editing" style="font-style:italic;font-size:15px">{{stavka.opis}}</div>
           </div>
 
         </div>
-        <div class="form-row" style="border-bottom:solid 1px;border-color:gainsboro">
+        <div class="form-row" style="border-bottom:solid 1px;border-color:black">
 
 
           <div class="col-sm-1">
+            <label>Količina/JM</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.kolicina}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.jedinica_mjere}}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-2" style="text-align:right">
+            <label>Nabavna cijena</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-1" style="text-align:right">
+            <label>Marža</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.marza_procenat | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.ruc | number : '1.2-2'}}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-2" style="text-align:right">
+            <label>Cijena</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-1" style="text-align:right">
+            <label>Rabat</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3()" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.rabat_iznos | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.rabat_iznos| number : '1.2-2'}}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-2" style="text-align:right">
+            <label>Cijena bez PDV-a</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-1" style="text-align:right">
+            <label>PDV</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv| number : '1.2-2'}}</div>
           </div>
 
-          <div class="col-sm-1">
+          <div class="col-sm-2" style="text-align:right">
+            <label>Cijena sa PDV-om</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
           </div>
-          <div class="col-sm-3" *ngIf="false">
-            <button *ngIf="stavka.editing" (click)="save(stavka,false)" class="btn btn-outline-primary">S</button>
-            <button *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary">SC</button><br *ngIf="stavka.editing" />
-            <button *ngIf="stavka.editing" (click)="startItemEdit(stavka)" class="btn btn-outline-primary">E</button><br *ngIf="stavka.editing" />
-            <button *ngIf="!stavka.editing" (click)="deleteStavka(stavka)" class="btn btn-outline-primary">X</button>
+      
+        </div>
+        <div class="form-row" *ngIf="stavka.editing">
+          <div style="text-align:center;" class="col-sm-12">
+            <button *ngIf="stavka.editing" (click)="save(stavka,false)" class="btn btn-outline-primary" style="margin:3px">Sačuvaj</button>
+            <button *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" class="btn btn-secondary"  style="margin:3px">Sačuvaj i nastavi unos</button>
+            <button *ngIf="stavka.editing" (click)="startItemEdit(stavka)" class="btn btn-warning"  style="margin:3px">Odustani</button>
+            <button *ngIf="!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-danger"  style="margin:3px">Obriši</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="form-row form-group" style="border-top: solid 1px gainsboro;padding-top: 10px;">
-      <div class="col-sm-1">Total:</div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+    <div class="form-row form-group" style="border-top: solid 1px black;padding-top: 10px;">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">Total:</div>
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.nabavna_vrijednost}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.ruc}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.iznos_bez_rabata}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.rabat}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.iznos_sa_rabatom}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.pdv}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold">
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
         {{selectedPonuda.iznos_sa_pdv}}
       </div>
 
     </div>
-    <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem" >
+    <div style="text-align:center;border:1px solid;border-color:gainsboro;border-radius:.2rem">
       <button type="button" [disabled]="itemAdd==true" class="btn btn-outline-success" style="margin:3px;" (click)="startItemAdd()">Unos stavki</button>
       <button type="button" class="btn btn-outline-success" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
       <button type="button" class="btn btn-outline-warning" style="margin:3px;" (click)="cancel()">Odustani</button>

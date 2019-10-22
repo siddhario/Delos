@@ -121,6 +121,16 @@ input {padding:2px;border-radius:4px;}
   background-position-y: center;
 }
 .modal-xl {
-  max-width: 90% !important;
-  padding-left: 5%;
+  max-width: 100% !important;
+}
+
+.modal-content{
+  width:70%;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+label {
+  font-weight:bold;
+  margin-bottom:0px;
 }
