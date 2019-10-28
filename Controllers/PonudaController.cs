@@ -14,12 +14,12 @@ namespace WebApplication3.Controllers
     public class PonudaController : ControllerBase
     {
 
-        private BloggingContext _dbContext;
+        private DelosDbContext _dbContext;
 
  
         private readonly ILogger<PonudaController> _logger;
 
-        public PonudaController(BloggingContext context, ILogger<PonudaController> logger)
+        public PonudaController(DelosDbContext context, ILogger<PonudaController> logger)
         {
             _logger = logger;
             _dbContext = context;
@@ -29,7 +29,7 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.Include(p=>p.stavke).ToList();
+            var ponude = _dbContext.ponuda.Include(p=>p.stavke).Include(p=>p.partner).OrderByDescending(p=>p.broj).ToList();
             return ponude;        
         }
 
@@ -39,7 +39,7 @@ namespace WebApplication3.Controllers
         [Route("getbybroj")]
         public ponuda GetByBroj(string broj)
         {
-            var ponuda = _dbContext.ponuda.Include(p => p.stavke).FirstOrDefault(p=>p.broj==broj);
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).FirstOrDefault(p=>p.broj==broj);
             return ponuda;
         }
 
@@ -59,14 +59,50 @@ namespace WebApplication3.Controllers
                     broj = dbroj + 1;
                 }
                 else
-                    broj = 0;
+                    broj = 1;
                 ponuda.radnik = "dario";
                 ponuda.status = "E";
-                ponuda.partner_sifra = 14;
+                //ponuda.partner_sifra = 14;
                 ponuda.broj = broj.Value.ToString("D5") + "/" + year.ToString();
+                ponuda.iznos_bez_rabata = 0;
+                ponuda.iznos_sa_pdv = 0;
+                ponuda.iznos_sa_pdv = 0;
+                ponuda.pdv = 0;
+                ponuda.iznos_sa_rabatom=0;
+                ponuda.rabat = 0;
+                partner partner;
+                if (ponuda.partner.sifra == null)
+                {
+                    partner = new partner();
+
+                    partner.naziv = ponuda.partner_naziv;
+                    partner.adresa = ponuda.partner_adresa;
+                    partner.maticni_broj = ponuda.partner_jib;
+                    partner.telefon = ponuda.partner_telefon;
+                    partner.email = ponuda.partner_email;
+                    partner.tip = "P";
+
+                    ponuda.partner = partner;
+                }
+                else
+                {
+                    partner = _dbContext.partner.Where(p => p.sifra == ponuda.partner_sifra).FirstOrDefault();
+
+                    partner.naziv = ponuda.partner_naziv;
+                    partner.adresa = ponuda.partner_adresa;
+                    partner.maticni_broj = ponuda.partner_jib;
+                    partner.telefon = ponuda.partner_telefon;
+                    partner.email = ponuda.partner_email;
+                    partner.tip = "P";
+                    _dbContext.SaveChanges();
+
+                    ponuda.partner = partner;                    
+                }
+
+
                 _dbContext.ponuda.Add(ponuda);
                 _dbContext.SaveChanges();
-                return Ok();
+                return Ok(ponuda);
             }
             catch (Exception ex)
             {
@@ -100,6 +136,39 @@ namespace WebApplication3.Controllers
                 try
                 {
                     Helper.CopyPropertiesTo<ponuda, ponuda>(ponuda, pon);
+
+                    partner partner;
+                    if (ponuda.partner.sifra == null)
+                    {
+                        partner = new partner();
+
+                        partner.naziv = ponuda.partner_naziv;
+                        partner.adresa = ponuda.partner_adresa;
+                        partner.maticni_broj = ponuda.partner_jib;
+                        partner.telefon = ponuda.partner_telefon;
+                        partner.email = ponuda.partner_email;
+                        partner.tip = "P";
+                        pon.partner_sifra = null;
+                        //_dbContext.partner.Add(partner);
+                        //_dbContext.SaveChanges();
+                        pon.partner = partner;
+                        //pon.partner_sifra = partner.sifra;
+                    }
+                    else
+                    {
+                        partner = _dbContext.partner.Where(p => p.sifra == ponuda.partner_sifra).FirstOrDefault();
+
+                        partner.naziv = ponuda.partner_naziv;
+                        partner.adresa = ponuda.partner_adresa;
+                        partner.maticni_broj = ponuda.partner_jib;
+                        partner.telefon = ponuda.partner_telefon;
+                        partner.email = ponuda.partner_email;
+                        partner.tip = "P";
+                        _dbContext.SaveChanges();
+
+                        pon.partner = partner;
+                    }
+
                     _dbContext.SaveChanges();
                     return Ok();
                 }

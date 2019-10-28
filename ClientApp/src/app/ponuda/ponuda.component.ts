@@ -25,6 +25,13 @@ export class PonudaComponent {
             }
         );
         modalRef.componentInstance.itemAdd = true;
+        modalRef.result.then((data) => {
+
+            this.load();
+
+        }, (reason) => {
+            this.load();
+        });
     }
 
     selectItem(ponuda: Ponuda) {
@@ -40,6 +47,13 @@ export class PonudaComponent {
                 windowClass: 'modal-xl'
             });
         modalRef.componentInstance.selectedPonuda = ponuda;
+        modalRef.result.then((data) => {
+
+            this.load();
+
+        }, (reason) => {
+            this.load();
+        });
     }
     rowClass(ponuda: Ponuda) {
         if (ponuda.selected)
@@ -64,6 +78,7 @@ export class PonudaComponent {
 class Ponuda {
     broj: string;
     datum: Date;
+    @jsonIgnore()
     selected: boolean;
     partner_naziv: string;
     partner_adresa: string;
@@ -79,6 +94,7 @@ class Ponuda {
     pdv: number;
     iznos_sa_pdv: number;
     predmet: string;
+    @jsonIgnore()
     stavke: PonudaStavka[];
 }
 @Pipe({

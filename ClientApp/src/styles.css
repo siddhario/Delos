@@ -124,8 +124,9 @@ input {padding:2px;border-radius:4px;}
   max-width: 100% !important;
 }
 
+
 .modal-content{
-  width:70%;
+  width:66%;
   margin-left:auto;
   margin-right:auto;
 }
@@ -133,4 +134,28 @@ input {padding:2px;border-radius:4px;}
 label {
   font-weight:bold;
   margin-bottom:0px;
+}
+.form-control-sm{
+  padding:0.25rem 0.2rem;
+}
+
+
+.color-primary-0 {
+  background-color: #fff
+}
+/* Main Primary color */
+.color-primary-1 {
+  background-color: #fff
+}
+
+.color-primary-2 {
+  background-color: #fff
+}
+
+.color-primary-3 {
+  background-color: #fff
+}
+
+.color-primary-4 {
+  background-color: #fff
 }

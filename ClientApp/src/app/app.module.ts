@@ -4,42 +4,44 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { KorisnikComponent } from './korisnik/korisnik.component';
 import { PonudaComponent, FilterPipe } from './ponuda/ponuda.component';
 import { PonudaDetailsComponent } from './ponuda-details/ponuda-details.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PartnerComponent, FilterPartnerPipe } from './partner/partner.component';
+import { PartnerDetailsComponent } from './partner-details/partner-details.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        NavMenuComponent,
         HomeComponent,
-        CounterComponent,
-        FetchDataComponent,
         KorisnikComponent,
         PonudaComponent,
         PonudaDetailsComponent,
-        FilterPipe
+        PartnerComponent,
+        PartnerDetailsComponent,
+        FilterPipe,
+        FilterPartnerPipe
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
         HttpClientModule,
         FormsModule,
         NgbModule,
+        BrowserAnimationsModule, // required animations module
+        ToastrModule.forRoot(), // ToastrModule added
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
-            { path: 'counter', component: CounterComponent },
-            { path: 'fetch-data', component: FetchDataComponent },
             { path: 'korisnici', component: KorisnikComponent },
             { path: 'ponude', component: PonudaComponent },
+            { path: 'partneri', component: PartnerComponent },
         ])
     ],
-    entryComponents: [PonudaDetailsComponent],
-    providers: [],
+    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent],
+    providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

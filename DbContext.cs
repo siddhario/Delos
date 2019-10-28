@@ -7,20 +7,35 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace WebApplication3
+namespace Delos
 {
-    public class BloggingContext : DbContext
+    public class DelosDbContext : DbContext
     {
-     
+        public DbSet<partner> partner { get; set; }
         public DbSet<korisnik> korisnik { get; set; }
         public DbSet<ponuda> ponuda { get; set; }
         public DbSet<ponuda_stavka> ponuda_stavka { get; set; }
-        public BloggingContext(DbContextOptions<BloggingContext> options) : base(options) { }
+        public DelosDbContext(DbContextOptions<DelosDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ponuda_stavka>()
            .HasKey(o => new { o.ponuda_broj, o.stavka_broj });
         }
+    }
+
+    public class partner
+    {
+        [Key]
+        public int? sifra { get; set; }
+        public string naziv { get; set; }
+        public string tip { get; set; }
+        public string maticni_broj { get; set; }
+        public string adresa { get; set; }
+        public string telefon { get; set; }
+        public string email { get; set; }
+        public bool kupac { get; set; }
+        public bool dobavljac { get; set; }
+        public string broj_lk { get; set; }
     }
 
 
@@ -49,7 +64,7 @@ namespace WebApplication3
         public string predmet { get; set; }
         public string radnik { get; set; }
         public DateTime datum { get; set; }
-        public int partner_sifra { get; set; }
+        public int? partner_sifra { get; set; }
         public string partner_jib { get; set; }
         public string partner_adresa { get; set; }
         public string partner_naziv { get; set; }
@@ -60,13 +75,16 @@ namespace WebApplication3
         public string paritet_kod { get; set; }
         public string paritet { get; set; }
         public string rok_isporuke { get; set; }
-        public decimal iznos_bez_rabata { get; set; }
-        public decimal rabat { get; set; }
-        public decimal iznos_sa_rabatom { get; set; }
-        public decimal pdv { get; set; }
-        public decimal iznos_sa_pdv { get; set; }
+        public decimal? iznos_bez_rabata { get; set; }
+        public decimal? rabat { get; set; }
+        public decimal? iznos_sa_rabatom { get; set; }
+        public decimal? pdv { get; set; }
+        public decimal? iznos_sa_pdv { get; set; }
         public decimal? nabavna_vrijednost { get; set; }
         public decimal? ruc { get; set; }
+
+        [ForeignKey("partner_sifra")]
+        public partner partner { get; set; }
         
         public IEnumerable<ponuda_stavka> stavke { get; set; }
     }

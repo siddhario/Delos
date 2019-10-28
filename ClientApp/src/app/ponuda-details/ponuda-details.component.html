@@ -1,15 +1,22 @@
-<div style="width:100%;padding:10px;">
-  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;background-color:lightslategray">
+<div style="width:100%;padding:10px;" class="color-primary-0">
+  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="color-primary-1">
     <div style="float:left">
-      <button type="button" class="btn btn-info btn-sm" style="margin:3px;">Zaključi</button>
-      <button type="button" class="btn btn-info btn-sm" style="margin:3px;">Štampaj</button>
-      <button type="button" class="btn btn-info btn-sm" style="margin:3px;">E-mail</button>
-      <button type="button" class="btn btn-info btn-sm" style="margin:3px;">Kopiraj</button>
-      <button type="button" class="btn btn-info btn-sm" style="margin:3px;">Statusiraj</button>
-      <button type="button" class="btn btn-info btn-sm" style="margin:3px;">Obriši</button>
+
+      <button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;">Ponuda</button>
+
+      <button type="button" [disabled]="false" class="btn btn-primary btn-sm" style="margin:3px;" (click)="startAdd()">+</button>
     </div>
+
+
     <div style="float:right">
-      <button type="button" class="btn btn-outline-info btn-sm" style="margin:3px" (click)="this.activeModal.close()">X</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Zaključi</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Štampaj</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">E-mail</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Kopiraj</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Statusiraj</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Obriši</button>
+
+      <button type="button" class="btn btn-outline-primary  btn-sm" style="margin:3px" (click)="this.activeModal.close()">X</button>
     </div>
   </div>
   <div style="margin:10px">
@@ -17,7 +24,7 @@
       <div class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-          <input class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum" ngbDatepicker #d="ngbDatepicker">
+          <input class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum" placeholder="yyyy-MM-dd" ngbDatepicker #d="ngbDatepicker">
           <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
         </div>
       </div>
@@ -25,9 +32,24 @@
       <div class="col-sm-4"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
 
     </div>
-    <div class="form-row form-group" style="border-top: solid 1px gainsboro;padding-top: 10px;">
-      <div class="col-sm-6"><label>Partner</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
+    <div class="form-row form-group" style="border-top: solid 1px gainsboro;padding-top: 10px;">   </div>
+
+    <div class="form-row form-group">
+      <div class="col-sm-6">
+        <label for="partner_naziv">Partner</label>
+        <input id="partner_naziv" type="text"
+               name="partner_naziv"
+               class="form-control  form-control-sm"
+               [(ngModel)]="selectedPonuda.partner"
+               (selectItem)="selectedItem($event)"
+               [ngbTypeahead]="search"
+               [resultFormatter]="resultFormatPartnerListValue"
+               [inputFormatter]="inputFormatPartnerListValue"
+               #instance="ngbTypeahead" />
+      </div>
+      <div class="col-sm-6" hidden><label>Naziv</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
       <div class="col-sm-6"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
+
     </div>
     <div class="form-row form-group">
       <div class="col-sm-4"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
@@ -85,23 +107,28 @@
 
   </div>
 
-  <div style="margin:10px;background-color:beige;font-size:16px;border-radius:.2rem;padding:3px;overflow:auto">
-    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;" >Stavke</button></div>
-    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-outline-primary btn-sm" style="margin:3px;" (click)="startItemAdd()">+</button></div>
-</div>
-  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke.length>0">
+  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="color-primary-1">
+    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;">Stavke ponude</button></div>
+    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary btn-sm" style="margin:3px;" (click)="startItemAdd()">+</button></div>
+  </div>
+  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke?.length>0">
     <div>
-      <div *ngFor="let stavka of selectedPonuda.stavke" (dblclick)="startItemEdit(stavka)">
-        <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
+      <div *ngFor="let stavka of selectedPonuda.stavke">
+        <div class="form-row color-primary-1" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
             <label>Naziv</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
             <div *ngIf="!stavka.editing" style="font-style:italic;font-size:15px">{{stavka.artikal_naziv}}</div>
           </div>
-          <div class="col-sm-9">
+          <div class="col-sm-7">
             <label>Opis</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.opis"></textarea>
             <div *ngIf="!stavka.editing" style="font-style:italic;font-size:15px">{{stavka.opis}}</div>
+          </div>
+          <div class="col-sm-2 align-content-sm-center">
+            <button *ngIf="!stavka.editing&&!itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Izmijeni</button>
+            <button *ngIf="!stavka.editing&&!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="margin:3px">Obriši</button>
+
           </div>
 
         </div>
@@ -110,7 +137,7 @@
 
           <div class="col-sm-1">
             <label>Količina/JM</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate()" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.kolicina}}</div>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.jedinica_mjere}}</div>
@@ -118,67 +145,68 @@
 
           <div class="col-sm-2" style="text-align:right">
             <label>Nabavna cijena</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
           </div>
 
           <div class="col-sm-1" style="text-align:right">
             <label>Marža</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.marza_procenat | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.ruc | number : '1.2-2'}}</div>
           </div>
 
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
           </div>
 
           <div class="col-sm-1" style="text-align:right">
             <label>Rabat</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3()" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3()" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.rabat_iznos | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.rabat_iznos | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.rabat_iznos| number : '1.2-2'}}</div>
           </div>
 
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena bez PDV-a</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
           </div>
 
           <div class="col-sm-1" style="text-align:right">
             <label>PDV</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv| number : '1.2-2'}}</div>
           </div>
 
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena sa PDV-om</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="text" />
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="number" />
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
           </div>
 
         </div>
-        <div class="form-row" *ngIf="stavka.editing">
-          <div style="text-align:right;padding-right:15px" class="col-sm-12">
-            <button *ngIf="stavka.editing" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="margin:3px">Sačuvaj</button>
-            <button *ngIf="stavka.editing&&itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="margin:3px">Sačuvaj i nastavi unos</button>
-            <button *ngIf="stavka.editing" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Odustani</button>
-            <button *ngIf="!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="margin:3px">Obriši</button>
+
+        <div class="form-row">
+          <div class="col-sm-12 align-content-sm-center"  style="text-align:right;">
+            <button *ngIf="stavka.editing||itemAdd" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="margin:3px">Sačuvaj</button>
+
+            <button *ngIf="stavka.editing||itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Odustani</button>
+            <button *ngIf="itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="margin:3px">Sačuvaj i nastavi unos</button>
           </div>
         </div>
       </div>
@@ -210,8 +238,8 @@
     </div>
 
   </div>
-  <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem">
-    <button type="button" class="btn btn-outline-success btn-sm" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
-    <button type="button" class="btn btn-outline-warning btn-sm" style="margin:3px;" (click)="cancel()">Odustani</button>
+  <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem" class="color-primary-1">
+    <button type="button" class="btn btn-primary btn-sm" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
+    <button type="button" class="btn btn-primary btn-sm" style="margin:3px;" (click)="cancel()">Odustani</button>
   </div>
 </div>

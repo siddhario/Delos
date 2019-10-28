@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Delos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace WebApplication3.Controllers
@@ -13,14 +11,13 @@ namespace WebApplication3.Controllers
     public class KorisnikController : ControllerBase
     {
 
-        private BloggingContext _dbContext;
+        private DelosDbContext _dbContext;
 
  
         private readonly ILogger<KorisnikController> _logger;
 
-        public KorisnikController(BloggingContext context, ILogger<KorisnikController> logger)
+        public KorisnikController(DelosDbContext context, ILogger<KorisnikController> logger)
         {
-            _logger = logger;
             _dbContext = context;
         }
 

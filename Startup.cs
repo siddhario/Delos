@@ -1,3 +1,4 @@
+using Delos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,7 @@ namespace WebApplication3
             });
 
      
-            services.AddDbContext<BloggingContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Delos")));
+            services.AddDbContext<DelosDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Delos")));
 
         }
 
