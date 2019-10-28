@@ -114,7 +114,7 @@
   <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke?.length>0">
     <div>
       <div *ngFor="let stavka of selectedPonuda.stavke">
-        <div class="form-row color-primary-1" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
+        <div [ngClass]="stavka.editing==true?'form-row color-primary-3':'form-row  color-primary-0'" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
             <label>Naziv</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
@@ -125,14 +125,15 @@
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.editing" [(ngModel)]="stavka.opis"></textarea>
             <div *ngIf="!stavka.editing" style="font-style:italic;font-size:15px">{{stavka.opis}}</div>
           </div>
-          <div class="col-sm-2 align-content-sm-center">
+
+          <div style="text-align:center" class="col-sm-2 align-content-sm-center">
             <button *ngIf="!stavka.editing&&!itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Izmijeni</button>
             <button *ngIf="!stavka.editing&&!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="margin:3px">Obriši</button>
 
           </div>
 
         </div>
-        <div class="form-row" style="border-bottom:solid 1px;border-color:black;padding:15px">
+        <div [ngClass]="stavka.editing==true?'form-row color-primary-3':'form-row  color-primary-0'" style="border-bottom:solid 1px;border-color:black;padding:15px">
 
 
           <div class="col-sm-1">
@@ -199,16 +200,17 @@
             <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
           </div>
 
-        </div>
 
-        <div class="form-row">
-          <div class="col-sm-12 align-content-sm-center"  style="text-align:right;">
-            <button *ngIf="stavka.editing||itemAdd" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="margin:3px">Sačuvaj</button>
-
-            <button *ngIf="stavka.editing||itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Odustani</button>
-            <button *ngIf="itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="margin:3px">Sačuvaj i nastavi unos</button>
+          <div class="form-row" style="margin-left:auto;margin-right:auto;margin-top:10px">
+            <div class="col-sm-12 align-content-sm-center">
+              <button *ngIf="itemAdd" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="margin:3px">Sačuvaj i nastavi unos</button>
+              <button *ngIf="stavka.editing||itemAdd" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="margin:3px">Sačuvaj</button>
+              <button *ngIf="stavka.editing||itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Odustani</button>
+            </div>
           </div>
+
         </div>
+
       </div>
     </div>
     <div class="form-row form-group" style="border-top: solid 1px;border-color:#17a2b8;padding-top: 10px;padding-right:15px">

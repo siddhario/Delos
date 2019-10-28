@@ -150,7 +150,7 @@ export class PonudaDetailsComponent implements OnInit {
     deleteStavka(stavka: PonudaStavka) {
         this.http.get(this.baseUrl + 'ponuda/stavka_delete?ponuda_broj=' + stavka.ponuda_broj + "&stavka_broj=" + stavka.stavka_broj).subscribe(result => {
             console.log("OK");
-            this.toastr.success("Ponuda je uspješno obrisana..");
+            this.toastr.success("Stavka ponude je uspješno obrisana..");
             var ponuda = this.selectedPonuda;
             let index = ponuda.stavke.findIndex(d => d.stavka_broj === stavka.stavka_broj);
             ponuda.stavke.splice(index, 1);//remove element from array
