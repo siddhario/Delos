@@ -2,10 +2,11 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 import { jsonIgnore } from 'json-ignore';
-import { NgbActiveModal, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTypeahead, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -16,6 +17,97 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from '
 export class PonudaDetailsComponent implements OnInit {
 
     public model: any;
+
+    zakljuciPonudu() {
+        if (this.selectedPonuda != undefined) {
+            let modalRef = this.modalService.open(NgbdModalConfirm);
+            modalRef.result.then((data) => {
+                this.http.put<Ponuda>(this.baseUrl + 'ponuda/zakljuciPonudu?broj=' + this.selectedPonuda.broj,null).subscribe(result => {
+                    this.toastr.success("Ponuda je uspješno zaključena..");
+                    this.selectedPonuda = result;
+                }, error => {
+                    this.toastr.error("Greška..");
+                    console.error(error)
+                });
+            }, (reason) => {
+            });
+
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ponudu " + this.selectedPonuda.broj + " ?";
+        }
+    }
+
+    statusiraj(status) {
+        if (this.selectedPonuda != undefined) {
+            let modalRef = this.modalService.open(NgbdModalConfirm);
+            modalRef.result.then((data) => {
+                this.http.put<Ponuda>(this.baseUrl + 'ponuda/statusiraj?broj=' + this.selectedPonuda.broj+"&status="+status, null).subscribe(result => {
+                    this.toastr.success("Status ponude je uspješno postavljen..");
+                    this.selectedPonuda = result;
+                }, error => {
+                    this.toastr.error("Greška..");
+                    console.error(error)
+                });
+            }, (reason) => {
+            });
+
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite promijeniti status ponude "
+                + this.selectedPonuda.broj + " u " + (status == 'R' ? '\'realizovana\'' : (status == 'D' ?'\'djelimično realizovana\'':'\'nerealizovana\'')) +" ? ";
+        }
+    }
+
+    otkljucajPonudu() {
+        if (this.selectedPonuda != undefined) {
+            let modalRef = this.modalService.open(NgbdModalConfirm);
+            modalRef.result.then((data) => {
+                this.http.put<Ponuda>(this.baseUrl + 'ponuda/otkljucajPonudu?broj=' + this.selectedPonuda.broj, null).subscribe(result => {
+                    this.toastr.success("Ponuda je uspješno otključana..");
+                    this.selectedPonuda = result;
+                }, error => {
+                    this.toastr.error("Greška..");
+                    console.error(error)
+                });
+            }, (reason) => {
+            });
+
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite otključati ponudu " + this.selectedPonuda.broj + " ?";
+        }
+    }
+
+    obrisiPonudu() {
+        if (this.selectedPonuda != undefined) {
+            let modalRef = this.modalService.open(NgbdModalConfirm);
+            modalRef.result.then((data) => {
+                this.http.delete(this.baseUrl + 'ponuda/obrisiPonudu?broj=' + this.selectedPonuda.broj).subscribe(result => {
+                    this.toastr.success("Ponuda je uspješno obrisana..");
+                    this.activeModal.close();
+                }, error => {
+                    this.toastr.error("Greška..");
+                    console.error(error)
+                });
+            }, (reason) => {
+            });
+
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati ponudu " + this.selectedPonuda.broj+" ?";
+        }
+    }
+
+    kopirajPonudu() {
+        if (this.selectedPonuda != undefined) {
+            let modalRef = this.modalService.open(NgbdModalConfirm);
+            modalRef.result.then((data) => {
+                this.http.put<Ponuda>(this.baseUrl + 'ponuda/kopirajPonudu?broj=' + this.selectedPonuda.broj, null).subscribe(result => {
+                    this.toastr.success("Ponuda je uspješno kopirana..");
+                    this.selectedPonuda = result;
+                }, error => {
+                    this.toastr.error("Greška..");
+                    console.error(error)
+                });
+            }, (reason) => {
+            });
+
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite kopirati ponudu " + this.selectedPonuda.broj + " ?";
+        }
+    }
 
 
     search = (text$: Observable<string>) => {
@@ -41,7 +133,7 @@ export class PonudaDetailsComponent implements OnInit {
  * display and list values. Maps `{name: "band", id:"id" }` into a string
 */
     resultFormatPartnerListValue(value: any) {
-        return value.sifra+"-"+value.naziv;
+        return value.sifra + "-" + value.naziv;
     }
     /**
       * Initially binds the string value and then after selecting
@@ -257,7 +349,7 @@ export class PonudaDetailsComponent implements OnInit {
             return 'row';
     }
 
-    constructor(public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
+    constructor(private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
         this.startAdd();
     }
 
@@ -266,6 +358,9 @@ export class PonudaDetailsComponent implements OnInit {
         this.selectedPonuda.status = "E";
         this.selectedPonuda.radnik = "dario";
         this.selectedPonuda.datum = (new Date());
+        this.selectedPonuda.rok_isporuke = "3-5 dana";
+        this.selectedPonuda.rok_vazenja = "7 dana";
+        this.selectedPonuda.valuta_placanja = "avans";
     }
 
 

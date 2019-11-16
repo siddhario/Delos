@@ -13,6 +13,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PartnerComponent, FilterPartnerPipe } from './partner/partner.component';
 import { PartnerDetailsComponent } from './partner-details/partner-details.component';
+import { NgbdModalConfirm } from './modal-focus/modal-focus.component';
 
 @NgModule({
     declarations: [
@@ -24,7 +25,8 @@ import { PartnerDetailsComponent } from './partner-details/partner-details.compo
         PartnerComponent,
         PartnerDetailsComponent,
         FilterPipe,
-        FilterPartnerPipe
+        FilterPartnerPipe,
+        NgbdModalConfirm
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -40,7 +42,7 @@ import { PartnerDetailsComponent } from './partner-details/partner-details.compo
             { path: 'partneri', component: PartnerComponent },
         ])
     ],
-    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent],
+    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm],
     providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }],
     bootstrap: [AppComponent]
 })

@@ -19,7 +19,8 @@ export class PartnerComponent {
         let modalRef = this.modalService.open(PartnerDetailsComponent
             , {
                 size: 'lg',
-                windowClass: 'modal-xl'
+                windowClass: 'modal-xl',
+                backdrop: 'static'
             }
         );
         modalRef.componentInstance.itemAdd = true;
@@ -86,7 +87,7 @@ export class FilterPartnerPipe implements PipeTransform {
 }
 
 
-class partner {
+export class partner {
     sifra: number;
     naziv: string;
     tip: string;

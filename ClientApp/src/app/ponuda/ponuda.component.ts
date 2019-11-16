@@ -4,6 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { jsonIgnore } from 'json-ignore';
 import { PonudaDetailsComponent } from '../ponuda-details/ponuda-details.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { partner } from '../partner/partner.component';
 @Component({
     selector: 'app-ponuda',
     templateUrl: './ponuda.component.html'
@@ -21,7 +22,8 @@ export class PonudaComponent {
         let modalRef = this.modalService.open(PonudaDetailsComponent
             , {
                 size: "xl",
-                windowClass: 'modal-xl'
+                windowClass: 'modal-xl',
+                backdrop: 'static'
             }
         );
         modalRef.componentInstance.itemAdd = true;
@@ -44,7 +46,8 @@ export class PonudaComponent {
         let modalRef = this.modalService.open(PonudaDetailsComponent
             , {
                 size: "xl",
-                windowClass: 'modal-xl'
+                windowClass: 'modal-xl',
+                backdrop: 'static'
             });
         modalRef.componentInstance.selectedPonuda = ponuda;
         modalRef.result.then((data) => {
@@ -80,6 +83,7 @@ class Ponuda {
     datum: Date;
     @jsonIgnore()
     selected: boolean;
+    partner: partner;
     partner_naziv: string;
     partner_adresa: string;
     partner_telefon: string;

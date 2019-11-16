@@ -9,12 +9,15 @@
 
 
     <div style="float:right">
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Zaključi</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Štampaj</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">E-mail</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Kopiraj</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Statusiraj</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;">Obriši</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status=='E'" (click)="zakljuciPonudu()">Zaključi</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="otkljucajPonudu()">Otključaj</button>
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;">Štampaj</button>
+      <button type="button"  class="btn btn-info  btn-sm" style="margin:3px;">E-mail</button>
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" (click)="kopirajPonudu()">Kopiraj</button>
+      <button type="button" [ngClass]="selectedPonuda.status=='R'?'btn btn-success btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('R')">Realizovana</button>
+      <button type="button" [ngClass]="selectedPonuda.status=='D'?'btn btn-warning btn-sm':'btn btn-light  btn-sm'"  style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('D')">Dj. realizovana</button>
+      <button type="button" [ngClass]="selectedPonuda.status=='N'?'btn btn-danger btn-sm':'btn btn-light  btn-sm'"  style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('N')">Nerealizovana</button>
+      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button>
 
       <button type="button" class="btn btn-outline-primary  btn-sm" style="margin:3px" (click)="this.activeModal.close()">X</button>
     </div>
@@ -24,8 +27,8 @@
       <div class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-          <input class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum" placeholder="yyyy-MM-dd" ngbDatepicker #d="ngbDatepicker">
-          <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+          <input [disabled]="selectedPonuda.status!='E'"  class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum" placeholder="yyyy-MM-dd" ngbDatepicker #d="ngbDatepicker">
+          <button [disabled]="selectedPonuda.status!='E'" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
         </div>
       </div>
       <div class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
@@ -37,7 +40,7 @@
     <div class="form-row form-group">
       <div class="col-sm-6">
         <label for="partner_naziv">Partner</label>
-        <input id="partner_naziv" type="text"
+        <input id="partner_naziv" type="text" [disabled]="selectedPonuda.status!='E'"
                name="partner_naziv"
                class="form-control  form-control-sm"
                [(ngModel)]="selectedPonuda.partner"
@@ -47,22 +50,22 @@
                [inputFormatter]="inputFormatPartnerListValue"
                #instance="ngbTypeahead" />
       </div>
-      <div class="col-sm-6" hidden><label>Naziv</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
-      <div class="col-sm-6"><label>Adresa</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
+      <div class="col-sm-6" hidden><label>Naziv</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_naziv" type="text" /></div>
+      <div class="col-sm-6"><label>Adresa</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_adresa" type="text" /></div>
 
     </div>
     <div class="form-row form-group">
-      <div class="col-sm-4"><label>Telefon</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
-      <div class="col-sm-4"><label>Email</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
-      <div class="col-sm-4"><label>JIB</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
+      <div class="col-sm-4"><label>Telefon</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_telefon" type="text" /></div>
+      <div class="col-sm-4"><label>Email</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_email" type="text" /></div>
+      <div class="col-sm-4"><label>JIB</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.partner_jib" type="text" /></div>
     </div>
     <div class="form-row form-group">
-      <div class="col-sm-2"><label>Valuta</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
-      <div class="col-sm-2"><label>Opcija</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
-      <div class="col-sm-2"><label>Rok isporuke</label><input class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
+      <div class="col-sm-2"><label>Valuta</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.valuta_placanja" type="text" /></div>
+      <div class="col-sm-2"><label>Opcija</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_vazenja" type="text" /></div>
+      <div class="col-sm-2"><label>Rok isporuke</label><input [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedPonuda.rok_isporuke" type="text" /></div>
       <div class="col-sm-6">
         <label>Paritet</label>
-        <select class="form-control form-control-sm" id="sel1" [(ngModel)]="selectedPonuda.paritet">
+        <select [disabled]="selectedPonuda.status!='E'" class="form-control form-control-sm" id="sel1" [(ngModel)]="selectedPonuda.paritet">
           <option>--Izaberi--</option>
           <option>EXW - Franko fabrika</option>
           <option>FCA - Franko prevoznik
@@ -109,7 +112,7 @@
 
   <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="color-primary-1">
     <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;">Stavke ponude</button></div>
-    <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary btn-sm" style="margin:3px;" (click)="startItemAdd()">+</button></div>
+    <div style="float:left"><button [disabled]="selectedPonuda.status!='E'" type="button"  class="btn btn-primary btn-sm" style="margin:3px;" (click)="startItemAdd()">+</button></div>
   </div>
   <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke?.length>0">
     <div>
@@ -127,8 +130,8 @@
           </div>
 
           <div style="text-align:center" class="col-sm-2 align-content-sm-center">
-            <button *ngIf="!stavka.editing&&!itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Izmijeni</button>
-            <button *ngIf="!stavka.editing&&!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="margin:3px">Obriši</button>
+            <button [disabled]="selectedPonuda.status!='E'" *ngIf="!stavka.editing&&!itemAdd" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="margin:3px">Izmijeni</button>
+            <button [disabled]="selectedPonuda.status!='E'" *ngIf="!stavka.editing&&!itemAdd" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="margin:3px">Obriši</button>
 
           </div>
 

@@ -105,6 +105,8 @@ input {padding:2px;border-radius:4px;}
   background-position-x: right;
   background-position-y: center;
 }
+
+
 .save {
   background: url('assets/img/save-24px.svg') no-repeat;
   background-color:gainsboro;

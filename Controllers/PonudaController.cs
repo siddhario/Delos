@@ -25,6 +25,153 @@ namespace WebApplication3.Controllers
             _dbContext = context;
         }
 
+        [HttpPut]
+        [Route("zakljuciPonudu")]
+        public IActionResult ZakljuciPonudu(string broj)
+        {
+            var pon = _dbContext.ponuda.Include(p=>p.partner).Include(p=>p.stavke).FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    pon.status = "Z";
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
+        [HttpPut]
+        [Route("kopirajPonudu")]
+        public IActionResult KopirajPonudu(string broj)
+        {
+            var pon = _dbContext.ponuda.Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    var newPonuda = new ponuda();
+                    Helper.CopyPropertiesTo<ponuda, ponuda>(pon, newPonuda);
+
+                    newPonuda.status = "E";
+                    newPonuda.datum = DateTime.Now;
+
+                    var ponude = _dbContext.ponuda.Where(p => p.datum.Year == DateTime.Now.Year);
+                    string maxPonudaBroj = null;
+                    int year = newPonuda.datum.Year;
+                    int? brojPonude = null;
+                    if (ponude != null && ponude.Count() > 0)
+                    {
+                        maxPonudaBroj = ponude.Max(p => p.broj);
+                        int dbroj = int.Parse(maxPonudaBroj.Split("/")[0]);
+                        brojPonude = dbroj + 1;
+                    }
+                    else
+                        brojPonude = 1;
+
+                    newPonuda.broj = brojPonude.Value.ToString("D5") + "/" + year.ToString(); ;
+
+                    var stavke = _dbContext.ponuda_stavka.Where(s => s.ponuda_broj == pon.broj);
+
+                    var stavkePonude = new List<ponuda_stavka>();
+                    foreach(var stavka in stavke)
+                    {
+                        var newPonudaStavka = new ponuda_stavka();
+                        Helper.CopyPropertiesTo<ponuda_stavka, ponuda_stavka>(stavka, newPonudaStavka);
+                        newPonudaStavka.ponuda_broj = newPonuda.broj;
+                        newPonudaStavka.ponuda = newPonuda;
+                        stavkePonude.Add(newPonudaStavka);
+                        //_dbContext.ponuda_stavka.Add(newPonudaStavka);
+                    }
+                    newPonuda.stavke = stavkePonude;
+
+                    _dbContext.ponuda.Add(newPonuda);
+
+                    _dbContext.SaveChanges();
+                    return Ok(newPonuda);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("obrisiPonudu")]
+        public IActionResult ObrisiPonudu(string broj)
+        {
+            var pon = _dbContext.ponuda.FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    _dbContext.Remove(pon);
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
+        [HttpPut]
+        [Route("statusiraj")]
+        public IActionResult Statusiraj(string broj,string status)
+        {
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    pon.status = status;
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
+        [HttpPut]
+        [Route("otkljucajPonudu")]
+        public IActionResult OtkljucajPonudu(string broj)
+        {
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    pon.status = "E";
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
         [HttpGet]
         public IEnumerable<ponuda> Get()
         {
