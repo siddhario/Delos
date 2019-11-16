@@ -15,9 +15,10 @@ export class KorisnikComponent {
     }
 }
 
-interface Korisnik {
+export class Korisnik {
     ime: string;
     prezime: number;
     email: number;
     admin: boolean;
+    token: string;
 }

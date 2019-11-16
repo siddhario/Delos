@@ -8,12 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Delos;
 using Delos.Klase;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace WebApplication3.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PonudaController : ControllerBase
@@ -38,47 +40,8 @@ namespace WebApplication3.Controllers
             if (pon == null)
                 return NotFound();
             else
-            {
-
-          //      string dir = System.IO.Path.Combine(Environment.GetFolderPath(
-          //Environment.SpecialFolder.MyDoc‌​uments), "ServisDB\\temp");
-
-          //      string br = broj;
-          //      string[] parts = broj.Split('/');
-          //      string rb = parts[0];
-          //      string year = parts[1];
-          //      int rrb = int.Parse(rb);
-          //      broj = rrb.ToString("D4") + "/" + year;
-          //      string fileName = dir + "\\MINTICT_Ponuda_" + broj.Replace("/", "-") + ".pdf";
-
-
-                //FileInfo f = new FileInfo(fileName);
-                //if (f.Exists == false)
-                ////{
-                //MessageBox.Show("PDF dokument sa ponudom ne postoji!");
-                //return;
+            { 
                 string file = Helper.Stampa(pon);
-                //Process p = Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
-                //Process p = Process.Start(file);
-                //Thread.Sleep(4000);
-                //p.CloseMainWindow();
-                //}
-
-                //var mailMessage = new MailMessage();
-
-                //mailMessage.From = new MailAddress(pon.Korisnik.email);
-                //mailMessage.To.Add(pon.partner_email);
-                //mailMessage.Subject = "Ponuda za " + pon.predmet;
-                //mailMessage.IsBodyHtml = true;
-                //mailMessage.Body = "<span style='font-size: 12pt; color: black;'>Poštovani ,<br/> u prilogu se nalazi ponuda. <br/><br/> Pozdrav</span>";
-
-
-                //mailMessage.Attachments.Add(new Attachment(fileName));
-
-                //var eml = fileName + ".eml";
-
-                //save the MailMessage to the filesystem
-                //mailMessage.Save(eml);
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
                 return new FileStreamResult(fileStream, "application/vnd.ms-excel.sheet.macroEnabled.12");
             }
@@ -106,17 +69,10 @@ namespace WebApplication3.Controllers
                 string fileName = dir + "\\MINTICT_Ponuda_" + broj.Replace("/", "-") + ".pdf";
 
 
-                //FileInfo f = new FileInfo(fileName);
-                //if (f.Exists == false)
-                //{
-                //MessageBox.Show("PDF dokument sa ponudom ne postoji!");
-                //return;
                 string file = Helper.Stampa(pon);
                 Process p = Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
-                //Process p = Process.Start(file);
                 Thread.Sleep(4000);
                 p.CloseMainWindow();
-                //}
 
                 var mailMessage = new MailMessage();
 
@@ -131,7 +87,6 @@ namespace WebApplication3.Controllers
 
                 var eml = fileName + ".eml";
 
-                //save the MailMessage to the filesystem
                 mailMessage.Save(eml);
                 var fileStream = new FileStream(eml, FileMode.Open, FileAccess.Read);
                 return new FileStreamResult(fileStream, "message/rfc822");

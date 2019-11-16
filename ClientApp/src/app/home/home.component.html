@@ -9,5 +9,7 @@
     <a class="nav-link text-dark" [routerLink]="['/korisnici']">Korisnici</a>
     <a class="nav-link text-dark" [routerLink]="['/ponude']">Ponude</a>
     <a class="nav-link text-dark" [routerLink]="['/partneri']">Partneri</a>
+    <a class="nav-link text-dark" [routerLink]="['/login']" *ngIf="!currentUser">Prijava</a>
+    <a class="nav-link text-dark" (click)="logout()" *ngIf="currentUser">Odjava</a>
   </li>
 </ul>

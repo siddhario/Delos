@@ -27,7 +27,7 @@
     <tbody>
       <tr *ngFor="let ponuda of ponude | filter : searchText" (click)="selectItem(ponuda)">
         <td>{{ ponuda.broj }}</td>
-        <td>{{ ponuda.datum }}</td>
+        <td>{{ ponuda.datum |date:'dd.MM.yyyy' }}</td>
         <td>{{ ponuda.partner_naziv }}</td>
         <td>{{ ponuda.partner_adresa }}</td>
         <td>{{ ponuda.partner_telefon}}</td>

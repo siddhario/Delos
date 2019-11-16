@@ -27,7 +27,9 @@
       <div class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-          <input [disabled]="selectedPonuda.status!='E'"  class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum" placeholder="yyyy-MM-dd" ngbDatepicker #d="ngbDatepicker">
+          <input [disabled]="selectedPonuda.status!='E'"  class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum"
+                
+                 ngbDatepicker #d="ngbDatepicker">
           <button [disabled]="selectedPonuda.status!='E'" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
         </div>
       </div>

@@ -14,8 +14,9 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
     <p>{{confirmText}}</p> 
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Ne</button>
     <button type="button" class="btn btn-danger" (click)="modal.close('Ok click')">Da</button>
+
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Ne</button>
   </div>
   `
 })
@@ -41,8 +42,9 @@ export class NgbdModalConfirm {
     </p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
     <button type="button" ngbAutofocus class="btn btn-danger" (click)="modal.close('Ok click')">Ok</button>
+
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
   </div>
   `
 })

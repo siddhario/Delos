@@ -246,6 +246,7 @@ export class PonudaDetailsComponent implements OnInit {
                 this.toastr.success("Ponuda je uspješno dodata..");
                 //stavka.editing = false;
                 ponuda = result;
+                this.selectedPonuda = ponuda;
 
                 //this.reloadItem(continueAdd);
                 //this.itemAdd = false;
@@ -398,6 +399,7 @@ export class PonudaDetailsComponent implements OnInit {
 
     constructor(private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
         this.startAdd();
+        toastr.toastrConfig.positionClass = "toast-bottom-right";
     }
 
     startAdd() {

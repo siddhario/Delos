@@ -52,6 +52,9 @@ namespace Delos
         public string lozinka { get; set; }
 
         public bool admin { get; set; }
+
+        [NotMapped]
+        public string token { get; set; }
     }
 
 

@@ -26,7 +26,7 @@ export class PonudaComponent {
                 backdrop: 'static'
             }
         );
-        modalRef.componentInstance.itemAdd = true;
+        //modalRef.componentInstance.itemAdd = true;
         modalRef.result.then((data) => {
 
             this.load();
