@@ -11,13 +11,15 @@
     <div style="float:right">
       <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status=='E'" (click)="zakljuciPonudu()">Zaključi</button>
       <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="otkljucajPonudu()">Otključaj</button>
-      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>
-      <button type="button"  class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="email()">E-mail</button>
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" (click)="kopirajPonudu()">Kopiraj</button>
+      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button> &nbsp;
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="email()">E-mail</button>  &nbsp;
+
       <button type="button" [ngClass]="selectedPonuda.status=='R'?'btn btn-success btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('R')">Realizovana</button>
-      <button type="button" [ngClass]="selectedPonuda.status=='D'?'btn btn-warning btn-sm':'btn btn-light  btn-sm'"  style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('D')">Dj. realizovana</button>
-      <button type="button" [ngClass]="selectedPonuda.status=='N'?'btn btn-danger btn-sm':'btn btn-light  btn-sm'"  style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('N')">Nerealizovana</button>
-      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button>
+      <button type="button" [ngClass]="selectedPonuda.status=='D'?'btn btn-warning btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('D')">Dj. realizovana</button>
+      <button type="button" [ngClass]="selectedPonuda.status=='N'?'btn btn-danger btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('N')">Nerealizovana</button>
+
 
       <button type="button" class="btn btn-outline-primary  btn-sm" style="margin:3px" (click)="this.activeModal.close()">X</button>
     </div>
@@ -28,7 +30,7 @@
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
           <input [disabled]="selectedPonuda.status!='E'"  class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum"
-                
+                value="selectedPonuda.datum"
                  ngbDatepicker #d="ngbDatepicker">
           <button [disabled]="selectedPonuda.status!='E'" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
         </div>

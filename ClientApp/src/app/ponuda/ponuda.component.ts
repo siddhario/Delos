@@ -110,7 +110,7 @@ export class FilterPipe implements PipeTransform {
         if (!searchText) return items;
         searchText = searchText.toLowerCase();
         return items.filter(it => {
-            return it.partner_naziv.toLowerCase().includes(searchText.toLowerCase())
+            return it.partner_naziv.toLowerCase().includes(searchText.toLowerCase()) || it.broj.includes(searchText)
                 || (!!it.stavke &&
                     it.stavke.filter(s =>
                         (!!s.artikal_naziv && s.artikal_naziv.toLowerCase().includes(searchText))
