@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using Delos;
+using Delos.Klase;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,7 +21,7 @@ namespace WebApplication3.Controllers
 
         private DelosDbContext _dbContext;
 
- 
+
         private readonly ILogger<PonudaController> _logger;
 
         public PonudaController(DelosDbContext context, ILogger<PonudaController> logger)
@@ -25,11 +30,119 @@ namespace WebApplication3.Controllers
             _dbContext = context;
         }
 
+        [HttpGet]
+        [Route("excel")]
+        public IActionResult Excel(string broj)
+        {
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+
+          //      string dir = System.IO.Path.Combine(Environment.GetFolderPath(
+          //Environment.SpecialFolder.MyDoc‌​uments), "ServisDB\\temp");
+
+          //      string br = broj;
+          //      string[] parts = broj.Split('/');
+          //      string rb = parts[0];
+          //      string year = parts[1];
+          //      int rrb = int.Parse(rb);
+          //      broj = rrb.ToString("D4") + "/" + year;
+          //      string fileName = dir + "\\MINTICT_Ponuda_" + broj.Replace("/", "-") + ".pdf";
+
+
+                //FileInfo f = new FileInfo(fileName);
+                //if (f.Exists == false)
+                ////{
+                //MessageBox.Show("PDF dokument sa ponudom ne postoji!");
+                //return;
+                string file = Helper.Stampa(pon);
+                //Process p = Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
+                //Process p = Process.Start(file);
+                //Thread.Sleep(4000);
+                //p.CloseMainWindow();
+                //}
+
+                //var mailMessage = new MailMessage();
+
+                //mailMessage.From = new MailAddress(pon.Korisnik.email);
+                //mailMessage.To.Add(pon.partner_email);
+                //mailMessage.Subject = "Ponuda za " + pon.predmet;
+                //mailMessage.IsBodyHtml = true;
+                //mailMessage.Body = "<span style='font-size: 12pt; color: black;'>Poštovani ,<br/> u prilogu se nalazi ponuda. <br/><br/> Pozdrav</span>";
+
+
+                //mailMessage.Attachments.Add(new Attachment(fileName));
+
+                //var eml = fileName + ".eml";
+
+                //save the MailMessage to the filesystem
+                //mailMessage.Save(eml);
+                var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                return new FileStreamResult(fileStream, "application/vnd.ms-excel.sheet.macroEnabled.12");
+            }
+        }
+
+        [HttpGet]
+        [Route("email")]
+        public IActionResult Email(string broj)
+        {
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p=>p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+
+                string dir = System.IO.Path.Combine(Environment.GetFolderPath(
+          Environment.SpecialFolder.MyDoc‌​uments), "ServisDB\\temp");
+
+                string br = broj;
+                string[] parts = broj.Split('/');
+                string rb = parts[0];
+                string year = parts[1];
+                int rrb = int.Parse(rb);
+                broj = rrb.ToString("D4") + "/" + year;
+                string fileName = dir + "\\MINTICT_Ponuda_" + broj.Replace("/", "-") + ".pdf";
+
+
+                //FileInfo f = new FileInfo(fileName);
+                //if (f.Exists == false)
+                //{
+                //MessageBox.Show("PDF dokument sa ponudom ne postoji!");
+                //return;
+                string file = Helper.Stampa(pon);
+                Process p = Process.Start(new ProcessStartInfo(file) { UseShellExecute = true });
+                //Process p = Process.Start(file);
+                Thread.Sleep(4000);
+                p.CloseMainWindow();
+                //}
+
+                var mailMessage = new MailMessage();
+
+                mailMessage.From = new MailAddress(pon.Korisnik.email);
+                mailMessage.To.Add(pon.partner_email);
+                mailMessage.Subject = "Ponuda za " + pon.predmet;
+                mailMessage.IsBodyHtml = true;
+                mailMessage.Body = "<span style='font-size: 12pt; color: black;'>Poštovani ,<br/> u prilogu se nalazi ponuda. <br/><br/> Pozdrav</span>";
+
+
+                mailMessage.Attachments.Add(new Attachment(fileName));
+
+                var eml = fileName + ".eml";
+
+                //save the MailMessage to the filesystem
+                mailMessage.Save(eml);
+                var fileStream = new FileStream(eml, FileMode.Open, FileAccess.Read);
+                return new FileStreamResult(fileStream, "message/rfc822");
+            }
+        }
+
         [HttpPut]
         [Route("zakljuciPonudu")]
         public IActionResult ZakljuciPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p=>p.partner).Include(p=>p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -82,7 +195,7 @@ namespace WebApplication3.Controllers
                     var stavke = _dbContext.ponuda_stavka.Where(s => s.ponuda_broj == pon.broj);
 
                     var stavkePonude = new List<ponuda_stavka>();
-                    foreach(var stavka in stavke)
+                    foreach (var stavka in stavke)
                     {
                         var newPonudaStavka = new ponuda_stavka();
                         Helper.CopyPropertiesTo<ponuda_stavka, ponuda_stavka>(stavka, newPonudaStavka);
@@ -103,6 +216,7 @@ namespace WebApplication3.Controllers
                     return BadRequest();
                 }
             }
+
         }
 
 
@@ -130,7 +244,7 @@ namespace WebApplication3.Controllers
 
         [HttpPut]
         [Route("statusiraj")]
-        public IActionResult Statusiraj(string broj,string status)
+        public IActionResult Statusiraj(string broj, string status)
         {
             var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
@@ -176,8 +290,8 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.Include(p=>p.stavke).Include(p=>p.partner).OrderByDescending(p=>p.broj).ToList();
-            return ponude;        
+            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).OrderByDescending(p => p.broj).ToList();
+            return ponude;
         }
 
 
@@ -186,7 +300,7 @@ namespace WebApplication3.Controllers
         [Route("getbybroj")]
         public ponuda GetByBroj(string broj)
         {
-            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).FirstOrDefault(p=>p.broj==broj);
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
             return ponuda;
         }
 
@@ -215,7 +329,7 @@ namespace WebApplication3.Controllers
                 ponuda.iznos_sa_pdv = 0;
                 ponuda.iznos_sa_pdv = 0;
                 ponuda.pdv = 0;
-                ponuda.iznos_sa_rabatom=0;
+                ponuda.iznos_sa_rabatom = 0;
                 ponuda.rabat = 0;
                 partner partner;
                 if (ponuda.partner.sifra == null)
@@ -243,7 +357,7 @@ namespace WebApplication3.Controllers
                     partner.tip = "P";
                     _dbContext.SaveChanges();
 
-                    ponuda.partner = partner;                    
+                    ponuda.partner = partner;
                 }
 
 
@@ -275,7 +389,7 @@ namespace WebApplication3.Controllers
 
             //ponuda.broj = broj.Value.ToString("D5") + "/" + year.ToString();
 
-            var pon = _dbContext.ponuda.FirstOrDefault(p =>p.broj== ponuda.broj);
+            var pon = _dbContext.ponuda.FirstOrDefault(p => p.broj == ponuda.broj);
             if (pon == null)
                 return NotFound();
             else
@@ -319,7 +433,7 @@ namespace WebApplication3.Controllers
                     _dbContext.SaveChanges();
                     return Ok();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return BadRequest(ex);
                 }
@@ -332,10 +446,10 @@ namespace WebApplication3.Controllers
         {
             int? ponuda_stavka = null;
             var stavke = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == stavka.ponuda_broj);
-            if(stavke!=null&&stavke.Count()>0)
+            if (stavke != null && stavke.Count() > 0)
                 ponuda_stavka = stavke.Max(ps => ps.stavka_broj);
 
-            stavka.stavka_broj = ponuda_stavka==null? 1:(ponuda_stavka.Value+1);
+            stavka.stavka_broj = ponuda_stavka == null ? 1 : (ponuda_stavka.Value + 1);
             _dbContext.Add(stavka);
             _dbContext.SaveChanges();
             return Ok();
@@ -370,7 +484,7 @@ namespace WebApplication3.Controllers
         [Route("/ponuda_stavka")]
         public IEnumerable<ponuda_stavka> GetStavke(string ponuda_broj)
         {
-            var stavke = _dbContext.ponuda_stavka.Where(sp=> sp.ponuda_broj==ponuda_broj).ToList();
+            var stavke = _dbContext.ponuda_stavka.Where(sp => sp.ponuda_broj == ponuda_broj).ToList();
             return stavke;
 
         }

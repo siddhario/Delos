@@ -36,6 +36,53 @@ export class PonudaDetailsComponent implements OnInit {
         }
     }
 
+    /**
+     * Method is use to download file.
+     * @param data - Array Buffer data
+     * @param type - type of the document.
+     */
+    downLoadFile(data: any, type: string) {
+        let blob = new Blob([data], { type: type });
+        let url = window.URL.createObjectURL(blob);
+        let pwa = window.open(url);
+        if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+            alert('Please disable your Pop-up blocker and try again.');
+        }
+    }
+
+    email() {
+        if (this.selectedPonuda != undefined) {
+            //let modalRef = this.modalService.open(NgbdModalConfirm);
+            //modalRef.result.then((data) => {
+            this.http.get(this.baseUrl + 'ponuda/email?broj=' + this.selectedPonuda.broj
+            , {
+                    responseType: 'arraybuffer'
+                }
+            ).subscribe(response => this.downLoadFile(response, "message/rfc822"));
+            //}, (reason) => {
+            //});
+
+            //modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ponudu " + this.selectedPonuda.broj + " ?";
+        }
+    }
+
+    excel() {
+        if (this.selectedPonuda != undefined) {
+            //let modalRef = this.modalService.open(NgbdModalConfirm);
+            //modalRef.result.then((data) => {
+            this.http.get(this.baseUrl + 'ponuda/excel?broj=' + this.selectedPonuda.broj
+                , {
+                    responseType: 'arraybuffer'
+                }
+            ).subscribe(response => this.downLoadFile(response, "application/vnd.ms-excel.sheet.macroEnabled.12"));
+            //}, (reason) => {
+            //});
+
+            //modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ponudu " + this.selectedPonuda.broj + " ?";
+        }
+    }
+
+
     statusiraj(status) {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);

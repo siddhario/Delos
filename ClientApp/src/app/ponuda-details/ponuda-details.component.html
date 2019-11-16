@@ -11,8 +11,8 @@
     <div style="float:right">
       <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status=='E'" (click)="zakljuciPonudu()">Zaključi</button>
       <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="otkljucajPonudu()">Otključaj</button>
-      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;">Štampaj</button>
-      <button type="button"  class="btn btn-info  btn-sm" style="margin:3px;">E-mail</button>
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>
+      <button type="button"  class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="email()">E-mail</button>
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" (click)="kopirajPonudu()">Kopiraj</button>
       <button type="button" [ngClass]="selectedPonuda.status=='R'?'btn btn-success btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('R')">Realizovana</button>
       <button type="button" [ngClass]="selectedPonuda.status=='D'?'btn btn-warning btn-sm':'btn btn-light  btn-sm'"  style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('D')">Dj. realizovana</button>

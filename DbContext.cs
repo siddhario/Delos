@@ -85,7 +85,10 @@ namespace Delos
 
         [ForeignKey("partner_sifra")]
         public partner partner { get; set; }
-        
+
+        [ForeignKey("radnik")]
+        public korisnik Korisnik { get; set; }
+
         public IEnumerable<ponuda_stavka> stavke { get; set; }
     }
 
