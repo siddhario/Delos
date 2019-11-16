@@ -42,7 +42,7 @@ export class PartnerDetailsComponent{
         }
     }
 
-    delete(sifra: string) {
+    delete(sifra) {
        
         this.http.delete(this.baseUrl + 'partner?sifra='+sifra).subscribe(result => {
             console.log("OK");
@@ -105,4 +105,5 @@ class partner {
     dobavljac: boolean;
     broj_lk: string;
     selected: boolean;
+    maticni_broj: string;
 }

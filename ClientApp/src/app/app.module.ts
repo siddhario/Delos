@@ -13,7 +13,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PartnerComponent, FilterPartnerPipe } from './partner/partner.component';
 import { PartnerDetailsComponent } from './partner-details/partner-details.component';
-import { NgbdModalConfirm } from './modal-focus/modal-focus.component';
+import { NgbdModalConfirm, NgbdModalFocus } from './modal-focus/modal-focus.component';
 import { TokenInterceptorService } from './auth/token.interceptor';
 import { LoginComponent } from './login/login.component';
 
@@ -29,7 +29,8 @@ import { LoginComponent } from './login/login.component';
         FilterPipe,
         FilterPartnerPipe,
         NgbdModalConfirm,
-        LoginComponent
+        LoginComponent,
+        NgbdModalFocus
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

@@ -10,6 +10,9 @@ import { PartnerDetailsComponent } from '../partner-details/partner-details.comp
 export class PartnerComponent {
     public partneri: partner[];
 
+
+    searchText: string;
+
     public selectedPartner: partner;
 
     itemEdit: boolean = false;
@@ -98,4 +101,5 @@ export class partner {
     dobavljac: boolean;
     broj_lk: string;
     selected: boolean;
+    maticni_broj: string;
 }
