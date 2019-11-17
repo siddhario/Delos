@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using Delos;
 using Delos.Klase;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace WebApplication3.Controllers
@@ -22,15 +25,69 @@ namespace WebApplication3.Controllers
     {
 
         private DelosDbContext _dbContext;
+        private IConfiguration _configuration;
 
 
         private readonly ILogger<PonudaController> _logger;
 
-        public PonudaController(DelosDbContext context, ILogger<PonudaController> logger)
+        public PonudaController(DelosDbContext context, ILogger<PonudaController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _dbContext = context;
+            _configuration = configuration;
         }
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("uploadPDF")]
+        public async Task<IActionResult> OnPostUploadAsync(IFormFile blob, string broj)
+        {
+            string filePath=null;
+            try
+            {
+
+                 filePath = Path.Combine(_configuration["ContentPath"],
+                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
+
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+                if (pon == null)
+                    return NotFound();
+                else
+                {
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await blob.CopyToAsync(fileStream);
+                    }
+
+
+
+                    var mailMessage = new MailMessage();
+
+                    mailMessage.From = new MailAddress(pon.Korisnik.email);
+                    mailMessage.To.Add(pon.partner_email);
+                    mailMessage.Subject = "Ponuda za " + pon.predmet;
+                    mailMessage.IsBodyHtml = true;
+                    mailMessage.Body = "<span style='font-size: 12pt; color: black;'>Poštovani ,<br/> u prilogu se nalazi ponuda. <br/><br/> Pozdrav</span>";
+
+
+                    mailMessage.Attachments.Add(new Attachment(filePath));
+
+                    var eml = filePath + ".eml";
+
+                    mailMessage.Save(eml);
+                    var fs = new FileStream(eml, FileMode.Open, FileAccess.Read);
+
+                    return new FileStreamResult(fs, "message/rfc822");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, filePath);
+                return BadRequest();
+            }
+        }
+
+
 
         [HttpGet]
         [Route("excel")]
@@ -40,9 +97,10 @@ namespace WebApplication3.Controllers
             if (pon == null)
                 return NotFound();
             else
-            { 
+            {
                 string file = Helper.Stampa(pon);
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                _logger.LogError(file);
                 return new FileStreamResult(fileStream, "application/vnd.ms-excel.sheet.macroEnabled.12");
             }
         }
@@ -51,14 +109,14 @@ namespace WebApplication3.Controllers
         [Route("email")]
         public IActionResult Email(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p=>p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
             {
 
-                string dir = System.IO.Path.Combine(Environment.GetFolderPath(
-          Environment.SpecialFolder.MyDoc‌​uments), "ServisDB\\temp");
+                //string dir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "temp");
+                string dir = "C:\\temp";
 
                 string br = broj;
                 string[] parts = broj.Split('/');

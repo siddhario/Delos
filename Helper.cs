@@ -35,8 +35,8 @@ namespace Delos
 
             //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
 
-            string dir = System.IO.Path.Combine(Environment.GetFolderPath(
-          Environment.SpecialFolder.MyDoc‌​uments), "ServisDB\\temp");
+            //string dir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "temp");
+            string dir = "C:\\temp";
 
             if (Directory.Exists(dir) == false)
             {

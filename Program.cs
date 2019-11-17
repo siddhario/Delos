@@ -17,7 +17,13 @@ namespace WebApplication3
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+            WebHost.CreateDefaultBuilder(args).ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddConsole();
+                logging.AddEventLog();
+                logging.AddEventSourceLogger();
+            })
                 .UseStartup<Startup>().UseUrls("http://0.0.0.0:5002");
     }
 }

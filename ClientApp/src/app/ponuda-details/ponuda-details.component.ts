@@ -7,6 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -18,11 +20,50 @@ export class PonudaDetailsComponent implements OnInit {
 
     public model: any;
 
+
+    email() {
+        var dd = {
+            content: [
+                this.selectedPonuda.broj,
+                this.selectedPonuda.predmet
+            ]
+        }
+        pdfMake.vfs = pdfFonts.pdfMake.vfs;
+        var pdf = pdfMake.createPdf(dd);
+        //pdf.download();
+        pdf.getBlob((b) => {
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", this.baseUrl + 'ponuda/uploadPDF?broj=' + this.selectedPonuda.broj, true);
+            oReq.onload = function (oEvent) {
+                // Uploaded.
+            };
+            var form = new FormData();
+            form.append("blob", b, this.selectedPonuda.broj.replace('/','_') + ".pdf");
+
+            oReq.send(form);
+            oReq.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    let blob = new Blob([this.response], { type: 'message/rfc822' });
+                    let url = window.URL.createObjectURL(blob);
+                    let pwa = window.open(url);
+                    if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+                        alert('Please disable your Pop-up blocker and try again.');
+                    }
+                }
+            };
+
+        });
+
+    }
+
+
+
+
     zakljuciPonudu() {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
             modalRef.result.then((data) => {
-                this.http.put<Ponuda>(this.baseUrl + 'ponuda/zakljuciPonudu?broj=' + this.selectedPonuda.broj,null).subscribe(result => {
+                this.http.put<Ponuda>(this.baseUrl + 'ponuda/zakljuciPonudu?broj=' + this.selectedPonuda.broj, null).subscribe(result => {
                     this.toastr.success("Ponuda je uspješno zaključena..");
                     this.selectedPonuda = result;
                 }, error => {
@@ -50,21 +91,21 @@ export class PonudaDetailsComponent implements OnInit {
         }
     }
 
-    email() {
-        if (this.selectedPonuda != undefined) {
-            //let modalRef = this.modalService.open(NgbdModalConfirm);
-            //modalRef.result.then((data) => {
-            this.http.get(this.baseUrl + 'ponuda/email?broj=' + this.selectedPonuda.broj
-            , {
-                    responseType: 'arraybuffer'
-                }
-            ).subscribe(response => this.downLoadFile(response, "message/rfc822"));
-            //}, (reason) => {
-            //});
+    //email() {
+    //    if (this.selectedPonuda != undefined) {
+    //        //let modalRef = this.modalService.open(NgbdModalConfirm);
+    //        //modalRef.result.then((data) => {
+    //        this.http.get(this.baseUrl + 'ponuda/email?broj=' + this.selectedPonuda.broj
+    //            , {
+    //                responseType: 'arraybuffer'
+    //            }
+    //        ).subscribe(response => this.downLoadFile(response, "message/rfc822"));
+    //        //}, (reason) => {
+    //        //});
 
-            //modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ponudu " + this.selectedPonuda.broj + " ?";
-        }
-    }
+    //        //modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ponudu " + this.selectedPonuda.broj + " ?";
+    //    }
+    //}
 
     excel() {
         if (this.selectedPonuda != undefined) {
@@ -87,7 +128,7 @@ export class PonudaDetailsComponent implements OnInit {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
             modalRef.result.then((data) => {
-                this.http.put<Ponuda>(this.baseUrl + 'ponuda/statusiraj?broj=' + this.selectedPonuda.broj+"&status="+status, null).subscribe(result => {
+                this.http.put<Ponuda>(this.baseUrl + 'ponuda/statusiraj?broj=' + this.selectedPonuda.broj + "&status=" + status, null).subscribe(result => {
                     this.toastr.success("Status ponude je uspješno postavljen..");
                     this.selectedPonuda = result;
                 }, error => {
@@ -98,7 +139,7 @@ export class PonudaDetailsComponent implements OnInit {
             });
 
             modalRef.componentInstance.confirmText = "Da li ste sigurni da želite promijeniti status ponude "
-                + this.selectedPonuda.broj + " u " + (status == 'R' ? '\'realizovana\'' : (status == 'D' ?'\'djelimično realizovana\'':'\'nerealizovana\'')) +" ? ";
+                + this.selectedPonuda.broj + " u " + (status == 'R' ? '\'realizovana\'' : (status == 'D' ? '\'djelimično realizovana\'' : '\'nerealizovana\'')) + " ? ";
         }
     }
 
@@ -134,7 +175,7 @@ export class PonudaDetailsComponent implements OnInit {
             }, (reason) => {
             });
 
-            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati ponudu " + this.selectedPonuda.broj+" ?";
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati ponudu " + this.selectedPonuda.broj + " ?";
         }
     }
 
