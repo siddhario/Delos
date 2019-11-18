@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { KorisnikComponent } from './korisnik/korisnik.component';
 import { PonudaComponent, FilterPipe } from './ponuda/ponuda.component';
-import { PonudaDetailsComponent } from './ponuda-details/ponuda-details.component';
+import { PonudaDetailsComponent, NoCommaPipe } from './ponuda-details/ponuda-details.component';
 import { NgbModule, NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,6 +16,7 @@ import { PartnerDetailsComponent } from './partner-details/partner-details.compo
 import { NgbdModalConfirm, NgbdModalFocus } from './modal-focus/modal-focus.component';
 import { TokenInterceptorService } from './auth/token.interceptor';
 import { LoginComponent } from './login/login.component';
+import { registerLocaleData } from '@angular/common';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,8 @@ import { LoginComponent } from './login/login.component';
         FilterPartnerPipe,
         NgbdModalConfirm,
         LoginComponent,
-        NgbdModalFocus
+        NgbdModalFocus,
+        NoCommaPipe
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -53,3 +55,5 @@ import { LoginComponent } from './login/login.component';
     bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+

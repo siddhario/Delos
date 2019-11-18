@@ -155,25 +155,25 @@
           <div class="col-sm-2" style="text-align:right">
             <label>Nabavna cijena</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate()" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_nabavna | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna  | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.vrijednost_nabavna | number : '1.2-2' }}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_nabavna |noComma}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna |noComma" type="number" />
+            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.vrijednost_nabavna |noComma }}</div>
           </div>
 
           <div class="col-sm-1" style="text-align:right">
             <label>Marža</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate()" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.marza_procenat | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.ruc | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.ruc | number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.marza_procenat |noComma}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.ruc|noComma" type="number" />
+            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.ruc |noComma}}</div>
           </div>
 
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2()" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv | number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv |noComma}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv |noComma" type="number" />
+            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv |noComma}}</div>
           </div>
 
           <div class="col-sm-1" style="text-align:right">
@@ -187,25 +187,25 @@
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena bez PDV-a</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv_sa_rabatom| noComma}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | noComma" type="number" />
+            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| noComma}}</div>
           </div>
 
           <div class="col-sm-1" style="text-align:right">
             <label>PDV</label>
             <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4()" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.pdv_stopa| number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.pdv | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv| number : '1.2-2'}}</div>
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.pdv_stopa|noComma}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.pdv | noComma" type="number" />
+            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.pdv| noComma}}</div>
           </div>
 
           <div class="col-sm-2" style="text-align:right">
             <label>Cijena sa PDV-om</label>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_sa_pdv | number : '1.2-2'}}</div>
-            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | number : '1.2-2'" type="number" />
-            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| number : '1.2-2'}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | noComma" type="text" />
+            <div *ngIf="!stavka.editing" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_sa_pdv |noComma}}</div>
+            <input class="form-control form-control-sm" *ngIf="stavka.editing" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | noComma" type="text" />
+            <div *ngIf="!stavka.editing" style="text-align:right">{{stavka.iznos_sa_pdv| noComma}}</div>
           </div>
 
 

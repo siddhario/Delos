@@ -457,17 +457,24 @@ export class PonudaDetailsComponent implements OnInit {
 
 
     deleteStavka(stavka: PonudaStavka) {
-        this.http.get(this.baseUrl + 'ponuda/stavka_delete?ponuda_broj=' + stavka.ponuda_broj + "&stavka_broj=" + stavka.stavka_broj).subscribe(result => {
-            console.log("OK");
-            this.toastr.success("Stavka ponude je uspješno obrisana..");
-            var ponuda = this.selectedPonuda;
-            let index = ponuda.stavke.findIndex(d => d.stavka_broj === stavka.stavka_broj);
-            ponuda.stavke.splice(index, 1);//remove element from array
-            this.reloadItem(false);
-        }, error => {
-            this.toastr.error("Greška..");
-            console.error(error)
+        let modalRef = this.modalService.open(NgbdModalConfirm);
+        modalRef.result.then((data) => {
+            this.http.get(this.baseUrl + 'ponuda/stavka_delete?ponuda_broj=' + stavka.ponuda_broj + "&stavka_broj=" + stavka.stavka_broj).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Stavka ponude je uspješno obrisana..");
+                var ponuda = this.selectedPonuda;
+                let index = ponuda.stavke.findIndex(d => d.stavka_broj === stavka.stavka_broj);
+                ponuda.stavke.splice(index, 1);//remove element from array
+                this.reloadItem(false);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        }, (reason) => {
         });
+
+        modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati stavku ponude " + stavka.artikal_naziv + "-" + stavka.opis + " ?";
+     
     }
 
     reloadItem(continueAdd: boolean) {
@@ -583,6 +590,21 @@ export class PonudaDetailsComponent implements OnInit {
     }
 
     currentUser: Korisnik;
+}
+
+@Pipe({
+    name: 'noComma'
+})
+export class NoCommaPipe implements PipeTransform {
+
+    transform(val: number): string {
+        if (val !== undefined && val !== null) {
+            // here we just remove the commas from value
+            return val.toString().replace(/,/g, "");
+        } else {
+            return "";
+        }
+    }
 }
 
 class partner {
