@@ -162,9 +162,17 @@ namespace WebApplication3.Controllers
             {
                 try
                 {
-                    pon.status = "Z";
-                    _dbContext.SaveChanges();
-                    return Ok(pon);
+                    var user = _dbContext.korisnik.FirstOrDefault(s => s.korisnicko_ime == User.Identity.Name);
+                    if (user.admin==true||pon.iznos_sa_pdv <= decimal.Parse(_configuration["MaxPonuda"]) || decimal.Parse(_configuration["MaxPonuda"]) == 0)
+                    {
+                        pon.status = "Z";
+
+                        pon.radnik = User.Identity.Name;
+                        _dbContext.SaveChanges();
+                        return Ok(pon);
+                    }
+                    else
+                        return Forbid();
                 }
                 catch (Exception ex)
                 {
@@ -334,7 +342,7 @@ namespace WebApplication3.Controllers
                 }
                 else
                     broj = 1;
-                ponuda.radnik = "dario";
+                ponuda.radnik = User.Identity.Name;
                 ponuda.status = "E";
                 //ponuda.partner_sifra = 14;
                 ponuda.broj = broj.Value.ToString("D5") + "/" + year.ToString();

@@ -10,7 +10,7 @@
 
     <div style="float:right">
       <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status=='E'" (click)="zakljuciPonudu()">Zaključi</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="otkljucajPonudu()">Otključaj</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'&&(currentUser.admin==true || selectedPonuda.radnik==currentUser?.korisnicko_ime)" (click)="otkljucajPonudu()">Otključaj</button>
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" (click)="kopirajPonudu()">Kopiraj</button>
       <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button> &nbsp;
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>

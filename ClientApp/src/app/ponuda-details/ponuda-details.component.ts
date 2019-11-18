@@ -11,6 +11,7 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { environment } from '../../environments/environment';
 import { Korisnik } from '../korisnik/korisnik.component';
+import { AuthenticationService } from '../auth/auth.service';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -62,7 +63,7 @@ export class PonudaDetailsComponent implements OnInit {
             alignment: 'justify',
             columns: [
                 [
-                    { columns: [{ text: 'Datum: ', bold: true, width: 60 }, { text: (new Date( this.selectedPonuda.datum)).toLocaleDateString('sr-Latn-ba'), width: 250 }] },
+                    { columns: [{ text: 'Datum: ', bold: true, width: 60 }, { text: (new Date(this.selectedPonuda.datum)).toLocaleDateString('sr-Latn-ba'), width: 250 }] },
                     { columns: [{ text: 'Partner: ', bold: true, width: 60 }, { text: this.selectedPonuda.partner_naziv, width: 250 }] },
                     { columns: [{ text: 'JIB: ', bold: true, width: 60 }, { text: this.selectedPonuda.partner_jib, width: 250 }] },
                     { columns: [{ text: 'Adresa: ', bold: true, width: 60 }, { text: this.selectedPonuda.partner_adresa, width: 250 }] }
@@ -164,7 +165,7 @@ export class PonudaDetailsComponent implements OnInit {
                 // Uploaded.
             };
             var form = new FormData();
-            form.append("blob", b, this.selectedPonuda.broj.replace('/','_') + ".pdf");
+            form.append("blob", b, this.selectedPonuda.broj.replace('/', '_') + ".pdf");
 
             oReq.send(form);
             oReq.onreadystatechange = function () {
@@ -191,7 +192,10 @@ export class PonudaDetailsComponent implements OnInit {
                     this.toastr.success("Ponuda je uspješno zaključena..");
                     this.selectedPonuda = result;
                 }, error => {
-                    this.toastr.error("Greška..");
+                    if (error.status == 403)
+                        this.toastr.error("Iznos ponude je veći od dozvoljenog!");
+                    else
+                        this.toastr.error("Greška..");
                     console.error(error)
                 });
             }, (reason) => {
@@ -562,22 +566,23 @@ export class PonudaDetailsComponent implements OnInit {
             return 'row';
     }
 
-    constructor(private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
+    constructor(private authenticationService: AuthenticationService, private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
         this.startAdd();
         toastr.toastrConfig.positionClass = "toast-bottom-right";
+        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
     }
 
     startAdd() {
         this.selectedPonuda = new Ponuda();
         this.selectedPonuda.status = "E";
-        this.selectedPonuda.radnik = "dario";
+        //this.selectedPonuda.radnik = this.currentUser.korisnicko_ime;
         this.selectedPonuda.datum = (new Date());
         this.selectedPonuda.rok_isporuke = "3-5 dana";
         this.selectedPonuda.rok_vazenja = "7 dana";
         this.selectedPonuda.valuta_placanja = "avans";
     }
 
-
+    currentUser: Korisnik;
 }
 
 class partner {
