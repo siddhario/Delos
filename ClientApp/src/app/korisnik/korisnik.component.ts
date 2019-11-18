@@ -16,9 +16,11 @@ export class KorisnikComponent {
 }
 
 export class Korisnik {
+    korisnicko_ime: string;
+    lozinka: string;
     ime: string;
-    prezime: number;
-    email: number;
+    prezime: string;
+    email: string;
     admin: boolean;
     token: string;
 }

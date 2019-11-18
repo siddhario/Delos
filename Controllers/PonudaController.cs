@@ -155,7 +155,7 @@ namespace WebApplication3.Controllers
         [Route("zakljuciPonudu")]
         public IActionResult ZakljuciPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p=>p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -177,7 +177,7 @@ namespace WebApplication3.Controllers
         [Route("kopirajPonudu")]
         public IActionResult KopirajPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -259,7 +259,7 @@ namespace WebApplication3.Controllers
         [Route("statusiraj")]
         public IActionResult Statusiraj(string broj, string status)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -281,7 +281,7 @@ namespace WebApplication3.Controllers
         [Route("otkljucajPonudu")]
         public IActionResult OtkljucajPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -303,7 +303,7 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).OrderByDescending(p => p.broj).ToList();
+            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).Include(p=>p.Korisnik).OrderByDescending(p => p.broj).ToList();
             return ponude;
         }
 
@@ -313,7 +313,7 @@ namespace WebApplication3.Controllers
         [Route("getbybroj")]
         public ponuda GetByBroj(string broj)
         {
-            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
             return ponuda;
         }
 

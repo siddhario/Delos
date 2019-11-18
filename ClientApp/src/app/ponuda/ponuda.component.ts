@@ -5,6 +5,7 @@ import { jsonIgnore } from 'json-ignore';
 import { PonudaDetailsComponent } from '../ponuda-details/ponuda-details.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { partner } from '../partner/partner.component';
+import { Korisnik } from '../korisnik/korisnik.component';
 @Component({
     selector: 'app-ponuda',
     templateUrl: './ponuda.component.html'
@@ -78,18 +79,24 @@ export class PonudaComponent {
     searchText: string;
 }
 
-class Ponuda {
+export class Ponuda {
     broj: string;
     datum: Date;
     @jsonIgnore()
-    selected: boolean;
+    selected?: boolean;
     partner: partner;
+    partner_sifra: number;
     partner_naziv: string;
     partner_adresa: string;
     partner_telefon: string;
     partner_email: string;
     iznos_sa_rabatom: number;
+    iznos_bez_rabata: number;
+    rabat: number;
+    nabavna_vrijednost: number;
+    ruc: number;
     partner_jib: string;
+    korisnik: Korisnik;
     rok_vazenja: string;
     rok_isporuke: string;
     paritet: string;
@@ -98,6 +105,8 @@ class Ponuda {
     pdv: number;
     iznos_sa_pdv: number;
     predmet: string;
+    status: string;
+    radnik: string;
     @jsonIgnore()
     stavke: PonudaStavka[];
 }
@@ -122,7 +131,7 @@ export class FilterPipe implements PipeTransform {
 }
 
 
-class PonudaStavka {
+export class PonudaStavka {
     ponuda_broj: string;
     stavka_broj: number;
     artikal_naziv: string;
@@ -146,5 +155,5 @@ class PonudaStavka {
     iznos_sa_pdv: number;
 
     @jsonIgnore()
-    editing: boolean;
+    editing?: boolean;
 }

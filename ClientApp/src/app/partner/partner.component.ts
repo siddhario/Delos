@@ -100,6 +100,6 @@ export class partner {
     kupac: boolean;
     dobavljac: boolean;
     broj_lk: string;
-    selected: boolean;
+    selected?: boolean;
     maticni_broj: string;
 }

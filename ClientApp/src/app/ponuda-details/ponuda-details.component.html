@@ -14,6 +14,7 @@
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" (click)="kopirajPonudu()">Kopiraj</button>
       <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button> &nbsp;
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="pdf()">PDF</button>
       <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="email()">E-mail</button>  &nbsp;
 
       <button type="button" [ngClass]="selectedPonuda.status=='R'?'btn btn-success btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('R')">Realizovana</button>

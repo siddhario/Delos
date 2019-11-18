@@ -94,7 +94,7 @@ export class PartnerDetailsComponent{
 
 }
 
-class partner {
+export class partner {
     sifra: number;
     naziv: string;
     tip: string;
@@ -104,6 +104,6 @@ class partner {
     kupac: boolean;
     dobavljac: boolean;
     broj_lk: string;
-    selected: boolean;
+    selected?: boolean;
     maticni_broj: string;
 }
