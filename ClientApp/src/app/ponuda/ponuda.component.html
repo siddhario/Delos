@@ -1,27 +1,27 @@
-<div style="width:100%">
-  <h1 id="tableLabel">Ponude</h1>
-  <p *ngIf="!ponude"><em>Učitavanje...</em></p>
-
-  <div style="overflow:auto">
-    <div style="float:left">
-      <button type="button" class="btn btn-info" (click)="load()">Učitaj</button>
-      <button type="button" class="btn btn-info" (click)="add()">+</button>
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+  <h2 id="tableLabel">Ponude</h2>
+  <p *ngIf="!ponude&&currentUser"><em>Učitavanje...</em></p>
+  <p *ngIf="!currentUser"><em>Niste autorizovani za pristup ovoj stranici...</em></p>
+  <div style="overflow:auto" *ngIf="currentUser">
+    <div style="float:left;margin: 4px;">
+      <!--<button type="button" class="btn btn-info" (click)="load()">Učitaj</button>-->
+      <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
     </div>
-    <div style="float:right">
-      <input class="form-control" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+    <div style="float:left;margin: 4px;">
+      <input class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
     </div>
   </div>
-  <table class='table table-hover' aria-labelledby="tableLabel" *ngIf="ponude">
+  <table class='table table-hover table-striped table-sm' aria-labelledby="tableLabel" *ngIf="ponude">
     <thead>
       <tr>
-        <th>Broj</th>
-        <th>Datum</th>
-        <th>Partner</th>
-        <th>Adresa</th>
-        <th>Telefon</th>
-        <th>Iznos bez pdv-a</th>
-        <th>Pdv</th>
-        <th>Iznos sa pdv-om</th>
+        <th><a (click)="sortProperty('broj')">Broj</a><ng-container *ngIf="sortColumn=='broj'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('datum')">Datum</a><ng-container *ngIf="sortColumn=='datum'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('partner_naziv')">Partner</a><ng-container *ngIf="sortColumn=='partner_naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('partner_adresa')">Adresa</a><ng-container *ngIf="sortColumn=='partner_adresa'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('partner_telefon')">Telefon</a><ng-container *ngIf="sortColumn=='partner_telefon'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('iznos_sa_rabatom')">Iznos bez pdv-a</a><ng-container *ngIf="sortColumn=='iznos_sa_rabatom'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('pdv')">Pdv</a><ng-container *ngIf="sortColumn=='pdv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('iznos_sa_pdv')">Iznos sa pdv-om</a><ng-container *ngIf="sortColumn=='iznos_sa_pdv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
       </tr>
     </thead>
     <tbody>

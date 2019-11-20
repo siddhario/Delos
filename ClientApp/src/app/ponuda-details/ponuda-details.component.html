@@ -1,5 +1,5 @@
-<div style="width:100%;padding:10px;" class="color-primary-0">
-  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="color-primary-1">
+<div style="width:100%;padding:10px;" >
+  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="navbar-dark bg-dark border-bottom box-shadow mb-3">
     <div style="float:left">
 
       <button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;">Ponuda</button>
@@ -9,25 +9,25 @@
 
 
     <div style="float:right">
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status=='E'" (click)="zakljuciPonudu()">Zaključi</button>
-      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'&&(currentUser.admin==true || selectedPonuda.radnik==currentUser?.korisnicko_ime)" (click)="otkljucajPonudu()">Otključaj</button>
-      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" (click)="kopirajPonudu()">Kopiraj</button>
-      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button> &nbsp;
-      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>
-      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="pdf()">PDF</button>
-      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="email()">E-mail</button>  &nbsp;
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.broj&&selectedPonuda.status=='E'" (click)="zakljuciPonudu()">Zaključi</button>
+      <button type="button" class="btn btn-primary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.broj&&selectedPonuda.status!='E'&&(currentUser.admin==true || selectedPonuda.radnik==currentUser?.korisnicko_ime)" (click)="otkljucajPonudu()">Otključaj</button>
+      <button type="button" class="btn btn-info  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.broj" (click)="kopirajPonudu()">Kopiraj</button>
+      <button type="button" class="btn btn-danger  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.broj"  [disabled]="selectedPonuda.status!='E'" (click)="obrisiPonudu()">Obriši</button> &nbsp;
+      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="excel()">Excel</button>
+      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="pdf()">PDF</button>
+      <button type="button" class="btn btn-secondary  btn-sm" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="email()">E-mail</button>  &nbsp;
 
       <button type="button" [ngClass]="selectedPonuda.status=='R'?'btn btn-success btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('R')">Realizovana</button>
       <button type="button" [ngClass]="selectedPonuda.status=='D'?'btn btn-warning btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('D')">Dj. realizovana</button>
       <button type="button" [ngClass]="selectedPonuda.status=='N'?'btn btn-danger btn-sm':'btn btn-light  btn-sm'" style="margin:3px;" *ngIf="selectedPonuda.status!='E'" (click)="statusiraj('N')">Nerealizovana</button>
 
 
-      <button type="button" class="btn btn-outline-primary  btn-sm" style="margin:3px" (click)="this.activeModal.close()">X</button>
+      <button type="button" class="btn btn-light  btn-sm" style="margin:3px" (click)="cancel()">X</button>
     </div>
   </div>
   <div style="margin:10px">
     <div class="form-row form-group">
-      <div class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
+      <div *ngIf="selectedPonuda.broj" class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
           <input [disabled]="selectedPonuda.status!='E'"  class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPonuda.datum"
@@ -36,8 +36,8 @@
           <button [disabled]="selectedPonuda.status!='E'" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
         </div>
       </div>
-      <div class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
-      <div class="col-sm-4"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
+      <div *ngIf="selectedPonuda.broj" class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.radnik" type="text" /></div>
+      <div *ngIf="selectedPonuda.broj" class="col-sm-4"><label>Status</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.status" type="text" /></div>
 
     </div>
     <div class="form-row form-group" style="border-top: solid 1px gainsboro;padding-top: 10px;">   </div>
@@ -115,7 +115,7 @@
 
   </div>
 
-  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="color-primary-1">
+  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="navbar-light bg-light border-bottom box-shadow mb-3" *ngIf="selectedPonuda.broj">
     <div style="float:left"><button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;">Stavke ponude</button></div>
     <div style="float:left"><button [disabled]="selectedPonuda.status!='E'" type="button"  class="btn btn-primary btn-sm" style="margin:3px;" (click)="startItemAdd()">+</button></div>
   </div>
@@ -141,7 +141,7 @@
           </div>
 
         </div>
-        <div [ngClass]="stavka.editing==true?'form-row color-primary-3':'form-row  color-primary-0'" style="border-bottom:solid 1px;border-color:black;padding:15px">
+        <div [ngClass]="stavka.editing==true?'form-row':'form-row'" style="border-bottom:solid 1px;border-color:black;padding:15px">
 
 
           <div class="col-sm-1">
@@ -221,35 +221,42 @@
 
       </div>
     </div>
-    <div class="form-row form-group" style="border-top: solid 1px;border-color:#17a2b8;padding-top: 10px;padding-right:15px">
-      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">Total:</div>
-      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
+    <div class="form-row form-group" style="border-top: solid 1px;border-color:#17a2b8;padding-top: 10px;padding:15px">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">Total:</div>
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+        Nabavna vrijednost <br />
         {{selectedPonuda.nabavna_vrijednost}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
+        RUC <br />
         {{selectedPonuda.ruc}}
       </div>
-      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+        Iznos bez rabata <br />
         {{selectedPonuda.iznos_bez_rabata}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
+        Rabat <br />
         {{selectedPonuda.rabat}}
       </div>
-      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+        Iznos bez PDV-a <br />
         {{selectedPonuda.iznos_sa_rabatom}}
       </div>
-      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:16px">
+      <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
+        PDV <br />
         {{selectedPonuda.pdv}}
       </div>
-      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:16px">
+      <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+        Iznos sa PDV-om <br />
         {{selectedPonuda.iznos_sa_pdv}}
       </div>
 
     </div>
-
+   
   </div>
-  <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem" class="color-primary-1">
-    <button type="button" class="btn btn-primary btn-sm" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
-    <button type="button" class="btn btn-primary btn-sm" style="margin:3px;" (click)="cancel()">Odustani</button>
+  <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem" class="navbar-light bg-light border-bottom box-shadow mb-3">
+    <button type="button" class="btn btn-success btn-sm" style="margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
+    <button type="button" class="btn btn-warning btn-sm" style="margin:3px;" (click)="cancel()">Odustani</button>
   </div>
 </div>

@@ -140,24 +140,26 @@ label {
 .form-control-sm{
   padding:0.25rem 0.2rem;
 }
-
-
-.color-primary-0 {
-  background-color: #fff
-}
-/* Main Primary color */
-.color-primary-1 {
-  background-color: #fff
+.color-toolbar {
+  background-color: #e6edf2
 }
 
-.color-primary-2 {
-  background-color: #fff
+.color-itemdetail {
+  background-color: #e6edf2
 }
 
-.color-primary-3 {
-  background-color: #e8f1f8
+.nav-link{
+  font-size:14px !important;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #e6edf2;
 }
 
-.color-primary-4 {
-  background-color: #fff
+.white {
+  filter: invert(100%);
+}
+
+
+.form-control:disabled {
+  background-color: #f8f9fa !important;
 }

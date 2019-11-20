@@ -32,7 +32,7 @@ export class PartnerDetailsComponent{
             //partner.datum = new Date(partner.datum.getFullYear(), partner.datum.getMonth(), partner.datum.getDate());
             this.http.put<partner>(this.baseUrl + 'partner', partner).subscribe(result => {
                 console.log("OK");
-                this.toastr.success("Partner je uspješno sačuvana..");
+                this.toastr.success("Partner je uspješno sačuvan..");
                 this.activeModal.close("OK");
             }, error => {
                 this.toastr.error("Greška..");

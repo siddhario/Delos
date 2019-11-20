@@ -36,7 +36,7 @@ namespace WebApplication3.Controllers
             _dbContext = context;
             _configuration = configuration;
         }
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         [Route("uploadPDF")]
         public async Task<IActionResult> OnPostUploadAsync(IFormFile blob, string broj)
@@ -388,6 +388,7 @@ namespace WebApplication3.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Exception");
                 return BadRequest(ex);
             }
         }
@@ -409,7 +410,7 @@ namespace WebApplication3.Controllers
             //    broj = 0;
 
             //ponuda.broj = broj.Value.ToString("D5") + "/" + year.ToString();
-
+            ponuda.Korisnik = null;
             var pon = _dbContext.ponuda.FirstOrDefault(p => p.broj == ponuda.broj);
             if (pon == null)
                 return NotFound();

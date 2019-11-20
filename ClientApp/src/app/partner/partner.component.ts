@@ -2,6 +2,8 @@ import { Component, Inject, PipeTransform, Pipe } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PartnerDetailsComponent } from '../partner-details/partner-details.component';
+import { AuthenticationService } from '../auth/auth.service';
+import { Korisnik } from '../korisnik/korisnik.component';
 
 @Component({
     selector: 'app-partner',
@@ -65,8 +67,10 @@ export class PartnerComponent {
     }
 
 
-    constructor(public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
+    currentUser: Korisnik;
+    constructor(private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
         this.load();
+        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
     }
 
     load() {

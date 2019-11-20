@@ -26,8 +26,24 @@ export class HomeComponent {
         this.router.navigate(['/login']);
     }
 
-
-
+    ponude() {
+        this.router.navigateByUrl('/ponude');
+    }
+    partneri() {
+        this.router.navigateByUrl('/partneri');
+    }
+    korisnici() {
+        this.router.navigateByUrl('/korisnici');
+    }
+    ugovori() {
+        this.router.navigateByUrl('/ugovori');
+    }
+    servisneprijave() {
+        this.router.navigateByUrl('/servisneprijave');
+    }
+    izvjestaji() {
+        this.router.navigateByUrl('/izvjestaji');
+    }
     selectedPonuda: Ponuda;
     pdf() {
         this.selectedPonuda = { "broj": "00001/2019", "status": "E", "predmet": "werwer", "radnik": "dario", "datum": new Date("2019-10-07T00:00:00"), "partner_sifra": 887, "partner_jib": "401301100000", "partner_adresa": "Cara Dušana bb Celinac 78240", "partner_naziv": "Argentina presente", "partner_telefon": "065/511-000", "partner_email": "fama@teol.net", "valuta_placanja": "wer", "rok_vazenja": "324", "paritet_kod": null, "paritet": "CIP - Transport i osiguranje plaćeni (do naznačene destinacije)", "rok_isporuke": "23", "iznos_bez_rabata": 3179.250000, "rabat": 0.000000, "iznos_sa_rabatom": 3179.250000, "pdv": 540.470000, "iznos_sa_pdv": 3719.720000, "nabavna_vrijednost": 2355.000000, "ruc": 824.250000, "partner": { "sifra": 887, "naziv": "Argentina presente", "tip": "P", "maticni_broj": "401301100000", "adresa": "Cara Dušana bb Celinac 78240", "telefon": "065/511-000", "email": "dario.djekic@lanaco.com", "kupac": false, "dobavljac": false, "broj_lk": null }, "korisnik": { "korisnicko_ime": "dario", "ime": "Dario", "prezime": "Đekić", "email": "dariodjekic@gmail.com", "lozinka": "8a49317e060e23bb86f9225ca581e0a9", "admin": true, "token": null }, "stavke": [{ "ponuda_broj": "00001/2019", "stavka_broj": 2, "artikal_naziv": "qweq", "opis": "eqweqwe", "jedinica_mjere": "KOM", "kolicina": 1.000000, "cijena_bez_pdv": 3136.050000, "cijena_bez_pdv_sa_rabatom": 3136.050000, "rabat_procenat": 0.000000, "rabat_iznos": 0.000000, "iznos_bez_pdv": 3136.050000, "iznos_bez_pdv_sa_rabatom": 3136.050000, "cijena_nabavna": 2323.000000, "vrijednost_nabavna": 2323.000000, "marza_procenat": 35.000000, "ruc": 813.050000, "pdv_stopa": 17.000000, "pdv": 533.130000, "cijena_sa_pdv": 3669.180000, "iznos_sa_pdv": 3669.180000 }, { "ponuda_broj": "00001/2019", "stavka_broj": 3, "artikal_naziv": "weqw", "opis": "qwe", "jedinica_mjere": "KOM", "kolicina": 1.000000, "cijena_bez_pdv": 43.200000, "cijena_bez_pdv_sa_rabatom": 43.200000, "rabat_procenat": 0.000000, "rabat_iznos": 0.000000, "iznos_bez_pdv": 43.200000, "iznos_bez_pdv_sa_rabatom": 43.200000, "cijena_nabavna": 32.000000, "vrijednost_nabavna": 32.000000, "marza_procenat": 35.000000, "ruc": 11.200000, "pdv_stopa": 17.000000, "pdv": 7.340000, "cijena_sa_pdv": 50.540000, "iznos_sa_pdv": 50.540000 }] };

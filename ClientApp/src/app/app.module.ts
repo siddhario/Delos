@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
@@ -17,6 +17,7 @@ import { NgbdModalConfirm, NgbdModalFocus } from './modal-focus/modal-focus.comp
 import { TokenInterceptorService } from './auth/token.interceptor';
 import { LoginComponent } from './login/login.component';
 import { registerLocaleData } from '@angular/common';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
 
 @NgModule({
     declarations: [
@@ -32,12 +33,14 @@ import { registerLocaleData } from '@angular/common';
         NgbdModalConfirm,
         LoginComponent,
         NgbdModalFocus,
-        NoCommaPipe
+        NoCommaPipe,
+        NavMenuComponent
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
         HttpClientModule,
         FormsModule,
+        ReactiveFormsModule,
         NgbModule,
         BrowserAnimationsModule, // required animations module
         ToastrModule.forRoot(), // ToastrModule added
@@ -49,7 +52,7 @@ import { registerLocaleData } from '@angular/common';
             { path: 'partneri', component: PartnerComponent },
         ])
     ],
-    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm],
+    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent],
     providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
 
     bootstrap: [AppComponent]

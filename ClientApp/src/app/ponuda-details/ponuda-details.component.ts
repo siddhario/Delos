@@ -166,16 +166,20 @@ export class PonudaDetailsComponent implements OnInit {
             };
             var form = new FormData();
             form.append("blob", b, this.selectedPonuda.broj.replace('/', '_') + ".pdf");
-
+            oReq.setRequestHeader("Authorization", "Bearer " + this.currentUser.token);
             oReq.send(form);
-            oReq.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    let blob = new Blob([this.response], { type: 'message/rfc822' });
+
+            oReq.onreadystatechange = () => {
+                if (oReq.readyState == 4 && oReq.status == 200) {
+                    let blob = new Blob([oReq.response], { type: 'message/rfc822' });
                     let url = window.URL.createObjectURL(blob);
                     let pwa = window.open(url);
                     if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
                         alert('Please disable your Pop-up blocker and try again.');
                     }
+                }
+                else if (oReq.readyState == 4 && oReq.status != 200) {
+                    this.toastr.error("Greška! Provjerite e-mail adresu kupca..");
                 }
             };
         });
@@ -450,6 +454,8 @@ export class PonudaDetailsComponent implements OnInit {
         newStavka.marza_procenat = 35;
         newStavka.jedinica_mjere = "KOM";
         newStavka.kolicina = 1;
+        newStavka.cijena_nabavna = 0;
+        newStavka.vrijednost_nabavna = 0;
         newStavka.ponuda_broj = this.selectedPonuda.broj;
         this.selectedPonuda.stavke = (new Array<PonudaStavka>(newStavka)).concat(this.selectedPonuda.stavke);
         this.startItemEdit(newStavka);
@@ -474,7 +480,7 @@ export class PonudaDetailsComponent implements OnInit {
         });
 
         modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati stavku ponude " + stavka.artikal_naziv + "-" + stavka.opis + " ?";
-     
+
     }
 
     reloadItem(continueAdd: boolean) {
@@ -488,7 +494,13 @@ export class PonudaDetailsComponent implements OnInit {
         });
     }
     cancel() {
-        this.activeModal.close();
+        let modalRef = this.modalService.open(NgbdModalConfirm);
+        modalRef.result.then((data) => {
+            this.activeModal.close();
+        }, (reason) => {
+        });
+        modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zatvoriti prikaz? Sve nesačuvane izmjene će biti poništene.";
+
     }
 
     save(stavka: PonudaStavka, continueAdd: boolean) {
@@ -540,8 +552,8 @@ export class PonudaDetailsComponent implements OnInit {
 
     calculate2() {
         this.stavka.iznos_bez_pdv = +(this.stavka.kolicina * this.stavka.cijena_bez_pdv).toFixed(2);
-        this.stavka.ruc = +(this.stavka.iznos_bez_pdv - this.stavka.vrijednost_nabavna).toFixed(2);
-        this.stavka.marza_procenat = +(this.stavka.ruc / this.stavka.vrijednost_nabavna * 100).toFixed(2);
+        this.stavka.ruc = this.stavka.vrijednost_nabavna == 0 ? 0 : (+(this.stavka.iznos_bez_pdv - this.stavka.vrijednost_nabavna).toFixed(2));
+        this.stavka.marza_procenat = this.stavka.vrijednost_nabavna == 0 ? 0 : (+(this.stavka.ruc / this.stavka.vrijednost_nabavna * 100).toFixed(2));
         this.stavka.rabat_iznos = +(this.stavka.iznos_bez_pdv * this.stavka.rabat_procenat / 100).toFixed(2);
         this.stavka.cijena_bez_pdv_sa_rabatom = +((this.stavka.iznos_bez_pdv - this.stavka.rabat_iznos) / this.stavka.kolicina).toFixed(2);
         this.stavka.iznos_bez_pdv_sa_rabatom = +(this.stavka.iznos_bez_pdv - this.stavka.rabat_iznos).toFixed(2);
@@ -643,6 +655,7 @@ export class Ponuda {
     predmet: string;
     status: string;
     radnik: string;
+    @jsonIgnore()
     stavke: PonudaStavka[];
     korisnik: Korisnik;
     rabat: number;
