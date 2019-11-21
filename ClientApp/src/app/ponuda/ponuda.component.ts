@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 import { jsonIgnore } from 'json-ignore';
-import { PonudaDetailsComponent } from '../ponuda-details/ponuda-details.component';
+import { PonudaDetailsComponent, FormMode } from '../ponuda-details/ponuda-details.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { partner } from '../partner/partner.component';
 import { Korisnik } from '../korisnik/korisnik.component';
@@ -65,7 +65,7 @@ export class PonudaComponent {
                 backdrop: 'static'
             }
         );
-        //modalRef.componentInstance.itemAdd = true;
+        modalRef.componentInstance.formMode = FormMode.Add;
         modalRef.result.then((data) => {
 
             this.load();

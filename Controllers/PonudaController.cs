@@ -384,6 +384,7 @@ namespace WebApplication3.Controllers
 
                 _dbContext.ponuda.Add(ponuda);
                 _dbContext.SaveChanges();
+                ponuda.Korisnik = _dbContext.korisnik.FirstOrDefault(k => k.korisnicko_ime == ponuda.radnik);
                 return Ok(ponuda);
             }
             catch (Exception ex)

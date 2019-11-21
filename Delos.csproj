@@ -42,6 +42,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ClientApp\src\assets\img\logout.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ClientApp\src\assets\img\memo22.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
