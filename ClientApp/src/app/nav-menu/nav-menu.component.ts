@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Korisnik } from '../korisnik/korisnik.component';
 import { AuthenticationService } from '../auth/auth.service';
+import { Korisnik } from '../model/korisnik';
 
 @Component({
   selector: 'app-nav-menu',

@@ -15,11 +15,14 @@ namespace Delos
         public DbSet<korisnik> korisnik { get; set; }
         public DbSet<ponuda> ponuda { get; set; }
         public DbSet<ponuda_stavka> ponuda_stavka { get; set; }
+        public DbSet<ponuda_dokument> ponuda_dokument { get; set; }
         public DelosDbContext(DbContextOptions<DelosDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ponuda_stavka>()
            .HasKey(o => new { o.ponuda_broj, o.stavka_broj });
+            modelBuilder.Entity<ponuda_dokument>()
+       .HasKey(o => new { o.ponuda_broj, o.dokument_broj });
         }
     }
 
@@ -95,6 +98,14 @@ namespace Delos
         public IEnumerable<ponuda_stavka> stavke { get; set; }
     }
 
+    public class ponuda_dokument
+    {
+        public string ponuda_broj { get; set; }
+        public short dokument_broj { get; set; }
+        public byte[]? dokument { get; set; }
+        public string naziv { get; set; }
+        public string opis { get; set; }
+    }
     public class ponuda_stavka
     {
         public string ponuda_broj { get; set; }
@@ -114,12 +125,12 @@ namespace Delos
         public decimal marza_procenat { get; set; }
         public decimal ruc { get; set; }
         public decimal pdv_stopa { get; set; }
-        public decimal pdv { get; set; }        
+        public decimal pdv { get; set; }
         public decimal cijena_sa_pdv { get; set; }
         public decimal iznos_sa_pdv { get; set; }
 
         [JsonIgnore]
         [ForeignKey("ponuda_broj")]
-        public ponuda ponuda {get;set;}
+        public ponuda ponuda { get; set; }
     }
 }

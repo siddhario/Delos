@@ -42,6 +42,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\enums\formMode.ts" />
+    <None Remove="ClientApp\src\app\model\korisnik.ts" />
+    <None Remove="ClientApp\src\app\model\partner.ts" />
+    <None Remove="ClientApp\src\app\model\ponuda.ts" />
+    <None Remove="ClientApp\src\app\model\ponudaDokument.ts" />
+    <None Remove="ClientApp\src\app\model\ponudaStavka.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\enums\formMode.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\model\korisnik.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\model\partner.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\model\ponuda.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\model\ponudaDokument.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\model\ponudaStavka.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ClientApp\src\assets\img\logout.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

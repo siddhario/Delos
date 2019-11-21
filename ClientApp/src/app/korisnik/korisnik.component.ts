@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Korisnik } from '../model/korisnik';
 
 @Component({
     selector: 'app-korisnik',
@@ -15,12 +16,3 @@ export class KorisnikComponent {
     }
 }
 
-export class Korisnik {
-    korisnicko_ime: string;
-    lozinka: string;
-    ime: string;
-    prezime: string;
-    email: string;
-    admin: boolean;
-    token: string;
-}

@@ -41,12 +41,12 @@ namespace WebApplication3.Controllers
         [Route("uploadPDF")]
         public async Task<IActionResult> OnPostUploadAsync(IFormFile blob, string broj)
         {
-            string filePath=null;
+            string filePath = null;
             try
             {
 
-                 filePath = Path.Combine(_configuration["ContentPath"],
-                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
+                filePath = Path.Combine(_configuration["ContentPath"],
+                   blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
                 var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
                 if (pon == null)
@@ -155,7 +155,7 @@ namespace WebApplication3.Controllers
         [Route("zakljuciPonudu")]
         public IActionResult ZakljuciPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p=>p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -163,7 +163,7 @@ namespace WebApplication3.Controllers
                 try
                 {
                     var user = _dbContext.korisnik.FirstOrDefault(s => s.korisnicko_ime == User.Identity.Name);
-                    if (user.admin==true||pon.iznos_sa_pdv <= decimal.Parse(_configuration["MaxPonuda"]) || decimal.Parse(_configuration["MaxPonuda"]) == 0)
+                    if (user.admin == true || pon.iznos_sa_pdv <= decimal.Parse(_configuration["MaxPonuda"]) || decimal.Parse(_configuration["MaxPonuda"]) == 0)
                     {
                         pon.status = "Z";
 
@@ -311,7 +311,7 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).Include(p=>p.Korisnik).OrderByDescending(p => p.broj).ToList();
+            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
             return ponude;
         }
 
@@ -510,6 +510,52 @@ namespace WebApplication3.Controllers
             var stavke = _dbContext.ponuda_stavka.Where(sp => sp.ponuda_broj == ponuda_broj).ToList();
             return stavke;
 
+        }
+
+        [HttpGet]
+        [Route("/ponuda_dokument")]
+        public IEnumerable<ponuda_dokument> GetDokument(string ponuda_broj)
+        {
+            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj).ToList();
+            return dokumenti.ToList().WithoutDatas();
+        }
+
+        [HttpPost]
+        [Route("upload_dokument")]
+        public IActionResult UploadDokument(IFormFile blob, string broj)
+        {
+            string filePath = null;
+            try
+            {
+                filePath = Path.Combine(_configuration["ContentPath"],
+                   blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
+
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+                if (pon == null)
+                    return NotFound();
+                else
+                {
+                    //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    //{
+                    var ms = new MemoryStream();
+                    blob.OpenReadStream().CopyTo(ms);
+                    byte[] Value = ms.ToArray();
+                    short noviBroj = 0;
+                    var dokument = new ponuda_dokument() { ponuda_broj = broj, dokument = Value, naziv = blob.FileName, dokument_broj = noviBroj };
+                    _dbContext.ponuda_dokument.Add(dokument);
+                    _dbContext.SaveChanges();
+                    //    await blob.CopyToAsync(fileStream);
+                    //}
+
+                    return Ok(dokument);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, filePath);
+                return BadRequest();
+            }
         }
     }
 }

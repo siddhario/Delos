@@ -1,8 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { jsonIgnore } from 'json-ignore';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { partner } from '../model/partner';
 
 @Component({
     selector: 'app-partner-details',
@@ -94,16 +94,3 @@ export class PartnerDetailsComponent{
 
 }
 
-export class partner {
-    sifra: number;
-    naziv: string;
-    tip: string;
-    email: string;
-    adresa: string;
-    telefon: string;
-    kupac: boolean;
-    dobavljac: boolean;
-    broj_lk: string;
-    selected?: boolean;
-    maticni_broj: string;
-}

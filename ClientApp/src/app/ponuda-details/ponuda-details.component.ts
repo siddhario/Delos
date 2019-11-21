@@ -10,8 +10,13 @@ import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { environment } from '../../environments/environment';
-import { Korisnik } from '../korisnik/korisnik.component';
 import { AuthenticationService } from '../auth/auth.service';
+import { Ponuda } from '../model/ponuda';
+import { PonudaStavka } from '../model/ponudaStavka';
+import { partner } from '../model/partner';
+import { Korisnik } from '../model/korisnik';
+import { FormMode } from '../enums/formMode';
+import { PonudaDokument } from '../model/ponudaDokument';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -179,7 +184,7 @@ export class PonudaDetailsComponent implements OnInit {
                     }
                 }
                 else if (oReq.readyState == 4 && oReq.status != 200) {
-                    this.toastr.error("Greška! Provjerite e-mail adresu kupca..");
+                    this.toastr.error("Greška! Provjerite e-mail adresu kupca i e-mail adresu vašeg korisničkog naloga!");
                 }
             };
         });
@@ -194,6 +199,8 @@ export class PonudaDetailsComponent implements OnInit {
                     this.selectedPonuda = result;
                     if (this.selectedPonuda.stavke != null)
                         this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+                    if (this.selectedPonuda.dokumenti != null)
+                        this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
                 }, error => {
                     if (error.status == 403)
                         this.toastr.error("Iznos ponude je veći od dozvoljenog!");
@@ -237,6 +244,8 @@ export class PonudaDetailsComponent implements OnInit {
                     this.selectedPonuda = result;
                     if (this.selectedPonuda.stavke != null)
                         this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+                    if (this.selectedPonuda.dokumenti != null)
+                        this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
                 }, error => {
                     this.toastr.error("Greška..");
                     console.error(error)
@@ -258,6 +267,8 @@ export class PonudaDetailsComponent implements OnInit {
                     this.selectedPonuda = result;
                     if (this.selectedPonuda.stavke != null)
                         this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+                    if (this.selectedPonuda.dokumenti != null)
+                        this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
                 }, error => {
                     this.toastr.error("Greška..");
                     console.error(error)
@@ -296,6 +307,8 @@ export class PonudaDetailsComponent implements OnInit {
                     this.selectedPonuda = result;
                     if (this.selectedPonuda.stavke != null)
                         this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+                    if (this.selectedPonuda.dokumenti != null)
+                        this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
                     this.izmijeniPonudu();
                 }, error => {
                     this.toastr.error("Greška..");
@@ -362,6 +375,16 @@ export class PonudaDetailsComponent implements OnInit {
                 this.toastr.error("Greška..");
                 console.error(error)
             });
+
+            this.http.get<PonudaDokument[]>(this.baseUrl + 'ponuda_dokument?ponuda_broj=' + this.selectedPonuda.broj).subscribe(result => {
+                result.forEach(s => s.mode = FormMode.View);
+                this.selectedPonuda.dokumenti = result;
+                if (this.selectedPonuda.dokumenti != null)
+                    this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
         }
     }
     public stavka: PonudaStavka;
@@ -369,6 +392,15 @@ export class PonudaDetailsComponent implements OnInit {
     itemEdit: boolean = false;
     startItemEdit(stavka: PonudaStavka) {
         stavka.mode = FormMode.Edit;
+    }
+
+    startDokumentEdit(dokument: PonudaDokument) {
+        dokument.mode = FormMode.Edit;
+    }
+
+    cancelDokumentAdd(dokument: PonudaDokument) {
+        this.selectedPonuda.dokumenti.splice(0, 1);
+        dokument.mode = FormMode.View;
     }
 
     cancelItemAdd(stavka: PonudaStavka) {
@@ -392,6 +424,8 @@ export class PonudaDetailsComponent implements OnInit {
                 this.selectedPonuda = ponuda;
                 if (this.selectedPonuda.stavke != null)
                     this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+                if (this.selectedPonuda.dokumenti != null)
+                    this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
             }, error => {
                 this.toastr.error("Greška..");
                 console.error(error)
@@ -427,6 +461,12 @@ export class PonudaDetailsComponent implements OnInit {
         this.selectedPonuda.stavke = (new Array<PonudaStavka>(newStavka)).concat(this.selectedPonuda.stavke);
     }
 
+    startDokumentAdd() {
+        this.dokumentiVisible = true;
+        var newDokument = new PonudaDokument();
+        this.selectedPonuda.dokumenti = (new Array<PonudaDokument>(newDokument)).concat(this.selectedPonuda.dokumenti );
+    }
+
     deleteStavka(stavka: PonudaStavka) {
         let modalRef = this.modalService.open(NgbdModalConfirm);
         modalRef.result.then((data) => {
@@ -448,11 +488,34 @@ export class PonudaDetailsComponent implements OnInit {
 
     }
 
+    deleteDokument(dokument: PonudaDokument) {
+        let modalRef = this.modalService.open(NgbdModalConfirm);
+        modalRef.result.then((data) => {
+            this.http.get(this.baseUrl + 'ponuda/dokument_delete?ponuda_broj=' + dokument.ponuda_broj + "&dokument_broj=" + dokument.dokument_broj).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Dokument je uspješno obrisan..");
+                var ponuda = this.selectedPonuda;
+                let index = ponuda.dokumenti.findIndex(d => d.dokument_broj === dokument.dokument_broj);
+                ponuda.dokumenti.splice(index, 1);//remove element from array
+                this.reloadItem(false);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        }, (reason) => {
+        });
+
+        modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati dokument " + dokument.naziv + "-" + dokument.opis + " ?";
+
+    }
+
     reloadItem(continueAdd: boolean) {
         this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
             this.selectedPonuda = result;
             if (this.selectedPonuda.stavke != null)
                 this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+            if (this.selectedPonuda.dokumenti != null)
+                this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
                 if (continueAdd == true)
                     this.startItemAdd();
         }, error => {
@@ -496,6 +559,30 @@ export class PonudaDetailsComponent implements OnInit {
                 console.error(error)
             });
         stavka.mode = FormMode.View;
+    }
+
+    saveDokument(dokument: PonudaDokument, continueAdd: boolean) {
+        if (dokument.mode == FormMode.Add)
+            this.http.post<PonudaDokument>(this.baseUrl + 'ponuda/dokument_add', dokument).subscribe(result => {
+                console.log("OK");
+                //stavka.editing = false;
+                this.toastr.success("Dokument je uspješno dodat..");
+                this.reloadItem(continueAdd);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        else
+            this.http.put<PonudaDokument>(this.baseUrl + 'ponuda/dokument_update', dokument).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Dokument je uspješno sačuvan..");
+                this.reloadItem(false);
+                //stavka.editing = false;
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        dokument.mode = FormMode.View;
     }
 
     calculate(stavka) {
@@ -581,6 +668,7 @@ export class PonudaDetailsComponent implements OnInit {
     currentUser: Korisnik;
     stavkeVisible: boolean = true;
     ponudaVisible: boolean = true;
+    dokumentiVisible: boolean = true;
 
     isExpanded = false;
 
@@ -608,80 +696,7 @@ export class NoCommaPipe implements PipeTransform {
     }
 }
 
-class partner {
-    sifra: number;
-    naziv: string;
-    tip: string;
-    email: string;
-    adresa: string;
-    telefon: string;
-    kupac: boolean;
-    dobavljac: boolean;
-    broj_lk: string;
-    selected: boolean;
-}
-
-
-export class Ponuda {
-    broj: string;
-    datum: Date;
-    selected: boolean;
-    partner: partner;
-    partner_sifra: number;
-    partner_naziv: string;
-    partner_adresa: string;
-    partner_telefon: string;
-    partner_email: string;
-    iznos_sa_rabatom: number;
-    partner_jib: string;
-    rok_vazenja: string;
-    rok_isporuke: string;
-    paritet: string;
-    paritet_kod: string;
-    valuta_placanja: string;
-    pdv: number;
-    iznos_sa_pdv: number;
-    predmet: string;
-    status: string;
-    radnik: string;
-    @jsonIgnore()
-    stavke: PonudaStavka[];
-    korisnik: Korisnik;
-    rabat: number;
-    iznos_bez_rabata: number;
-}
 
 
 
-export class PonudaStavka {
-    ponuda_broj: string;
-    stavka_broj: number;
-    artikal_naziv: string;
-    opis: string;
-    jedinica_mjere: string;
-    kolicina: number = null;
-    cijena_bez_pdv: number;
-    cijena_bez_pdv_sa_rabatom: number;
-    rabat_procenat: number;
-    rabat_iznos: number;
-    iznos_bez_pdv: number;
-    iznos_bez_pdv_sa_rabatom: number;
-    cijena_nabavna: number;
-    vrijednost_nabavna: number;
-    marza_procenat: number;
-    ruc: number;
-    pdv_stopa: number;
-    pdv: number;
 
-    cijena_sa_pdv: number;
-    iznos_sa_pdv: number;
-
-    @jsonIgnore()
-    mode?: FormMode = FormMode.View;
-}
-
-export enum FormMode {
-    View = 1,
-    Add = 2,
-    Edit = 3
-};

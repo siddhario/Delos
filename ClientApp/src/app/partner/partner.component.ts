@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PartnerDetailsComponent } from '../partner-details/partner-details.component';
 import { AuthenticationService } from '../auth/auth.service';
-import { Korisnik } from '../korisnik/korisnik.component';
+import { partner } from '../model/partner';
+import { Korisnik } from '../model/korisnik';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-partner',
@@ -68,9 +70,13 @@ export class PartnerComponent {
 
 
     currentUser: Korisnik;
-    constructor(private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
+    constructor(private router: Router,private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
         this.load();
-        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+        this.authenticationService.currentUser.subscribe(x => {
+            this.currentUser = x;
+            if (this.currentUser == null)
+                this.router.navigate(['/login']);
+        });
     }
 
     load() {
@@ -93,17 +99,3 @@ export class FilterPartnerPipe implements PipeTransform {
     }
 }
 
-
-export class partner {
-    sifra: number;
-    naziv: string;
-    tip: string;
-    email: string;
-    adresa: string;
-    telefon: string;
-    kupac: boolean;
-    dobavljac: boolean;
-    broj_lk: string;
-    selected?: boolean;
-    maticni_broj: string;
-}
