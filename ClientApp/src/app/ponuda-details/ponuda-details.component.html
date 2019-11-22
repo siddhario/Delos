@@ -1,11 +1,11 @@
 <div style="width:100%;padding:10px;">
 
   <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3" style="padding:3px;border-radius:.2rem">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
       <div class="container" style="padding:0px">
 
-        <button type="button" *ngIf="formMode==1" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startAdd()">+</button>
         <button type="button" class="btn btn-primary btn-sm" style="width:80px;margin:3px;" (click)="ponudaVisible=!ponudaVisible">Ponuda</button>
+        <button type="button" *ngIf="formMode==1" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startAdd()">+</button>
 
         <button class="navbar-toggler"
                 type="button"
@@ -91,7 +91,7 @@
     <div class="form-row form-group">
       <div class="col-sm-6">
         <label for="partner_naziv">Partner</label>
-        <input id="partner_naziv" type="text" [disabled]="formMode==1||selectedPonuda.status!='E'"
+        <input id="partner_naziv" type="text" [disabled]="formMode==1||selectedPonuda.status!='E'" #partnerElement (keyup.enter)="console.log('enter')"
                name="partner_naziv"
                class="form-control  form-control-sm"
                [(ngModel)]="selectedPonuda.partner"
@@ -163,10 +163,11 @@
 
 
   <header *ngIf="formMode!=2">
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:3px;border-radius:.2rem">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
       <div class="container" style="padding:0px">
-        <button *ngIf="formMode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startItemAdd()">+</button>
         <button type="button" class="btn btn-primary btn-sm" style="width:80px;margin:3px;" (click)="stavkeVisible=!stavkeVisible">Stavke</button>
+        <button *ngIf="formMode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startItemAdd()">+</button>
+
 
         <button class="navbar-toggler"
                 type="button"
@@ -184,15 +185,13 @@
       </div>
     </nav>
   </header>
-
-
   <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke?.length>0&&stavkeVisible==true">
     <div>
       <div *ngFor="let stavka of selectedPonuda.stavke">
         <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
             <label>Naziv</label>
-            <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
+            <textarea #naziv [id]="stavka.stavka_broj" class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
             <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px">{{stavka.artikal_naziv}}</div>
           </div>
           <div class="col-sm-6">
@@ -321,7 +320,7 @@
   </div>
 
 
-  <header *ngIf="formMode!=2">
+  <header *ngIf="formMode!=2&&false">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:3px;border-radius:.2rem">
       <div class="container" style="padding:0px">
         <button *ngIf="formMode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startDokumentAdd()">+</button>

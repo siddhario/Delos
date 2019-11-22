@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 import { jsonIgnore } from 'json-ignore';
@@ -28,6 +28,10 @@ export class PonudaDetailsComponent implements OnInit {
     public model: any;
 
     public formMode: FormMode;
+
+    @ViewChild("partnerElement", { static: false }) partnerElement: ElementRef;
+
+    @ViewChildren("naziv") naziv: QueryList<ElementRef>;
 
     makeDocument() {
         var dd = {
@@ -392,6 +396,9 @@ export class PonudaDetailsComponent implements OnInit {
     itemEdit: boolean = false;
     startItemEdit(stavka: PonudaStavka) {
         stavka.mode = FormMode.Edit;
+        setTimeout(_ => {
+            this.naziv.find(s => s.nativeElement.id == stavka.stavka_broj).nativeElement.focus();
+        }, 0);
     }
 
     startDokumentEdit(dokument: PonudaDokument) {
@@ -459,6 +466,9 @@ export class PonudaDetailsComponent implements OnInit {
         newStavka.ponuda_broj = this.selectedPonuda.broj;
         newStavka.mode = FormMode.Add;
         this.selectedPonuda.stavke = (new Array<PonudaStavka>(newStavka)).concat(this.selectedPonuda.stavke);
+        setTimeout(_ => {
+            this.naziv.find(s => s.nativeElement.id == "undefined").nativeElement.focus();
+        }, 0);
     }
 
     startDokumentAdd() {
@@ -639,6 +649,9 @@ export class PonudaDetailsComponent implements OnInit {
 
     izmijeniPonudu() {
         this.formMode = FormMode.Edit;
+        setTimeout(_ => {
+            this.partnerElement.nativeElement.focus();
+        }, 0);
     }
 
     getStatus(status) {
@@ -663,6 +676,9 @@ export class PonudaDetailsComponent implements OnInit {
         this.selectedPonuda.rok_isporuke = "3-5 dana";
         this.selectedPonuda.rok_vazenja = "7 dana";
         this.selectedPonuda.valuta_placanja = "Avans";
+        setTimeout(_ => {
+            this.partnerElement.nativeElement.focus();
+        }, 0);
     }
 
     currentUser: Korisnik;
