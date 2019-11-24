@@ -48,6 +48,9 @@
     <None Remove="ClientApp\src\app\model\ponuda.ts" />
     <None Remove="ClientApp\src\app\model\ponudaDokument.ts" />
     <None Remove="ClientApp\src\app\model\ponudaStavka.ts" />
+    <None Remove="ClientApp\src\app\pipes\noCommaPipe.ts" />
+    <None Remove="ClientApp\src\app\pipes\ponudaFilterPipe.ts" />
+    <None Remove="Ponuda.xlsm" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +60,8 @@
     <TypeScriptCompile Include="ClientApp\src\app\model\ponuda.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\model\ponudaDokument.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\model\ponudaStavka.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\pipes\noCommaPipe.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\pipes\ponudaFilterPipe.ts" />
   </ItemGroup>
 
   <ItemGroup>

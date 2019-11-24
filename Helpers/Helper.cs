@@ -1,13 +1,12 @@
 ﻿using ClosedXML.Excel;
+using Delos.Model;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Delos
+namespace Delos.Helpers
 {
     public static class Helper
     {
@@ -43,32 +42,12 @@ namespace Delos
                 Directory.CreateDirectory(dir);
             }
 
-
-
             XLWorkbook doc = new XLWorkbook("PONUDA.xlsm");
-            //doc.Worksheets.Add("PRIJAVA");
 
             var sheet = doc.Worksheet(1);
 
-            //object o = dgvPrijave.SelectedRows[0].DataBoundItem;
-            //string rednibroj = ((Ponuda)o).Broj;
-
-
-            //StaticFilters = new List<string>();
-            //StaticFilters.Add("(broj like concat(@broj,'%') or @broj is null)");
-            //StaticFilters.Add("(broj in (select Ponuda_broj from ponuda_stavka where lower(artikal_naziv) like concat(lower(@kupac_ime),'%')) or (lower(partner_naziv) like concat(lower(@kupac_ime),'%') or @kupac_ime is null))");
-
-            //List<string> filters = new List<string>();
-            //filters = filters.Concat(StaticFilters).ToList();
-            //if (DynamicFilters != null)
-            //    filters = filters.Concat(DynamicFilters).ToList();
-
-            //Ponuda p = PersistanceManager.ReadPonuda(rednibroj, "", filters).FirstOrDefault();
-
-
             string rednibroj = p.broj;
             DateTime datum = p.datum.Date;
-            //MessageBox.Show(datum);
             string partner_naziv = p.partner_naziv;
             string partner_jib = p.partner_jib;
             string partner_adresa = p.partner_adresa;
@@ -326,40 +305,24 @@ namespace Delos
 
             string fileName = dir + "\\MINTICT_Ponuda_" + rednibroj.Replace("/", "-") + ".xlsm";
             if (File.Exists(fileName) == true)
-            {
-                //DialogResult dr = MessageBox.Show("Štampana verzija već postoji. Napraviti novu ?", "Upozorenje", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
-                //if (dr == DialogResult.Yes)
-                //{
+            { 
                 try
                 {
                     File.Delete(fileName);
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show("Zatvorite dokument pa pokušajte opet!");
                     return null;
                 }
                 doc.SaveAs(fileName);
-                //Process.Start(fileName);
-                //}
             }
             else
             {
                 doc.SaveAs(fileName);
-                //Process.Start(fileName);
             }
 
             return fileName;
-            //IPrinter printer = new Printer();
-            //StreamReader sr = new StreamReader(fileName);
-
-            //printer.PrintRawFile("Foxit Reader PDF Printer", "C:\\Users\\Dario\\Downloads\\PONUDA.xlsx", "Ponuda.pdf");
-            //printer.PrintRawStream("Microsoft Print to PDF", sr.BaseStream, "Ponuda.pdf");
-
-
-
         }
-
         public static void CopyPropertiesTo<T, TU>(this T source, TU dest)
         {
             var sourceProps = typeof(T).GetProperties().Where(x => x.CanRead).ToList();

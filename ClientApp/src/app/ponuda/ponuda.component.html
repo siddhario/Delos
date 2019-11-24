@@ -4,7 +4,6 @@
   <p *ngIf="!currentUser"><em>Niste autorizovani za pristup ovoj stranici...</em></p>
   <div style="overflow:auto" *ngIf="currentUser">
     <div style="float:left;margin: 4px;">
-      <!--<button type="button" class="btn btn-info" (click)="load()">Učitaj</button>-->
       <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
     </div>
     <div style="float:left;margin: 4px;">
@@ -25,7 +24,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let ponuda of ponude | filter : searchText" (click)="selectItem(ponuda)">
+      <tr *ngFor="let ponuda of ponude | ponudaFilter : searchText" (click)="selectItem(ponuda)">
         <td>{{ ponuda.broj }}</td>
         <td>{{ ponuda.datum |date:'dd.MM.yyyy' }}</td>
         <td>{{ ponuda.partner_naziv }}</td>

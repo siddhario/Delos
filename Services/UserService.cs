@@ -7,7 +7,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
+using Delos.Model;
+using Delos.Contexts;
+using Delos.Helpers;
 
 namespace Delos.Services
 {
@@ -19,11 +21,6 @@ namespace Delos.Services
 
     public class UserService : IUserService
     {
-        // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-        //private List<User> _users = new List<User>
-        //{
-        //    new User { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" }
-        //};
 
         private readonly AppSettings _appSettings;
 
@@ -39,7 +36,6 @@ namespace Delos.Services
             using (IServiceScope scope = _provider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DelosDbContext>();
-                //var user = _users.SingleOrDefault(x => x.Username == username && x.Password == password);
                 var user = context.korisnik.FirstOrDefault(u => u.korisnicko_ime == username && u.lozinka.ToLower() == Helper.CreateMD5(password).ToLower());
 
                 // return null if user not found

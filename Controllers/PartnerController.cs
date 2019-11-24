@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Delos;
+using Delos.Contexts;
+using Delos.Helpers;
+using Delos.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,9 +27,9 @@ namespace WebApplication3.Controllers
         public IEnumerable<partner> Get()
         {
 
-            var partneri = _dbContext.partner.ToList().OrderByDescending(p=>p.sifra);
+            var partneri = _dbContext.partner.ToList().OrderByDescending(p => p.sifra);
             return partneri;
-        
+
         }
 
         [HttpGet]
@@ -59,17 +61,16 @@ namespace WebApplication3.Controllers
         {
             try
             {
-                //var partneri = _dbContext.partner
-                //string maxPartnerBroj = null;
-                //int? broj = null;
-                //if (partneri != null && partneri.Count() > 0)
-                //{
-                //    maxPartnerBroj = partneri.Max(p => p.broj);
-                //    int dbroj = int.Parse(maxPartnerBroj.Split("/")[0]);
-                //    broj = dbroj + 1;
-                //}
-                //else
-                //    broj = 1;
+                int? maxPartnerBroj = null;
+                int? broj = null;
+                if (_dbContext.partner != null && _dbContext.partner.Count() > 0)
+                {
+                    maxPartnerBroj = _dbContext.partner.Max(p => p.sifra);
+                    broj = maxPartnerBroj + 1;
+                }
+                else
+                    broj = 1;
+                partner.sifra = broj;
                 _dbContext.partner.Add(partner);
                 _dbContext.SaveChanges();
                 return Ok();

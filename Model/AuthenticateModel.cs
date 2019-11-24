@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Delos
+namespace Delos.Model
 {
     public class AuthenticateModel
     {

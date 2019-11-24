@@ -20,10 +20,8 @@ export class PonudaStavka {
     ruc: number;
     pdv_stopa: number;
     pdv: number;
-
     cijena_sa_pdv: number;
     iznos_sa_pdv: number;
-
     @jsonIgnore()
     mode?: FormMode = FormMode.View;
 }

@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Delos.Model;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Delos
+namespace Delos.Helpers
 {
     public static class ExtensionMethods
     {

@@ -6,8 +6,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { KorisnikComponent } from './korisnik/korisnik.component';
-import { PonudaComponent, FilterPipe } from './ponuda/ponuda.component';
-import { PonudaDetailsComponent, NoCommaPipe } from './ponuda-details/ponuda-details.component';
 import { NgbModule, NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,8 +14,11 @@ import { PartnerDetailsComponent } from './partner-details/partner-details.compo
 import { NgbdModalConfirm, NgbdModalFocus } from './modal-focus/modal-focus.component';
 import { TokenInterceptorService } from './auth/token.interceptor';
 import { LoginComponent } from './login/login.component';
-import { registerLocaleData } from '@angular/common';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { PonudaComponent } from './ponuda/ponuda.component';
+import { PonudaDetailsComponent } from './ponuda-details/ponuda-details.component';
+import { PonudaFilterPipe } from './pipes/ponudaFilterPipe';
+import { NoCommaPipe } from './pipes/noCommaPipe';
 
 @NgModule({
     declarations: [
@@ -28,7 +29,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
         PonudaDetailsComponent,
         PartnerComponent,
         PartnerDetailsComponent,
-        FilterPipe,
+        PonudaFilterPipe,
         FilterPartnerPipe,
         NgbdModalConfirm,
         LoginComponent,

@@ -1,4 +1,5 @@
 using Delos;
+using Delos.Contexts;
 using Delos.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -8,12 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace WebApplication3
 {
@@ -31,7 +28,7 @@ namespace WebApplication3
     //    }
     //}
 
-    
+
 
     public class Startup
     {

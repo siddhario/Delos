@@ -6,23 +6,30 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthenticationService } from '../auth/auth.service';
 import { Ponuda } from '../model/ponuda';
 import { Korisnik } from '../model/korisnik';
-import { FormMode } from '../enums/formMode';
 import { Router } from '@angular/router';
 @Component({
     selector: 'app-ponuda',
     templateUrl: './ponuda.component.html'
 })
-
-
 export class PonudaComponent {
     public ponude: Ponuda[];
     public selectedPonuda: Ponuda;
-
-    itemEdit: boolean = false;
     itemAdd: boolean = false;
     sortOrder: boolean;
     sortColumn: string;
+    searchText: string;
+    currentUser: Korisnik;
+    constructor(private router: Router, private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
+        this.load();
+        this.sortColumn = 'broj';
+        this.sortOrder = true;
 
+        this.authenticationService.currentUser.subscribe(x => {
+            this.currentUser = x;
+            if (this.currentUser == null)
+                this.router.navigate(['/login']);
+        });
+    }
     sortProperty(property) {
         this.sortColumn = property;
         if (property == "broj")
@@ -66,16 +73,13 @@ export class PonudaComponent {
                 backdrop: 'static'
             }
         );
-        modalRef.componentInstance.formMode = FormMode.Add;
+        modalRef.componentInstance.startAdd();
         modalRef.result.then((data) => {
-
             this.load();
-
         }, (reason) => {
             this.load();
         });
     }
-
     selectItem(ponuda: Ponuda) {
 
         this.ponude.filter(dd => dd.broj != ponuda.broj).forEach((value) => { value.selected = false });
@@ -98,52 +102,10 @@ export class PonudaComponent {
             this.load();
         });
     }
-    rowClass(ponuda: Ponuda) {
-        if (ponuda.selected)
-            return 'rowSelected';
-        else
-            return 'row';
-    }
-
-    constructor(private router: Router,private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
-        this.load();
-        this.sortColumn = 'broj';
-        this.sortOrder = true;
-
-        this.authenticationService.currentUser.subscribe(x => {
-            this.currentUser = x;
-            if (this.currentUser == null)
-                this.router.navigate(['/login']);
-        });
-    }
-
     load() {
         this.http.get<Ponuda[]>(this.baseUrl + 'ponuda').subscribe(result => {
             this.ponude = result;
         }, error => console.error(error));
-    }
-
-    searchText: string;
-    currentUser: Korisnik;
-}
-
-@Pipe({
-    name: 'filter'
-})
-export class FilterPipe implements PipeTransform {
-    transform(items: Ponuda[], searchText: string): any[] {
-        if (!items) return [];
-        if (!searchText) return items;
-        searchText = searchText.toLowerCase();
-        return items.filter(it => {
-            return it.partner_naziv.toLowerCase().includes(searchText.toLowerCase()) || it.broj.includes(searchText)
-                || (!!it.stavke &&
-                    it.stavke.filter(s =>
-                        (!!s.artikal_naziv && s.artikal_naziv.toLowerCase().includes(searchText))
-                        ||
-                        (!!s.opis && s.opis.toLowerCase().includes(searchText))
-                    ).length > 0);
-        });
     }
 }
 

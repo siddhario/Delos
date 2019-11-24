@@ -26,13 +26,117 @@ import { PonudaDokument } from '../model/ponudaDokument';
 
 export class PonudaDetailsComponent implements OnInit {
     public model: any;
-
     public formMode: FormMode;
+    currentUser: Korisnik;
+    stavkeVisible: boolean = true;
+    ponudaVisible: boolean = true;
+    dokumentiVisible: boolean = true;
+    isExpanded = false;
+    public selectedPonuda: Ponuda;
 
     @ViewChild("partnerElement", { static: false }) partnerElement: ElementRef;
-
     @ViewChildren("naziv") naziv: QueryList<ElementRef>;
+  
+    constructor(private authenticationService: AuthenticationService, private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
+        toastr.toastrConfig.positionClass = "toast-bottom-right";
+        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+        this.formMode = FormMode.View;
+    }
 
+    ngOnInit(): void {
+        if (this.selectedPonuda != undefined) {
+            this.http.get<PonudaStavka[]>(this.baseUrl + 'ponuda_stavka?ponuda_broj=' + this.selectedPonuda.broj).subscribe(result => {
+                result.forEach(s => s.mode = FormMode.View);
+                this.selectedPonuda.stavke = result;
+                if (this.selectedPonuda.stavke != null)
+                    this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+
+            this.http.get<PonudaDokument[]>(this.baseUrl + 'ponuda_dokument?ponuda_broj=' + this.selectedPonuda.broj).subscribe(result => {
+                result.forEach(s => s.mode = FormMode.View);
+                this.selectedPonuda.dokumenti = result;
+                if (this.selectedPonuda.dokumenti != null)
+                    this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        }
+    }
+    public startAdd() {
+        this.formMode = FormMode.Add;
+        this.ponudaVisible = true;
+        this.selectedPonuda = new Ponuda();
+        this.selectedPonuda.status = "E";
+        this.selectedPonuda.datum = (new Date());
+        this.selectedPonuda.rok_isporuke = "3-5 dana";
+        this.selectedPonuda.rok_vazenja = "7 dana";
+        this.selectedPonuda.valuta_placanja = "Avans";
+        setTimeout(_ => {
+            this.partnerElement.nativeElement.focus();
+        }, 0);
+    }
+    savePonuda(ponuda) {
+        if ((typeof ponuda.partner) == "string") {
+            ponuda.partner_naziv = ponuda.partner;
+            ponuda.partner = new partner();
+            ponuda.partner.naziv = ponuda.partner_naziv;
+        }
+        if (ponuda.broj == undefined) {
+            let obj: object = ponuda.datum;
+            this.http.post<Ponuda>(this.baseUrl + 'ponuda', ponuda).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Ponuda je uspješno dodata..");
+                this.formMode = FormMode.View;
+                ponuda = result;
+                this.selectedPonuda = ponuda;
+                if (this.selectedPonuda.stavke != null)
+                    this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+                if (this.selectedPonuda.dokumenti != null)
+                    this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        } else {
+            this.http.put<Ponuda>(this.baseUrl + 'ponuda', ponuda).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Ponuda je uspješno sačuvana..");
+                this.formMode = FormMode.View;
+                ponuda = result;
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        }
+    }
+    izmijeniPonudu() {
+        this.formMode = FormMode.Edit;
+        setTimeout(_ => {
+            this.partnerElement.nativeElement.focus();
+        }, 0);
+    }
+    getStatus(status) {
+        if (status == "E")
+            return "Evidentirana";
+        else if (status == "Z")
+            return "Zaključena";
+        else if (status == "R")
+            return "Realizovana";
+        else if (status == "D")
+            return "Djelimično realizovana";
+        else if (status == "N")
+            return "Nerealizovana";
+    }
+    collapse() {
+        this.isExpanded = false;
+    }
+    toggle() {
+        this.isExpanded = !this.isExpanded;
+    }
     makeDocument() {
         var dd = {
             styles: {
@@ -155,14 +259,12 @@ export class PonudaDetailsComponent implements OnInit {
         dd.footer = { width: 510, image: environment.footer, alignment: 'center' };
         return dd;
     }
-
     pdf() {
         var dd = this.makeDocument();
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
         var pdf = pdfMake.createPdf(dd);
         pdf.download();
     }
-
     email() {
         var dd = this.makeDocument();
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -193,7 +295,6 @@ export class PonudaDetailsComponent implements OnInit {
             };
         });
     }
-
     zakljuciPonudu() {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
@@ -218,7 +319,6 @@ export class PonudaDetailsComponent implements OnInit {
             modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ponudu " + this.selectedPonuda.broj + " ?";
         }
     }
-
     downLoadFile(data: any, type: string) {
         let blob = new Blob([data], { type: type });
         let url = window.URL.createObjectURL(blob);
@@ -227,7 +327,6 @@ export class PonudaDetailsComponent implements OnInit {
             alert('Please disable your Pop-up blocker and try again.');
         }
     }
-
     excel() {
         if (this.selectedPonuda != undefined) {
 
@@ -238,7 +337,6 @@ export class PonudaDetailsComponent implements OnInit {
             ).subscribe(response => this.downLoadFile(response, "application/vnd.ms-excel.sheet.macroEnabled.12"));
         }
     }
-
     statusiraj(status) {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
@@ -261,7 +359,6 @@ export class PonudaDetailsComponent implements OnInit {
                 + this.selectedPonuda.broj + " u " + (status == 'R' ? '\'realizovana\'' : (status == 'D' ? '\'djelimično realizovana\'' : '\'nerealizovana\'')) + " ? ";
         }
     }
-
     otkljucajPonudu() {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
@@ -283,7 +380,6 @@ export class PonudaDetailsComponent implements OnInit {
             modalRef.componentInstance.confirmText = "Da li ste sigurni da želite otključati ponudu " + this.selectedPonuda.broj + " ?";
         }
     }
-
     obrisiPonudu() {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
@@ -301,7 +397,6 @@ export class PonudaDetailsComponent implements OnInit {
             modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati ponudu " + this.selectedPonuda.broj + " ?";
         }
     }
-
     kopirajPonudu() {
         if (this.selectedPonuda != undefined) {
             let modalRef = this.modalService.open(NgbdModalConfirm);
@@ -324,8 +419,26 @@ export class PonudaDetailsComponent implements OnInit {
             modalRef.componentInstance.confirmText = "Da li ste sigurni da želite kopirati ponudu " + this.selectedPonuda.broj + " ?";
         }
     }
-
-
+    selectedItem(item) {
+        this.selectedPonuda.partner_sifra = item["item"]["sifra"];
+        this.selectedPonuda.partner_naziv = item["item"]["naziv"];
+        this.selectedPonuda.partner_adresa = item["item"]["adresa"];
+        this.selectedPonuda.partner_email = item["item"]["email"];
+        this.selectedPonuda.partner_telefon = item["item"]["telefon"];
+        this.selectedPonuda.partner_jib = item["item"]["maticni_broj"];
+    }
+    cancel() {
+        if (this.formMode == FormMode.Add || this.formMode == FormMode.Edit) {
+            let modalRef = this.modalService.open(NgbdModalConfirm);
+            modalRef.result.then((data) => {
+                this.activeModal.close();
+            }, (reason) => {
+            });
+            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zatvoriti prikaz? Sve nesačuvane izmjene će biti poništene.";
+        }
+        else
+            this.activeModal.close();
+    }
     search = (text$: Observable<string>) => {
         return text$.pipe(
             debounceTime(200),
@@ -335,20 +448,9 @@ export class PonudaDetailsComponent implements OnInit {
             catchError(null)
         );
     }
-
-    selectedItem(item) {
-        this.selectedPonuda.partner_sifra = item["item"]["sifra"];
-        this.selectedPonuda.partner_naziv = item["item"]["naziv"];
-        this.selectedPonuda.partner_adresa = item["item"]["adresa"];
-        this.selectedPonuda.partner_email = item["item"]["email"];
-        this.selectedPonuda.partner_telefon = item["item"]["telefon"];
-        this.selectedPonuda.partner_jib = item["item"]["maticni_broj"];
-    }
-
     resultFormatPartnerListValue(value: any) {
         return value.sifra + "-" + value.naziv;
     }
-
     inputFormatPartnerListValue(value: any) {
         if (value.naziv)
             return value.naziv
@@ -367,92 +469,73 @@ export class PonudaDetailsComponent implements OnInit {
                 })
             );
     }
-
-    ngOnInit(): void {
-        if (this.selectedPonuda != undefined) {
-            this.http.get<PonudaStavka[]>(this.baseUrl + 'ponuda_stavka?ponuda_broj=' + this.selectedPonuda.broj).subscribe(result => {
-                result.forEach(s => s.mode = FormMode.View);
-                this.selectedPonuda.stavke = result;
-                if (this.selectedPonuda.stavke != null)
-                    this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-
-            this.http.get<PonudaDokument[]>(this.baseUrl + 'ponuda_dokument?ponuda_broj=' + this.selectedPonuda.broj).subscribe(result => {
-                result.forEach(s => s.mode = FormMode.View);
-                this.selectedPonuda.dokumenti = result;
-                if (this.selectedPonuda.dokumenti != null)
-                    this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        }
+    reloadItem(continueAdd: boolean) {
+        this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
+            this.selectedPonuda = result;
+            if (this.selectedPonuda.stavke != null)
+                this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
+            if (this.selectedPonuda.dokumenti != null)
+                this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
+            if (continueAdd == true)
+                this.startItemAdd();
+        }, error => {
+            this.toastr.error("Greška..");
+            console.error(error)
+        });
     }
-    public stavka: PonudaStavka;
-    public selectedPonuda: Ponuda;
-    itemEdit: boolean = false;
+
+    calculate(stavka) {
+        stavka.vrijednost_nabavna = +(stavka.kolicina * stavka.cijena_nabavna).toFixed(2);
+        stavka.ruc = +(stavka.vrijednost_nabavna * stavka.marza_procenat / 100).toFixed(2);
+        if (stavka.cijena_nabavna != 0) {
+            stavka.iznos_bez_pdv = +(stavka.vrijednost_nabavna + stavka.ruc).toFixed(2);
+            stavka.cijena_bez_pdv = +(stavka.iznos_bez_pdv / stavka.kolicina).toFixed(2);
+        }
+        else {
+            stavka.iznos_bez_pdv = +(stavka.kolicina * stavka.cijena_bez_pdv).toFixed(2);
+        }
+        stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
+        stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
+        stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
+        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
+        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
+        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
+    }
+    calculate2(stavka) {
+        stavka.iznos_bez_pdv = +(stavka.kolicina * stavka.cijena_bez_pdv).toFixed(2);
+        stavka.ruc = stavka.vrijednost_nabavna == 0 ? 0 : (+(stavka.iznos_bez_pdv - stavka.vrijednost_nabavna).toFixed(2));
+        stavka.marza_procenat = stavka.vrijednost_nabavna == 0 ? 0 : (+(stavka.ruc / stavka.vrijednost_nabavna * 100).toFixed(2));
+        stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
+        stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
+        stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
+        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
+        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
+        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
+    }
+    calculate3(stavka) {
+        stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
+        stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
+        stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
+        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
+        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
+        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
+    }
+    calculate4(stavka) {
+        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
+        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
+        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
+    }
+
     startItemEdit(stavka: PonudaStavka) {
         stavka.mode = FormMode.Edit;
         setTimeout(_ => {
             this.naziv.find(s => s.nativeElement.id == stavka.stavka_broj).nativeElement.focus();
         }, 0);
     }
-
-    startDokumentEdit(dokument: PonudaDokument) {
-        dokument.mode = FormMode.Edit;
-    }
-
-    cancelDokumentAdd(dokument: PonudaDokument) {
-        this.selectedPonuda.dokumenti.splice(0, 1);
-        dokument.mode = FormMode.View;
-    }
-
     cancelItemAdd(stavka: PonudaStavka) {
         this.selectedPonuda.stavke.splice(0, 1);
         stavka.mode = FormMode.View;
     }
-
-    savePonuda(ponuda) {
-        if ((typeof ponuda.partner) == "string") {
-            ponuda.partner_naziv = ponuda.partner;
-            ponuda.partner = new partner();
-            ponuda.partner.naziv = ponuda.partner_naziv;
-        }
-        if (ponuda.broj == undefined) {
-            let obj: object = ponuda.datum;
-            this.http.post<Ponuda>(this.baseUrl + 'ponuda', ponuda).subscribe(result => {
-                console.log("OK");
-                this.toastr.success("Ponuda je uspješno dodata..");
-                this.formMode = FormMode.View;
-                ponuda = result;
-                this.selectedPonuda = ponuda;
-                if (this.selectedPonuda.stavke != null)
-                    this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
-                if (this.selectedPonuda.dokumenti != null)
-                    this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        } else {
-            this.http.put<Ponuda>(this.baseUrl + 'ponuda', ponuda).subscribe(result => {
-                console.log("OK");
-                this.toastr.success("Ponuda je uspješno sačuvana..");
-                this.formMode = FormMode.View;
-                ponuda = result;
-                //this.selectedPonuda = ponuda;
-                //if (this.selectedPonuda.stavke != null)
-                //    this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        }
-    }
-
     startItemAdd() {
         this.stavkeVisible = true;
         var newStavka = new PonudaStavka();
@@ -470,13 +553,6 @@ export class PonudaDetailsComponent implements OnInit {
             this.naziv.find(s => s.nativeElement.id == "undefined").nativeElement.focus();
         }, 0);
     }
-
-    startDokumentAdd() {
-        this.dokumentiVisible = true;
-        var newDokument = new PonudaDokument();
-        this.selectedPonuda.dokumenti = (new Array<PonudaDokument>(newDokument)).concat(this.selectedPonuda.dokumenti );
-    }
-
     deleteStavka(stavka: PonudaStavka) {
         let modalRef = this.modalService.open(NgbdModalConfirm);
         modalRef.result.then((data) => {
@@ -493,11 +569,63 @@ export class PonudaDetailsComponent implements OnInit {
             });
         }, (reason) => {
         });
-
         modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati stavku ponude " + stavka.artikal_naziv + "-" + stavka.opis + " ?";
-
+    }
+    save(stavka: PonudaStavka, continueAdd: boolean) {
+        if (stavka.mode == FormMode.Add)
+            this.http.post<PonudaStavka>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Stavka ponude je uspješno dodata..");
+                this.reloadItem(continueAdd);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        else
+            this.http.put<PonudaStavka>(this.baseUrl + 'ponuda/stavka_update', stavka).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Stavka ponude je uspješno sačuvana..");
+                this.reloadItem(false);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        stavka.mode = FormMode.View;
     }
 
+    saveDokument(dokument: PonudaDokument, continueAdd: boolean) {
+        if (dokument.mode == FormMode.Add)
+            this.http.post<PonudaDokument>(this.baseUrl + 'ponuda/dokument_add', dokument).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Dokument je uspješno dodat..");
+                this.reloadItem(continueAdd);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        else
+            this.http.put<PonudaDokument>(this.baseUrl + 'ponuda/dokument_update', dokument).subscribe(result => {
+                console.log("OK");
+                this.toastr.success("Dokument je uspješno sačuvan..");
+                this.reloadItem(false);
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            });
+        dokument.mode = FormMode.View;
+    }
+    startDokumentAdd() {
+        this.dokumentiVisible = true;
+        var newDokument = new PonudaDokument();
+        this.selectedPonuda.dokumenti = (new Array<PonudaDokument>(newDokument)).concat(this.selectedPonuda.dokumenti );
+    }
+    startDokumentEdit(dokument: PonudaDokument) {
+        dokument.mode = FormMode.Edit;
+    }
+    cancelDokumentAdd(dokument: PonudaDokument) {
+        this.selectedPonuda.dokumenti.splice(0, 1);
+        dokument.mode = FormMode.View;
+    }
     deleteDokument(dokument: PonudaDokument) {
         let modalRef = this.modalService.open(NgbdModalConfirm);
         modalRef.result.then((data) => {
@@ -518,200 +646,7 @@ export class PonudaDetailsComponent implements OnInit {
         modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati dokument " + dokument.naziv + "-" + dokument.opis + " ?";
 
     }
-
-    reloadItem(continueAdd: boolean) {
-        this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
-            this.selectedPonuda = result;
-            if (this.selectedPonuda.stavke != null)
-                this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
-            if (this.selectedPonuda.dokumenti != null)
-                this.selectedPonuda.dokumenti.forEach(s => s.mode = FormMode.View);
-                if (continueAdd == true)
-                    this.startItemAdd();
-        }, error => {
-            this.toastr.error("Greška..");
-            console.error(error)
-        });
-    }
-
-    cancel() {
-        if (this.formMode == FormMode.Add || this.formMode == FormMode.Edit) {
-            let modalRef = this.modalService.open(NgbdModalConfirm);
-            modalRef.result.then((data) => {
-                this.activeModal.close();
-            }, (reason) => {
-            });
-            modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zatvoriti prikaz? Sve nesačuvane izmjene će biti poništene.";
-        }
-        else
-            this.activeModal.close();
-    }
-
-    save(stavka: PonudaStavka, continueAdd: boolean) {
-        if (stavka.mode == FormMode.Add)
-            this.http.post<PonudaStavka>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
-                console.log("OK");
-                //stavka.editing = false;
-                this.toastr.success("Stavka ponude je uspješno dodata..");
-                this.reloadItem(continueAdd);
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        else
-            this.http.put<PonudaStavka>(this.baseUrl + 'ponuda/stavka_update', stavka).subscribe(result => {
-                console.log("OK");
-                this.toastr.success("Stavka ponude je uspješno sačuvana..");
-                this.reloadItem(false);
-                //stavka.editing = false;
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        stavka.mode = FormMode.View;
-    }
-
-    saveDokument(dokument: PonudaDokument, continueAdd: boolean) {
-        if (dokument.mode == FormMode.Add)
-            this.http.post<PonudaDokument>(this.baseUrl + 'ponuda/dokument_add', dokument).subscribe(result => {
-                console.log("OK");
-                //stavka.editing = false;
-                this.toastr.success("Dokument je uspješno dodat..");
-                this.reloadItem(continueAdd);
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        else
-            this.http.put<PonudaDokument>(this.baseUrl + 'ponuda/dokument_update', dokument).subscribe(result => {
-                console.log("OK");
-                this.toastr.success("Dokument je uspješno sačuvan..");
-                this.reloadItem(false);
-                //stavka.editing = false;
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            });
-        dokument.mode = FormMode.View;
-    }
-
-    calculate(stavka) {
-        stavka.vrijednost_nabavna = +(stavka.kolicina * stavka.cijena_nabavna).toFixed(2);
-        stavka.ruc = +(stavka.vrijednost_nabavna * stavka.marza_procenat / 100).toFixed(2);
-        if (stavka.cijena_nabavna != 0 ) {
-            stavka.iznos_bez_pdv = +(stavka.vrijednost_nabavna + stavka.ruc).toFixed(2);
-            stavka.cijena_bez_pdv = +(stavka.iznos_bez_pdv / stavka.kolicina).toFixed(2);
-        }
-        else {
-            stavka.iznos_bez_pdv = +(stavka.kolicina * stavka.cijena_bez_pdv).toFixed(2);
-        }
-        stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
-        stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
-        stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
-        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
-        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
-        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
-    }
-
-    calculate2(stavka) {
-        stavka.iznos_bez_pdv = +(stavka.kolicina * stavka.cijena_bez_pdv).toFixed(2);
-        stavka.ruc = stavka.vrijednost_nabavna == 0 ? 0 : (+(stavka.iznos_bez_pdv - stavka.vrijednost_nabavna).toFixed(2));
-        stavka.marza_procenat = stavka.vrijednost_nabavna == 0 ? 0 : (+(stavka.ruc / stavka.vrijednost_nabavna * 100).toFixed(2));
-        stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
-        stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
-        stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
-        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
-        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
-        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
-    }
-
-    calculate3(stavka) {
-        stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
-        stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
-        stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
-        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
-        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
-        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
-    }
-
-    calculate4(stavka) {
-        stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
-        stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
-        stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
-    }
-
-    constructor(private authenticationService: AuthenticationService, private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
-        this.startAdd();
-        toastr.toastrConfig.positionClass = "toast-bottom-right";
-        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
-        this.formMode = 1;
-    }
-
-    izmijeniPonudu() {
-        this.formMode = FormMode.Edit;
-        setTimeout(_ => {
-            this.partnerElement.nativeElement.focus();
-        }, 0);
-    }
-
-    getStatus(status) {
-        if (status == "E")
-            return "Evidentirana";
-        else if (status == "Z")
-            return "Zaključena";
-        else if (status == "R")
-            return "Realizovana";
-        else if (status == "D")
-            return "Djelimično realizovana";
-        else if (status == "N")
-            return "Nerealizovana";
-    }
-
-    startAdd() {
-        this.formMode = FormMode.Add;
-        this.ponudaVisible = true;
-        this.selectedPonuda = new Ponuda();
-        this.selectedPonuda.status = "E";
-        this.selectedPonuda.datum = (new Date());
-        this.selectedPonuda.rok_isporuke = "3-5 dana";
-        this.selectedPonuda.rok_vazenja = "7 dana";
-        this.selectedPonuda.valuta_placanja = "Avans";
-        setTimeout(_ => {
-            this.partnerElement.nativeElement.focus();
-        }, 0);
-    }
-
-    currentUser: Korisnik;
-    stavkeVisible: boolean = true;
-    ponudaVisible: boolean = true;
-    dokumentiVisible: boolean = true;
-
-    isExpanded = false;
-
-    collapse() {
-        this.isExpanded = false;
-    }
-
-    toggle() {
-        this.isExpanded = !this.isExpanded;
-    }
 }
-
-@Pipe({
-    name: 'noComma'
-})
-export class NoCommaPipe implements PipeTransform {
-
-    transform(val: number): string {
-        if (val !== undefined && val !== null) {
-            // here we just remove the commas from value
-            return val.toFixed(2).toString().replace(/,/g, "");
-        } else {
-            return "";
-        }
-    }
-}
-
 
 
 

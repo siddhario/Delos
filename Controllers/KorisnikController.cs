@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Delos;
+using Delos.Contexts;
+using Delos.Model;
 using Delos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

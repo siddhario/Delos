@@ -71,7 +71,7 @@
     </nav>
   </header>
 
-  <div *ngIf="ponudaVisible==true" style="margin:10px">
+  <div *ngIf="selectedPonuda&&ponudaVisible==true" style="margin:10px">
     <div class="form-row form-group">
       <div *ngIf="formMode!=2" class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPonuda.broj" type="text" /></div>
       <div class="col-sm-2">
@@ -185,7 +185,7 @@
       </div>
     </nav>
   </header>
-  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.stavke?.length>0&&stavkeVisible==true">
+  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda?.stavke?.length>0&&stavkeVisible==true">
     <div>
       <div *ngFor="let stavka of selectedPonuda.stavke">
         <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
@@ -343,7 +343,7 @@
     </nav>
   </header>
 
-  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda.dokumenti?.length>0&&dokumentiVisible==true">
+  <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda?.dokumenti?.length>0&&dokumentiVisible==true">
     <div>
       <div *ngFor="let dokument of selectedPonuda.dokumenti">
         <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
@@ -365,13 +365,8 @@
             <button *ngIf="dokument.mode==2||dokument.mode==3" (click)="saveDokument(dokument,false)" class="btn btn-outline-success btn-sm" style="width:80px;margin:3px">Sačuvaj</button>
             <button *ngIf="dokument.mode==2||dokument.mode==3" (click)="cancelDokumentAdd(dokument)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
           </div>
-
         </div>
-      
-
       </div>
     </div>
-
-
   </div>
 </div>
