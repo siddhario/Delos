@@ -36,7 +36,7 @@ export class PonudaDetailsComponent implements OnInit {
 
     @ViewChild("partnerElement", { static: false }) partnerElement: ElementRef;
     @ViewChildren("naziv") naziv: QueryList<ElementRef>;
-  
+
     constructor(private authenticationService: AuthenticationService, private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
         toastr.toastrConfig.positionClass = "toast-bottom-right";
         this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
@@ -137,6 +137,16 @@ export class PonudaDetailsComponent implements OnInit {
     toggle() {
         this.isExpanded = !this.isExpanded;
     }
+    sortStavke(stavke) {
+        return stavke.sort((a, b) => {
+            if (a.stavka_broj < b.stavka_broj)
+                return -1;
+            else if (a.stavka_broj > b.stavka_broj)
+                return 1;
+            else
+                return 0;
+        })
+    }
     makeDocument() {
         var dd = {
             styles: {
@@ -177,17 +187,17 @@ export class PonudaDetailsComponent implements OnInit {
             alignment: 'justify',
             columns: [
                 [
-                    { columns: [{ text: 'Datum: ', bold: true, width: 60 }, { text: (new Date(this.selectedPonuda.datum)).toLocaleDateString('sr-Latn-ba'), width: 250 }] },
-                    { columns: [{ text: 'Partner: ', bold: true, width: 60 }, { text: this.selectedPonuda.partner_naziv, width: 250 }] },
-                    { columns: [{ text: 'JIB: ', bold: true, width: 60 }, { text: this.selectedPonuda.partner_jib, width: 250 }] },
-                    { columns: [{ text: 'Adresa: ', bold: true, width: 60 }, { text: this.selectedPonuda.partner_adresa, width: 250 }] }
+                    { columns: [{ text: 'Datum: ', bold: true, width: 60, alignment: 'left' }, { text: (new Date(this.selectedPonuda.datum)).toLocaleDateString('sr-Latn-ba'), width: 250, alignment: 'left' }] },
+                    { columns: [{ text: 'Partner: ', bold: true, width: 60, alignment: 'left' }, { text: this.selectedPonuda.partner_naziv, width: 250, alignment: 'left' }] },
+                    { columns: [{ text: 'JIB: ', bold: true, width: 60, alignment: 'left' }, { text: this.selectedPonuda.partner_jib, width: 250, alignment: 'left' }] },
+                    { columns: [{ text: 'Adresa: ', bold: true, width: 60, alignment: 'left' }, { text: this.selectedPonuda.partner_adresa, width: 250, alignment: 'left' }] }
 
                 ],
                 [
-                    { columns: [{ text: 'Valuta: ', bold: true, width: 95 }, { text: this.selectedPonuda.valuta_placanja, width: 'auto' }] },
-                    { columns: [{ text: 'Opcija ponude: ', bold: true, width: 95 }, { text: this.selectedPonuda.rok_vazenja, width: 'auto' }] },
-                    { columns: [{ text: 'Rok isporuke: ', bold: true, width: 95 }, { text: this.selectedPonuda.rok_isporuke, width: 'auto' }] },
-                    { columns: [{ text: 'Paritet: ', bold: true, width: 95 }, { text: this.selectedPonuda.paritet_kod, width: 'auto' }] }
+                    { columns: [{ text: 'Valuta: ', bold: true, width: 95, alignment: 'left' }, { text: this.selectedPonuda.valuta_placanja, width: 105, alignment: 'left' }] },
+                    { columns: [{ text: 'Opcija ponude: ', bold: true, width: 95, alignment: 'left' }, { text: this.selectedPonuda.rok_vazenja, width: 105, alignment: 'left' }] },
+                    { columns: [{ text: 'Rok isporuke: ', bold: true, width: 95, alignment: 'left' }, { text: this.selectedPonuda.rok_isporuke, width: 105, alignment: 'left' }] },
+                    { columns: [{ text: this.selectedPonuda.paritet != null ? 'Paritet: ' : '', bold: true, width: 95, alignment: 'left' }, { text: this.selectedPonuda.paritet, width: 105,alignment:'left' }] }
                 ]
             ]
         });
@@ -197,57 +207,87 @@ export class PonudaDetailsComponent implements OnInit {
         var itemsTable = {
             style: 'tableExample', table: {
                 headerRows: 1,
-                widths: [200, 50, 40, 60, 40, 60], body: [
+                widths: [520], body: [
                 ]
             },
-            layout: 'lightHorizontalLines'
-        };
-
-        itemsTable.table.body.push([
-            {
-                text: [
-                    { text: 'Naziv artikla' + '\n', bold: true },
-                    { text: 'Opis', fontSize: 10 }]
-            },
-            { text: 'Količina', style: 'tableHeader' },
-            { text: 'JM', style: 'tableHeader' },
-            { text: 'Cijena bez PDV-a', style: 'tableHeader' },
-            { text: 'Rabat', style: 'tableHeader' },
-            { text: 'Iznos bez PDV-a', style: 'tableHeader' }]);
-
-        this.selectedPonuda.stavke.forEach(s => {
-            itemsTable.table.body.push([
-                {
-                    text: [
-                        { text: s.artikal_naziv + '\n', bold: true },
-                        { text: s.opis, fontSize: 10 }]
+            layout: {
+                fillColor: function (rowIndex, node, columnIndex) {
+                    return (rowIndex === 0) ? 'lightgray' : null;
                 },
-                { text: s.kolicina, alignment: 'right' },
-                { text: s.jedinica_mjere, alignment: 'center' },
-                { text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
-                { text: s.rabat_iznos.toFixed(2), alignment: 'right' },
-                { text: s.iznos_bez_pdv.toFixed(2), alignment: 'right' }]
+                hLineWidth: function (i, node) {
+                    if (i === 0 || i === 1 || i === node.table.body.length) {
+                        return 2;
+                    }
+                    
+                    return 1;
+                },
+                hLineColor: function (i, node) {
+                    if (i === 0 || i === 1 || i === node.table.body.length) {
+                        return 'black';
+                    }
+                    return 'gray';
+                },
+                vLineWidth: function (i, node) {
+                    return 0;
+                },
+            }
+        };
+        itemsTable.table.body.push([{
+            columns: [
+                { width: 20, text: "RB", style: 'tableHeader', alignment: 'center', margin: [0, 0, 5, 0],  },
+                { alignment: 'left' ,
+                    width: 250,
+                    text: [
+                        { text: 'Naziv artikla' + '\n', bold: true },
+                        { text: 'Opis', fontSize: 10 }]
+                },
+                { width: 50, text: 'Količina', style: 'tableHeader', alignment: 'center' },
+                { width: 40, text: 'JM', style: 'tableHeader', alignment: 'center' },
+                { width: 60, text: 'Cijena bez PDV-a', style: 'tableHeader', alignment: 'center' },
+                { width: 40, text: 'Rabat', style: 'tableHeader', alignment: 'center'  },
+                { width: 60, text: 'Iznos bez PDV-a', style: 'tableHeader', alignment: 'center'  }]
+        }]);
+
+        this.selectedPonuda.stavke.sort((a, b) => {
+            if (a.stavka_broj < b.stavka_broj)
+                return -1;
+            else if (a.stavka_broj > b.stavka_broj)
+                return 1;
+            else
+                return 0;
+        }).forEach((s, index) => {
+
+            itemsTable.table.body.push([{
+                unbreakable: true, columns: [
+                    { width: 20, text: (index + 1) + ".", margin: [0, 0, 5, 0], alignment: 'right' },
+                    {
+                        width: 250,
+                        text: [
+                            { text: s.artikal_naziv + '\n', bold: true },
+                            { text: s.opis, fontSize: 10 }]
+                    },
+                    { width: 50, text: s.kolicina, alignment: 'center' },
+                    { width: 40, text: s.jedinica_mjere, alignment: 'center' },
+                    { width: 60, text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
+                    { width: 40, text: s.rabat_iznos.toFixed(2), alignment: 'right' },
+                    { width: 60, text: s.iznos_bez_pdv.toFixed(2), alignment: 'right' }]
+            }],
             );
         });
 
         dd.content.push(itemsTable);
 
-        dd.content.push(
-            {
-                columns: [{ text: "Ukupan iznos bez rabata:", bold: true, alignment: 'right', width: 450 }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2), width: 80, alignment: 'right' }]
-            },
-            {
-                columns: [{ text: "Iznos rabata:", bold: true, alignment: 'right', width: 450 }, { text: this.selectedPonuda.rabat.toFixed(2), width: 80, alignment: 'right' }]
-            },
-            {
-                columns: [{ text: "Ukupan iznos bez PDV-a:", bold: true, alignment: 'right', width: 450 }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2), width: 80, alignment: 'right' }]
-            },
-            {
-                columns: [{ text: "PDV:", bold: true, alignment: 'right', width: 450 }, { text: this.selectedPonuda.pdv.toFixed(2), width: 80, alignment: 'right' }]
-            },
-            {
-                columns: [{ text: "Ukupan iznos sa PDV-om:", bold: true, alignment: 'right', width: 450 }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2), width: 80, alignment: 'right' }]
-            }
+        dd.content.push({
+            alignment: 'right',
+            unbreakable:true,
+            stack: [
+                { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true}, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2), width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2), width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Ukupan iznos bez PDV-a:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2), width: 100, alignment: 'right' }] },
+                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2), width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Ukupan iznos sa PDV-om:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2), width: 100, alignment: 'right' }] }
+            ]
+        }
         );
         dd.content.push({ text: '\n' });
         dd.content.push({
@@ -617,7 +657,7 @@ export class PonudaDetailsComponent implements OnInit {
     startDokumentAdd() {
         this.dokumentiVisible = true;
         var newDokument = new PonudaDokument();
-        this.selectedPonuda.dokumenti = (new Array<PonudaDokument>(newDokument)).concat(this.selectedPonuda.dokumenti );
+        this.selectedPonuda.dokumenti = (new Array<PonudaDokument>(newDokument)).concat(this.selectedPonuda.dokumenti);
     }
     startDokumentEdit(dokument: PonudaDokument) {
         dokument.mode = FormMode.Edit;

@@ -187,12 +187,12 @@
   </header>
   <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda?.stavke?.length>0&&stavkeVisible==true">
     <div>
-      <div *ngFor="let stavka of selectedPonuda.stavke">
+      <div *ngFor="let stavka of sortStavke(selectedPonuda.stavke);let i=index">
         <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
             <label>Naziv</label>
             <textarea #naziv [id]="stavka.stavka_broj" class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
-            <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px">{{stavka.artikal_naziv}}</div>
+            <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px"><b>{{i+1}}.&nbsp;</b>{{stavka.artikal_naziv}}</div>
           </div>
           <div class="col-sm-6">
             <label>Opis</label>
