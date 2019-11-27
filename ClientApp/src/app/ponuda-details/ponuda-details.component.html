@@ -180,7 +180,8 @@
         </button>
         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
              [ngClass]="{ show: isExpanded }">
-
+          <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-warning btn-sm" style="width:80px;margin:3px;" (click)="cancel()">Odustani</button>
+          <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>
         </div>
       </div>
     </nav>
@@ -207,8 +208,13 @@
             <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="width:80px;margin:3px">Sačuvaj</button>
             <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="cancelItemAdd(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
           </div>
-
+          <div class="col-sm-9" >
+            <label *ngIf="(stavka.napomena!=null&&stavka.napomena!='')||stavka.mode==2||stavka.mode==3">Napomena</label>
+            <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.napomena"></textarea>
+            <div  *ngIf="stavka.mode==1&&stavka.napomena!=null&&stavka.napomena!=''" style="font-style:italic;font-size:15px">{{stavka.napomena}}</div>
+          </div>
         </div>
+      
         <div class="form-row" style="border-bottom:solid 1px;border-color:black;padding:15px">
 
 
@@ -349,7 +355,7 @@
         <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
             <label>Naziv</label>
-            <input class="form-control form-control-sm"  *ngIf="dokument.mode==2||dokument.mode==3" [(ngModel)]="dokument.naziv" type="text"/>
+            <input class="form-control form-control-sm" *ngIf="dokument.mode==2||dokument.mode==3" [(ngModel)]="dokument.naziv" type="text" />
             <div *ngIf="dokument.mode==1" style="font-style:italic;font-size:15px">{{dokument.naziv}}</div>
           </div>
           <div class="col-sm-6">

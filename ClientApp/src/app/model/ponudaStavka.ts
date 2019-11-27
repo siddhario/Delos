@@ -22,6 +22,7 @@ export class PonudaStavka {
     pdv: number;
     cijena_sa_pdv: number;
     iznos_sa_pdv: number;
+    napomena: string;
     @jsonIgnore()
     mode?: FormMode = FormMode.View;
 }

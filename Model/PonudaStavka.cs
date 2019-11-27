@@ -9,6 +9,7 @@ namespace Delos.Model
         public int stavka_broj { get; set; }
         public string artikal_naziv { get; set; }
         public string opis { get; set; }
+        public string napomena { get; set; }
         public string jedinica_mjere { get; set; }
         public decimal kolicina { get; set; }
         public decimal cijena_bez_pdv { get; set; }

@@ -234,9 +234,9 @@ export class PonudaDetailsComponent implements OnInit {
         };
         itemsTable.table.body.push([{
             columns: [
-                { width: 20, text: "RB", style: 'tableHeader', alignment: 'center', margin: [0, 0, 5, 0],  },
+                { width: 25, text: "R.B.", style: 'tableHeader', alignment: 'center', margin: [0, 0, 5, 0],  },
                 { alignment: 'left' ,
-                    width: 250,
+                    width: 245,
                     text: [
                         { text: 'Naziv artikla' + '\n', bold: true },
                         { text: 'Opis', fontSize: 10 }]
@@ -259,9 +259,9 @@ export class PonudaDetailsComponent implements OnInit {
 
             itemsTable.table.body.push([{
                 unbreakable: true, columns: [
-                    { width: 20, text: (index + 1) + ".", margin: [0, 0, 5, 0], alignment: 'right' },
+                    { width: 25, text: (index + 1) + ".", margin: [0, 0, 5, 0], alignment: 'center' },
                     {
-                        width: 250,
+                        width: 245,
                         text: [
                             { text: s.artikal_naziv + '\n', bold: true },
                             { text: s.opis, fontSize: 10 }]
