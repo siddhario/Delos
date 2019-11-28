@@ -208,13 +208,13 @@
             <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="width:80px;margin:3px">Sačuvaj</button>
             <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="cancelItemAdd(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
           </div>
-          <div class="col-sm-9" >
+          <div class="col-sm-9">
             <label *ngIf="(stavka.napomena!=null&&stavka.napomena!='')||stavka.mode==2||stavka.mode==3">Napomena</label>
             <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.napomena"></textarea>
-            <div  *ngIf="stavka.mode==1&&stavka.napomena!=null&&stavka.napomena!=''" style="font-style:italic;font-size:15px">{{stavka.napomena}}</div>
+            <div *ngIf="stavka.mode==1&&stavka.napomena!=null&&stavka.napomena!=''" style="font-style:italic;font-size:15px">{{stavka.napomena}}</div>
           </div>
         </div>
-      
+
         <div class="form-row" style="border-bottom:solid 1px;border-color:black;padding:15px">
 
 
@@ -326,11 +326,12 @@
   </div>
 
 
-  <header *ngIf="formMode!=2&&false">
+  <header *ngIf="formMode!=2">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:3px;border-radius:.2rem">
       <div class="container" style="padding:0px">
-        <button *ngIf="formMode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startDokumentAdd()">+</button>
         <button type="button" class="btn btn-primary btn-sm" style="width:80px;margin:3px;" (click)="dokumentiVisible=!dokumentiVisible">Dokumenti</button>
+
+        <button *ngIf="formMode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startDokumentAdd()">+</button>
 
         <button class="navbar-toggler"
                 type="button"
@@ -354,21 +355,12 @@
       <div *ngFor="let dokument of selectedPonuda.dokumenti">
         <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
           <div class="col-sm-3">
-            <label>Naziv</label>
-            <input class="form-control form-control-sm" *ngIf="dokument.mode==2||dokument.mode==3" [(ngModel)]="dokument.naziv" type="text" />
-            <div *ngIf="dokument.mode==1" style="font-style:italic;font-size:15px">{{dokument.naziv}}</div>
-          </div>
-          <div class="col-sm-6">
-            <label>Opis</label>
-            <textarea class="form-control form-control-sm" rows="2" *ngIf="dokument.mode==2||dokument.mode==3" [(ngModel)]="stavka.opis"></textarea>
-            <div *ngIf="dokument.mode==1" style="font-style:italic;font-size:15px">{{dokument.opis}}</div>
+            <div *ngIf="dokument.mode==1" style="font-style:italic;font-size:15px"><a [routerLink]="" (click)="dokument_download(dokument)">{{dokument.naziv}}</a></div>
+            <input *ngIf="dokument.mode==2" type="file" class="form-control" (change)="handleFileInput($event.target.files,dokument)" />
           </div>
 
           <div style="text-align:right" class="col-sm-3 align-self-sm-center">
-            <button *ngIf="dokument.mode==1&&selectedPonuda.status=='E'" (click)="startDokumentEdit(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Izmijeni</button>
             <button *ngIf="dokument.mode==1&&selectedPonuda.status=='E'" (click)="deleteDokument(stavka)" class="btn btn-outline-danger btn-sm" style="width:80px;margin:3px">Obriši</button>
-            <button *ngIf="dokument.mode==2" (click)="saveDokument(dokument,true)" class="btn btn-outline-primary btn-sm" style="width:80px;margin:3px">Sačuvaj+</button>
-            <button *ngIf="dokument.mode==2||dokument.mode==3" (click)="saveDokument(dokument,false)" class="btn btn-outline-success btn-sm" style="width:80px;margin:3px">Sačuvaj</button>
             <button *ngIf="dokument.mode==2||dokument.mode==3" (click)="cancelDokumentAdd(dokument)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
           </div>
         </div>

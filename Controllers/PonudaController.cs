@@ -46,7 +46,7 @@ namespace WebApplication3.Controllers
         [Route("getbybroj")]
         public ponuda GetByBroj(string broj)
         {
-            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p=>p.dokumenti).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
             return ponuda;
         }
 
@@ -255,6 +255,21 @@ namespace WebApplication3.Controllers
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
                 _logger.LogError(file);
                 return new FileStreamResult(fileStream, "application/vnd.ms-excel.sheet.macroEnabled.12");
+            }
+        }
+
+
+        [HttpGet]
+        [Route("dokument_download")]
+        public IActionResult Download(string naziv,string broj)
+        {
+            var dokument = _dbContext.ponuda_dokument.FirstOrDefault(p => p.ponuda_broj == broj&& p.naziv== naziv);
+            if (dokument == null)
+                return NotFound();
+            else
+            {
+                Stream stream = new MemoryStream(dokument.dokument);
+                return new FileStreamResult(stream,dokument.opis);
             }
         }
 
@@ -495,6 +510,19 @@ namespace WebApplication3.Controllers
             return dokumenti.ToList().WithoutDatas();
         }
 
+        [HttpGet]
+        [Route("dokument_delete")]
+        public IActionResult DeleteDokumentPonuda(string ponuda_broj, int dokument_broj)
+        {
+            var ponuda_dokument = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == ponuda_broj && ps.dokument_broj == dokument_broj).FirstOrDefault();
+            if (ponuda_dokument == null)
+                return NotFound();
+
+            _dbContext.Remove(ponuda_dokument);
+            _dbContext.SaveChanges();
+            return Ok();
+        }
+
         [HttpPost]
         [Route("upload_dokument")]
         public IActionResult UploadDokument(IFormFile blob, string broj)
@@ -510,13 +538,19 @@ namespace WebApplication3.Controllers
                     return NotFound();
                 else
                 {
+
+                    short? ponuda_dokument = null;
+                    var dokumenti = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == broj);
+                    if (dokumenti != null && dokumenti.Count() > 0)
+                        ponuda_dokument = dokumenti.Max(ps => ps.dokument_broj);
+
+                    ponuda_dokument = ponuda_dokument == null ? (short)1 : (short)(ponuda_dokument.Value + 1);
                     //using (var fileStream = new FileStream(filePath, FileMode.Create))
                     //{
                     var ms = new MemoryStream();
                     blob.OpenReadStream().CopyTo(ms);
                     byte[] Value = ms.ToArray();
-                    short noviBroj = 0;
-                    var dokument = new ponuda_dokument() { ponuda_broj = broj, dokument = Value, naziv = blob.FileName, dokument_broj = noviBroj };
+                    var dokument = new ponuda_dokument() { ponuda_broj = broj, dokument = Value, naziv = blob.FileName,opis=blob.ContentType, dokument_broj = ponuda_dokument.Value };
                     _dbContext.ponuda_dokument.Add(dokument);
                     _dbContext.SaveChanges();
                     //    await blob.CopyToAsync(fileStream);

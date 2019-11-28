@@ -40,6 +40,8 @@ namespace Delos.Model
         public korisnik Korisnik { get; set; }
 
         public IEnumerable<ponuda_stavka> stavke { get; set; }
+
+        public IEnumerable<ponuda_dokument> dokumenti { get; set; }
     }
 
 }
