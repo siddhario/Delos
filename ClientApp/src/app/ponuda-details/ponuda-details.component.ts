@@ -18,6 +18,7 @@ import { Korisnik } from '../model/korisnik';
 import { FormMode } from '../enums/formMode';
 import { PonudaDokument } from '../model/ponudaDokument';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -39,7 +40,7 @@ export class PonudaDetailsComponent implements OnInit {
     @ViewChild("partnerElement", { static: false }) partnerElement: ElementRef;
     @ViewChildren("naziv") naziv: QueryList<ElementRef>;
 
-    constructor(
+    constructor(private _sanitizer: DomSanitizer,
         private formBuilder: FormBuilder, private authenticationService: AuthenticationService, private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
         toastr.toastrConfig.positionClass = "toast-bottom-right";
         this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
@@ -153,7 +154,7 @@ export class PonudaDetailsComponent implements OnInit {
                 return 0;
         })
     }
-    makeDocument() {
+    makeDocument(images) {
         var dd = {
             styles: {
                 header: {
@@ -179,6 +180,8 @@ export class PonudaDetailsComponent implements OnInit {
             footer: {},
             content: []
         };
+
+
 
         dd.content.push({ width: 510, image: environment.memo });
         dd.content.push({ text: '\n' });
@@ -304,16 +307,108 @@ export class PonudaDetailsComponent implements OnInit {
             text: this.selectedPonuda.korisnik.ime + " " + this.selectedPonuda.korisnik.prezime, alignment: 'right'
         });
         dd.footer = { width: 510, image: environment.footer, alignment: 'center' };
+        if (images != null)
+            images.forEach(s => dd.content.push({ image: s, width: 520 }));
         return dd;
     }
-    pdf() {
-        var dd = this.makeDocument();
+
+    _arrayBufferToBase64(arrayBuffer) {
+        //var binary = '';
+        //var bytes = new Uint8Array(buffer);
+        //var len = bytes.byteLength;
+        //for (var i = 0; i < len; i++) {
+        //    binary += String.fromCharCode(bytes[i]);
+        //}
+        //return window.btoa(binary);function base64ArrayBuffer(arrayBuffer) {
+        var base64 = ''
+        var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+        var bytes = new Uint8Array(arrayBuffer)
+        var byteLength = bytes.byteLength
+        var byteRemainder = byteLength % 3
+        var mainLength = byteLength - byteRemainder
+
+        var a, b, c, d
+        var chunk
+
+        // Main loop deals with bytes in chunks of 3
+        for (var i = 0; i < mainLength; i = i + 3) {
+            // Combine the three bytes into a single integer
+            chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+            // Use bitmasks to extract 6-bit segments from the triplet
+            a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+            b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
+            c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
+            d = chunk & 63               // 63       = 2^6 - 1
+
+            // Convert the raw binary segments to the appropriate ASCII encoding
+            base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+        }
+
+        // Deal with the remaining bytes and padding
+        if (byteRemainder == 1) {
+            chunk = bytes[mainLength]
+
+            a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+            // Set the 4 least significant bits to zero
+            b = (chunk & 3) << 4 // 3   = 2^2 - 1
+
+            base64 += encodings[a] + encodings[b] + '=='
+        } else if (byteRemainder == 2) {
+            chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+            a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+            b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
+
+            // Set the 2 least significant bits to zero
+            c = (chunk & 15) << 2 // 15    = 2^4 - 1
+
+            base64 += encodings[a] + encodings[b] + encodings[c] + '='
+        }
+
+        return base64;
+    }
+
+    //async imageblob(dokument) {
+
+    //  let result =await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + dokument.naziv + '&broj=' + dokument.ponuda_broj
+    //        , {
+    //            responseType: 'arraybuffer'
+    //        }
+    //    ).toPromise();
+    //    return this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
+    //        + this._arrayBufferToBase64(result));
+         
+    //}
+    async pdf() {
+        let images = [];
+        for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++) {
+            let asyncResult = await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + this.selectedPonuda.dokumenti[i].naziv + '&broj=' + this.selectedPonuda.dokumenti[i].ponuda_broj
+                , {
+                    responseType: 'arraybuffer'
+                }
+            ).toPromise();
+            images.push('data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult));
+        }
+
+        var dd = this.makeDocument(images);
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
         var pdf = pdfMake.createPdf(dd);
         pdf.download();
     }
-    email() {
-        var dd = this.makeDocument();
+    async email() {
+        let images = [];
+        for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++) {
+            let asyncResult = await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + this.selectedPonuda.dokumenti[i].naziv + '&broj=' + this.selectedPonuda.dokumenti[i].ponuda_broj
+                , {
+                    responseType: 'arraybuffer'
+                }
+            ).toPromise();
+            images.push('data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult));
+        }
+        var dd = this.makeDocument(images);
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
         var pdf = pdfMake.createPdf(dd);
         pdf.getBlob((b) => {
@@ -728,7 +823,7 @@ export class PonudaDetailsComponent implements OnInit {
         }, (reason) => {
         });
 
-        modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati dokument " + dokument.naziv + "-" + dokument.opis + " ?";
+        modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati dokument " + dokument.naziv + " ?";
 
     }
 }

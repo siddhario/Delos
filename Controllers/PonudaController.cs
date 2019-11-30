@@ -38,7 +38,7 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
+            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
             return ponude;
         }
 
@@ -203,7 +203,7 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
                 if (pon == null)
                     return NotFound();
                 else
@@ -246,7 +246,7 @@ namespace WebApplication3.Controllers
         [Route("excel")]
         public IActionResult Excel(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -277,7 +277,7 @@ namespace WebApplication3.Controllers
         [Route("email")]
         public IActionResult Email(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -323,7 +323,7 @@ namespace WebApplication3.Controllers
         [Route("zakljuciPonudu")]
         public IActionResult ZakljuciPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -413,7 +413,7 @@ namespace WebApplication3.Controllers
         [Route("statusiraj")]
         public IActionResult Statusiraj(string broj, string status)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -435,7 +435,7 @@ namespace WebApplication3.Controllers
         [Route("otkljucajPonudu")]
         public IActionResult OtkljucajPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -533,7 +533,7 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).FirstOrDefault(p => p.broj == broj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
                 if (pon == null)
                     return NotFound();
                 else

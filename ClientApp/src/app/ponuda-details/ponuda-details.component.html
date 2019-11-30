@@ -327,7 +327,7 @@
 
 
   <header *ngIf="formMode!=2">
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:3px;border-radius:.2rem">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
       <div class="container" style="padding:0px">
         <button type="button" class="btn btn-primary btn-sm" style="width:80px;margin:3px;" (click)="dokumentiVisible=!dokumentiVisible">Dokumenti</button>
 
@@ -352,15 +352,22 @@
 
   <div style="margin:10px;border-top:2px solid;border-color:#17a2b8;padding:3px;border-radius:0.2rem" *ngIf="selectedPonuda?.dokumenti?.length>0&&dokumentiVisible==true">
     <div>
-      <div *ngFor="let dokument of selectedPonuda.dokumenti">
-        <div class="form-row" style="border-bottom: solid 1px gainsboro;padding: 15px;padding-bottom:5px;font-size:14px">
-          <div class="col-sm-3">
-            <div *ngIf="dokument.mode==1" style="font-style:italic;font-size:15px"><a [routerLink]="" (click)="dokument_download(dokument)">{{dokument.naziv}}</a></div>
-            <input *ngIf="dokument.mode==2" type="file" class="form-control" (change)="handleFileInput($event.target.files,dokument)" />
+      <div *ngFor="let dokument of selectedPonuda.dokumenti;let i=index">
+        <div class="form-row" style="border-bottom: solid 1px gainsboro;">
+          <div class="col-sm-6  align-self-sm-center">
+            <div *ngIf="dokument.mode==1" style="font-style:italic;font-size:15px"><a [routerLink]="" (click)="dokument_download(dokument)">{{i+1}}.&nbsp;{{dokument.naziv}}</a></div>
+            <!--<img [src]="imageblob(dokument)" width="200" />-->
           </div>
-
-          <div style="text-align:right" class="col-sm-3 align-self-sm-center">
-            <button *ngIf="dokument.mode==1&&selectedPonuda.status=='E'" (click)="deleteDokument(stavka)" class="btn btn-outline-danger btn-sm" style="width:80px;margin:3px">Obriši</button>
+          <div class="col-sm-6  align-self-sm-center">
+            <button *ngIf="dokument.mode==1&&selectedPonuda.status=='E'" (click)="deleteDokument(dokument)" class="btn btn-outline-danger btn-sm" style="width:80px;margin:3px">Obriši</button>
+          </div>
+        </div>
+        <div class="form-row"  >
+          <div class="col-sm-6  align-self-sm-center" *ngIf="dokument.mode==2">
+            <label for="imageUpload" class="btn btn-outline-info btn-block btn-outlined btn-sm">Izaberi sliku</label>
+            <input id="imageUpload" style="display:none"  type="file" accept="image/*" class="form-control form-control-sm" (change)="handleFileInput($event.target.files,dokument)" />
+          </div>
+          <div  class="col-sm-6 align-self-sm-center">
             <button *ngIf="dokument.mode==2||dokument.mode==3" (click)="cancelDokumentAdd(dokument)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
           </div>
         </div>
