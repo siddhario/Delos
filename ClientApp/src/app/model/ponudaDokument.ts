@@ -7,6 +7,7 @@ export class PonudaDokument {
     dokument?: Blob;
     naziv?: string;
     opis?: string;
+    stavka_broj?: number;
     @jsonIgnore()
     mode?: FormMode;
 }

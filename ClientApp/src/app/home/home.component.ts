@@ -21,7 +21,7 @@ export class HomeComponent {
             if (this.currentUser == null)
                 this.router.navigate(['/login']);
         });
-
+        return;
         var dd = {
             styles: {
                 header: {

@@ -11,8 +11,14 @@ namespace Delos.Model
         public string naziv { get; set; }
         public string opis { get; set; }
 
+        public short? stavka_broj { get; set; }
+
         [JsonIgnore]
         [ForeignKey("ponuda_broj")]
         public ponuda ponuda { get; set; }
+
+        //[JsonIgnore]
+        //[ForeignKey(nameof(ponuda_broj)+","+nameof(stavka_broj))]
+        //public ponuda ponuda_stavka { get; set; }
     }
 }

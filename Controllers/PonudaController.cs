@@ -504,9 +504,9 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Route("/ponuda_dokument")]
-        public IEnumerable<ponuda_dokument> GetDokument(string ponuda_broj)
+        public IEnumerable<ponuda_dokument> GetDokument(string ponuda_broj,short? stavka_broj)
         {
-            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj).ToList();
+            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj&&(sp.stavka_broj==stavka_broj)).ToList();
             return dokumenti.ToList().WithoutDatas();
         }
 
@@ -525,7 +525,7 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Route("upload_dokument")]
-        public IActionResult UploadDokument(IFormFile blob, string broj)
+        public IActionResult UploadDokument(IFormFile blob, string ponudabroj,short? stavkabroj)
         {
             string filePath = null;
             try
@@ -533,14 +533,14 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
                 if (pon == null)
                     return NotFound();
                 else
                 {
 
                     short? ponuda_dokument = null;
-                    var dokumenti = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == broj);
+                    var dokumenti = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == ponudabroj);
                     if (dokumenti != null && dokumenti.Count() > 0)
                         ponuda_dokument = dokumenti.Max(ps => ps.dokument_broj);
 
@@ -550,12 +550,11 @@ namespace WebApplication3.Controllers
                     var ms = new MemoryStream();
                     blob.OpenReadStream().CopyTo(ms);
                     byte[] Value = ms.ToArray();
-                    var dokument = new ponuda_dokument() { ponuda_broj = broj, dokument = Value, naziv = blob.FileName,opis=blob.ContentType, dokument_broj = ponuda_dokument.Value };
+                    var dokument = new ponuda_dokument() {stavka_broj= stavkabroj, ponuda_broj = ponudabroj, dokument = Value, naziv = blob.FileName,opis=blob.ContentType, dokument_broj = ponuda_dokument.Value };
                     _dbContext.ponuda_dokument.Add(dokument);
                     _dbContext.SaveChanges();
                     //    await blob.CopyToAsync(fileStream);
                     //}
-
                     return Ok(dokument);
 
                 }

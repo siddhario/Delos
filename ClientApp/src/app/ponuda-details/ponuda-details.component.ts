@@ -246,16 +246,16 @@ export class PonudaDetailsComponent implements OnInit {
                 { width: 25, text: "R.B.", style: 'tableHeader', alignment: 'center', margin: [0, 0, 5, 0], },
                 {
                     alignment: 'left',
-                    width: 245,
+                    width: 185,
                     text: [
                         { text: 'Naziv artikla' + '\n', bold: true },
                         { text: 'Opis', fontSize: 10 }]
                 },
                 { width: 50, text: 'Količina', style: 'tableHeader', alignment: 'center' },
                 { width: 40, text: 'JM', style: 'tableHeader', alignment: 'center' },
-                { width: 60, text: 'Cijena bez PDV-a', style: 'tableHeader', alignment: 'center' },
+                { width: 90, text: 'Cijena bez PDV-a', style: 'tableHeader', alignment: 'center' },
                 { width: 40, text: 'Rabat', style: 'tableHeader', alignment: 'center' },
-                { width: 60, text: 'Iznos bez PDV-a', style: 'tableHeader', alignment: 'center' }]
+                { width: 90, text: 'Iznos bez PDV-a', style: 'tableHeader', alignment: 'center' }]
         }]);
 
         this.selectedPonuda.stavke.sort((a, b) => {
@@ -271,16 +271,16 @@ export class PonudaDetailsComponent implements OnInit {
                 unbreakable: true, columns: [
                     { width: 25, text: (index + 1) + ".", margin: [0, 0, 5, 0], alignment: 'center' },
                     {
-                        width: 245,
+                        width: 185,
                         text: [
                             { text: s.artikal_naziv + '\n', bold: true },
                             { text: s.opis, fontSize: 10 }]
                     },
                     { width: 50, text: s.kolicina, alignment: 'center' },
                     { width: 40, text: s.jedinica_mjere, alignment: 'center' },
-                    { width: 60, text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
-                    { width: 40, text: s.rabat_iznos.toFixed(2), alignment: 'right' },
-                    { width: 60, text: s.iznos_bez_pdv.toFixed(2), alignment: 'right' }]
+                    { width: 90, text: s.cijena_bez_pdv.toFixed(2) + " KM", alignment: 'right' },
+                    { width: 40, text: s.rabat_procenat.toFixed(2) + "%", alignment: 'right' },
+                    { width: 90, text: s.iznos_bez_pdv.toFixed(2) + " KM", alignment: 'right' }]
             }],
             );
         });
@@ -291,11 +291,11 @@ export class PonudaDetailsComponent implements OnInit {
             alignment: 'right',
             unbreakable: true,
             stack: [
-                { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2), width: 100, alignment: 'right' }] },
-                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2), width: 100, alignment: 'right' }] },
-                { columns: [{ text: "Ukupan iznos bez PDV-a:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2), width: 100, alignment: 'right' }] },
-                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2), width: 100, alignment: 'right' }] },
-                { columns: [{ text: "Ukupan iznos sa PDV-om:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2), width: 100, alignment: 'right' }] }
+                { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2)+" KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Ukupan iznos bez PDV-a:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Ukupan iznos sa PDV-om:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] }
             ]
         }
         );
@@ -307,8 +307,26 @@ export class PonudaDetailsComponent implements OnInit {
             text: this.selectedPonuda.korisnik.ime + " " + this.selectedPonuda.korisnik.prezime, alignment: 'right'
         });
         dd.footer = { width: 510, image: environment.footer, alignment: 'center' };
-        if (images != null)
-            images.forEach(s => dd.content.push({ image: s, width: 520 }));
+
+        this.selectedPonuda.dokumenti.filter(d => d.stavka_broj == null).forEach(d => {
+
+        });
+
+        this.selectedPonuda.dokumenti.filter(d => d.stavka_broj == null).forEach(d => {
+            let img = images.find(i=>i.naziv==d.naziv);
+            dd.content.push({
+                image: img.dokument, width: 520
+            });
+        });
+
+        //for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++)
+        //{
+        //    if (this.selectedPonuda.dokumenti[i].stavka_broj == null)
+        //    dd.content.push({ image: images[this.selectedPonuda.dokumenti[i], width: 520 })
+            
+        //    if (images != null)
+        //        images.forEach(s => dd.content.push({ image: s, width: 520 }));
+        //}
         return dd;
     }
 
@@ -383,14 +401,15 @@ export class PonudaDetailsComponent implements OnInit {
          
     //}
     async pdf() {
-        let images = [];
+        var images = [{}];
+        //let images = [];
         for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++) {
             let asyncResult = await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + this.selectedPonuda.dokumenti[i].naziv + '&broj=' + this.selectedPonuda.dokumenti[i].ponuda_broj
                 , {
                     responseType: 'arraybuffer'
                 }
             ).toPromise();
-            images.push('data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult));
+            images.push({ naziv: this.selectedPonuda.dokumenti[i].naziv, dokument: 'data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult) });
         }
 
         var dd = this.makeDocument(images);
@@ -744,11 +763,11 @@ export class PonudaDetailsComponent implements OnInit {
         stavka.mode = FormMode.View;
     }
     fileToUpload: File = null;
-    handleFileInput(files: FileList, dokument) {
+    handleFileInput(files: FileList, ponuda: Ponuda, stavka: PonudaStavka) {
         this.fileToUpload = files.item(0);
 
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", this.baseUrl + 'ponuda/upload_dokument?broj=' + this.selectedPonuda.broj, true);
+        oReq.open("POST", this.baseUrl + 'ponuda/upload_dokument?ponudabroj=' + ponuda.broj + (stavka == null ? '' : '&stavkabroj=' + stavka.stavka_broj), true);
         oReq.onload = function (oEvent) {
             // Uploaded.
         };
@@ -760,13 +779,11 @@ export class PonudaDetailsComponent implements OnInit {
         oReq.onreadystatechange = () => {
             if (oReq.readyState == 4 && oReq.status == 200) {
                 this.toastr.success("Dokument je uspješno povezan...");
-                dokument.mode = FormMode.View;
                 this.reloadItem(false);
+                
             }
             else if (oReq.readyState == 4 && oReq.status != 200) {
                 this.toastr.error("Greška...");
-                dokument.mode = FormMode.View;
-                this.reloadItem(false);
             }
         };
     }

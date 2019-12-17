@@ -25,4 +25,6 @@ export class PonudaStavka {
     napomena: string;
     @jsonIgnore()
     mode?: FormMode = FormMode.View;
+    @jsonIgnore()
+    dokumentiVisible: boolean = false;
 }

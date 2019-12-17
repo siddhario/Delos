@@ -19,6 +19,7 @@ import { PonudaComponent } from './ponuda/ponuda.component';
 import { PonudaDetailsComponent } from './ponuda-details/ponuda-details.component';
 import { PonudaFilterPipe } from './pipes/ponudaFilterPipe';
 import { NoCommaPipe } from './pipes/noCommaPipe';
+import { PonudaDokumentComponent } from './ponuda-dokument/ponuda-dokument.component';
 
 @NgModule({
     declarations: [
@@ -35,7 +36,8 @@ import { NoCommaPipe } from './pipes/noCommaPipe';
         LoginComponent,
         NgbdModalFocus,
         NoCommaPipe,
-        NavMenuComponent
+        NavMenuComponent,
+        PonudaDokumentComponent
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -53,7 +55,7 @@ import { NoCommaPipe } from './pipes/noCommaPipe';
             { path: 'partneri', component: PartnerComponent },
         ])
     ],
-    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent],
+    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
     providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
 
     bootstrap: [AppComponent]
