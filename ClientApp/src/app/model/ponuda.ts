@@ -7,6 +7,8 @@ import { PonudaDokument } from "./ponudaDokument";
 export class Ponuda {
     broj: string;
     datum: Date;
+
+
     selected: boolean;
     partner: partner;
     partner_sifra: number;
@@ -33,4 +35,6 @@ export class Ponuda {
     iznos_bez_rabata: number;
     @jsonIgnore()
     dokumenti: PonudaDokument[];
+
+
 }

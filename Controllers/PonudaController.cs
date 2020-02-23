@@ -39,7 +39,7 @@ namespace WebApplication3.Controllers
         {
 
             var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
-            return ponude;
+            return ponude.OrderByDescending(p=>p.datum.Year*1000+p.broj.Substring(p.broj.IndexOf("/")+1));
         }
 
         [HttpGet]

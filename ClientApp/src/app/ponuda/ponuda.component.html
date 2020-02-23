@@ -21,6 +21,7 @@
         <th><a (click)="sortProperty('iznos_sa_rabatom')">Iznos bez pdv-a</a><ng-container *ngIf="sortColumn=='iznos_sa_rabatom'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('pdv')">Pdv</a><ng-container *ngIf="sortColumn=='pdv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('iznos_sa_pdv')">Iznos sa pdv-om</a><ng-container *ngIf="sortColumn=='iznos_sa_pdv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('sortC')">Broj</a><ng-container *ngIf="sortColumn=='sortC'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
       </tr>
     </thead>
     <tbody>
@@ -33,6 +34,7 @@
         <td>{{ ponuda.iznos_sa_rabatom }}</td>
         <td>{{ ponuda.pdv }}</td>
         <td>{{ ponuda.iznos_sa_pdv }}</td>
+        <td>{{ ponuda.sortC }}</td>
       </tr>
     </tbody>
   </table>

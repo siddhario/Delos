@@ -246,7 +246,7 @@ export class PonudaDetailsComponent implements OnInit {
                 { width: 25, text: "R.B.", style: 'tableHeader', alignment: 'center', margin: [0, 0, 5, 0], },
                 {
                     alignment: 'left',
-                    width: 185,
+                    width: 175,
                     text: [
                         { text: 'Naziv artikla' + '\n', bold: true },
                         { text: 'Opis', fontSize: 10 }]
@@ -254,7 +254,7 @@ export class PonudaDetailsComponent implements OnInit {
                 { width: 50, text: 'Količina', style: 'tableHeader', alignment: 'center' },
                 { width: 40, text: 'JM', style: 'tableHeader', alignment: 'center' },
                 { width: 90, text: 'Cijena bez PDV-a', style: 'tableHeader', alignment: 'center' },
-                { width: 40, text: 'Rabat', style: 'tableHeader', alignment: 'center' },
+                { width: 50, text: 'Rabat', style: 'tableHeader', alignment: 'center' },
                 { width: 90, text: 'Iznos bez PDV-a', style: 'tableHeader', alignment: 'center' }]
         }]);
 
@@ -271,16 +271,16 @@ export class PonudaDetailsComponent implements OnInit {
                 unbreakable: true, columns: [
                     { width: 25, text: (index + 1) + ".", margin: [0, 0, 5, 0], alignment: 'center' },
                     {
-                        width: 185,
+                        width: 175,
                         text: [
                             { text: s.artikal_naziv + '\n', bold: true },
                             { text: s.opis, fontSize: 10 }]
                     },
                     { width: 50, text: s.kolicina, alignment: 'center' },
                     { width: 40, text: s.jedinica_mjere, alignment: 'center' },
-                    { width: 90, text: s.cijena_bez_pdv.toFixed(2) + " KM", alignment: 'right' },
-                    { width: 40, text: s.rabat_procenat.toFixed(2) + "%", alignment: 'right' },
-                    { width: 90, text: s.iznos_bez_pdv.toFixed(2) + " KM", alignment: 'right' }]
+                    { width: 90, text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
+                    { width: 50, text: s.rabat_procenat.toFixed(2) + "%", alignment: 'right' },
+                    { width: 90, text: s.iznos_bez_pdv.toFixed(2) , alignment: 'right' }]
             }],
             );
         });
@@ -292,9 +292,9 @@ export class PonudaDetailsComponent implements OnInit {
             unbreakable: true,
             stack: [
                 { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2)+" KM", width: 100, alignment: 'right' }] },
-                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2) , width: 100, alignment: 'right' }] },
                 { columns: [{ text: "Ukupan iznos bez PDV-a:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
-                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2) , width: 100, alignment: 'right' }] },
                 { columns: [{ text: "Ukupan iznos sa PDV-om:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] }
             ]
         }
@@ -418,14 +418,15 @@ export class PonudaDetailsComponent implements OnInit {
         pdf.download();
     }
     async email() {
-        let images = [];
+        var images = [{}];
+        //let images = [];
         for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++) {
             let asyncResult = await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + this.selectedPonuda.dokumenti[i].naziv + '&broj=' + this.selectedPonuda.dokumenti[i].ponuda_broj
                 , {
                     responseType: 'arraybuffer'
                 }
             ).toPromise();
-            images.push('data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult));
+            images.push({ naziv: this.selectedPonuda.dokumenti[i].naziv, dokument: 'data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult) });
         }
         var dd = this.makeDocument(images);
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -655,6 +656,7 @@ export class PonudaDetailsComponent implements OnInit {
     }
 
     calculate(stavka) {
+        this.convertProperties(stavka);
         stavka.vrijednost_nabavna = +(stavka.kolicina * stavka.cijena_nabavna).toFixed(2);
         stavka.ruc = +(stavka.vrijednost_nabavna * stavka.marza_procenat / 100).toFixed(2);
         if (stavka.cijena_nabavna != 0) {
@@ -672,6 +674,7 @@ export class PonudaDetailsComponent implements OnInit {
         stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
     }
     calculate2(stavka) {
+        this.convertProperties(stavka);
         stavka.iznos_bez_pdv = +(stavka.kolicina * stavka.cijena_bez_pdv).toFixed(2);
         stavka.ruc = stavka.vrijednost_nabavna == 0 ? 0 : (+(stavka.iznos_bez_pdv - stavka.vrijednost_nabavna).toFixed(2));
         stavka.marza_procenat = stavka.vrijednost_nabavna == 0 ? 0 : (+(stavka.ruc / stavka.vrijednost_nabavna * 100).toFixed(2));
@@ -683,6 +686,7 @@ export class PonudaDetailsComponent implements OnInit {
         stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
     }
     calculate3(stavka) {
+        this.convertProperties(stavka);
         stavka.rabat_iznos = +(stavka.iznos_bez_pdv * stavka.rabat_procenat / 100).toFixed(2);
         stavka.cijena_bez_pdv_sa_rabatom = +((stavka.iznos_bez_pdv - stavka.rabat_iznos) / stavka.kolicina).toFixed(2);
         stavka.iznos_bez_pdv_sa_rabatom = +(stavka.iznos_bez_pdv - stavka.rabat_iznos).toFixed(2);
@@ -691,6 +695,7 @@ export class PonudaDetailsComponent implements OnInit {
         stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
     }
     calculate4(stavka) {
+        this.convertProperties(stavka);
         stavka.iznos_sa_pdv = +(stavka.iznos_bez_pdv_sa_rabatom * (1 + stavka.pdv_stopa / 100)).toFixed(2);
         stavka.cijena_sa_pdv = +(stavka.iznos_sa_pdv / stavka.kolicina).toFixed(2);
         stavka.pdv = +(stavka.iznos_sa_pdv - stavka.iznos_bez_pdv_sa_rabatom).toFixed(2);
@@ -711,7 +716,7 @@ export class PonudaDetailsComponent implements OnInit {
         var newStavka = new PonudaStavka();
         newStavka.pdv_stopa = 17;
         newStavka.rabat_procenat = 0;
-        newStavka.marza_procenat = 35;
+        newStavka.marza_procenat = 0;
         newStavka.jedinica_mjere = "KOM";
         newStavka.kolicina = 1;
         newStavka.cijena_nabavna = 0;
@@ -741,7 +746,20 @@ export class PonudaDetailsComponent implements OnInit {
         });
         modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati stavku ponude " + stavka.artikal_naziv + "-" + stavka.opis + " ?";
     }
+  
+    convertToNumber(text: any) {
+        if (text == undefined)
+            return text;
+        let n = +(text.toString().replace(",", "."));
+        if (!Number.isNaN(n))
+            return n;
+        else
+            return text;
+    }
     save(stavka: PonudaStavka, continueAdd: boolean) {
+      
+        this.convertProperties(stavka);
+       
         if (stavka.mode == FormMode.Add)
             this.http.post<PonudaStavka>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
                 console.log("OK");
@@ -763,6 +781,24 @@ export class PonudaDetailsComponent implements OnInit {
         stavka.mode = FormMode.View;
     }
     fileToUpload: File = null;
+    private convertProperties(stavka: PonudaStavka) {
+        stavka.cijena_nabavna = this.convertToNumber(stavka.cijena_nabavna);
+        stavka.cijena_bez_pdv = this.convertToNumber(stavka.cijena_bez_pdv);
+        stavka.cijena_bez_pdv_sa_rabatom = this.convertToNumber(stavka.cijena_bez_pdv_sa_rabatom);
+        stavka.cijena_sa_pdv = this.convertToNumber(stavka.cijena_sa_pdv);
+        stavka.iznos_bez_pdv = this.convertToNumber(stavka.iznos_bez_pdv);
+        stavka.iznos_bez_pdv_sa_rabatom = this.convertToNumber(stavka.iznos_bez_pdv_sa_rabatom);
+        stavka.iznos_sa_pdv = this.convertToNumber(stavka.iznos_sa_pdv);
+        stavka.kolicina = this.convertToNumber(stavka.kolicina);
+        stavka.marza_procenat = this.convertToNumber(stavka.marza_procenat);
+        stavka.pdv = this.convertToNumber(stavka.pdv);
+        stavka.pdv_stopa = this.convertToNumber(stavka.pdv_stopa);
+        stavka.rabat_iznos = this.convertToNumber(stavka.rabat_iznos);
+        stavka.rabat_procenat = this.convertToNumber(stavka.rabat_procenat);
+        stavka.ruc = this.convertToNumber(stavka.ruc);
+        stavka.vrijednost_nabavna = this.convertToNumber(stavka.vrijednost_nabavna);
+    }
+
     handleFileInput(files: FileList, ponuda: Ponuda, stavka: PonudaStavka) {
         this.fileToUpload = files.item(0);
 
