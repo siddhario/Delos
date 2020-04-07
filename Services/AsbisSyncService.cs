@@ -7,10 +7,11 @@ using System.Xml;
 
 namespace Delos.Services
 {
-    public class UniexpertSyncService : ISyncService
+    public class AsbisSyncService : ISyncService
     {
         public override List<artikal> Sync()
         {
+            throw new NotImplementedException();
             String URLString = "https://www.ue.ba/ekupi.xml";
             XmlTextReader reader = new XmlTextReader(URLString);
 

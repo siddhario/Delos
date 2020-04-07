@@ -7,10 +7,11 @@ using System.Xml;
 
 namespace Delos.Services
 {
-    public class UniexpertSyncService : ISyncService
+    public class KimtecSyncService : ISyncService
     {
         public override List<artikal> Sync()
         {
+            throw new NotImplementedException();
             String URLString = "https://www.ue.ba/ekupi.xml";
             XmlTextReader reader = new XmlTextReader(URLString);
 
@@ -24,7 +25,7 @@ namespace Delos.Services
                         {
                             if (reader.Name == "item")
                             {
-                                artikal = new artikal() { dobavljac = this.Description };
+                                artikal = new artikal() { dobavljac = "UNIEXPERT" };
                                 artikli.Add(artikal);
                             }
                             if(reader.Name == "Sifra")

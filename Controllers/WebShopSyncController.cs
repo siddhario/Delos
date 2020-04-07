@@ -46,16 +46,12 @@ namespace WebApplication3.Controllers
             {
                 string objectToInstantiate = ss.Implementation + ", Delos";
                 var objectType = Type.GetType(objectToInstantiate);
-                try
-                {
-                    var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
-                    artikli = serviceInstance.Sync();
-                    serviceInstance.UdpateDb(_dbContext, artikli);
-                }
-                catch(Exception ex)
-                {
 
-                }
+                var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
+                serviceInstance.Description = ss.Description;
+                artikli = serviceInstance.Sync();
+                serviceInstance.UdpateDb(_dbContext, artikli);
+
             }
             return Ok(artikli);
         }

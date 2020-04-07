@@ -98,11 +98,12 @@ namespace WebApplication3
                 try
                 {
                     var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
+                    serviceInstance.Description = s.Description;
                     serviceInstance.Id = s.Id;
                     serviceInstance.IntervalInMinutes = s.IntervalInMinutes;
 
                     var hostService = new HostService(serviceInstance, new DelosDbContext(connectionString));
-                    hostService.StartAsync(new System.Threading.CancellationToken());
+                    //hostService.StartAsync(new System.Threading.CancellationToken());
                 }
                 catch(Exception ex)
                 {
