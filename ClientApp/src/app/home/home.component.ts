@@ -131,7 +131,9 @@ export class HomeComponent {
         this.authenticationService.logout();
         this.router.navigate(['/login']);
     }
-
+    webShopServisi() {
+        this.router.navigateByUrl('/servisi');
+    }
     ponude() {
         this.router.navigateByUrl('/ponude');
     }

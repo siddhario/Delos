@@ -1,14 +1,18 @@
 using Delos;
 using Delos.Contexts;
+using Delos.Model;
 using Delos.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -54,11 +58,11 @@ namespace WebApplication3
                 configuration.RootPath = "ClientApp/dist";
             });
 
-     
+
             services.AddDbContext<DelosDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("Delos")));
             services.AddScoped<IUserService, UserService>();
 
-
+            string connectionString = Configuration.GetConnectionString("Delos");
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -84,8 +88,27 @@ namespace WebApplication3
                 };
             });
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            var syncServices = Configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
+            foreach (var s in syncServices)
+            {
+                string objectToInstantiate = s.Implementation+", Delos";
+                var objectType = Type.GetType(objectToInstantiate);
+                try
+                {
+                    var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
+                    serviceInstance.Id = s.Id;
+                    serviceInstance.IntervalInMinutes = s.IntervalInMinutes;
 
+                    var hostService = new HostService(serviceInstance, new DelosDbContext(connectionString));
+                    hostService.StartAsync(new System.Threading.CancellationToken());
+                }
+                catch(Exception ex)
+                {
+
+                }
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

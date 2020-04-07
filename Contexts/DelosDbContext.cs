@@ -5,12 +5,26 @@ namespace Delos.Contexts
 {
     public class DelosDbContext : DbContext
     {
+        public string ConnectionString { get; set; }
         public DbSet<partner> partner { get; set; }
         public DbSet<korisnik> korisnik { get; set; }
         public DbSet<ponuda> ponuda { get; set; }
         public DbSet<ponuda_stavka> ponuda_stavka { get; set; }
         public DbSet<ponuda_dokument> ponuda_dokument { get; set; }
+
+        public DbSet<artikal> artikal { get; set; }
         public DelosDbContext(DbContextOptions<DelosDbContext> options) : base(options) { }
+        public DelosDbContext(string connectionString) : base()
+        {
+            this.ConnectionString = connectionString;
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseNpgsql(ConnectionString);
+            }
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ponuda_stavka>()
