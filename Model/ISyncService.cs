@@ -1,6 +1,7 @@
 ﻿using Delos.Contexts;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Delos.Model
 {
@@ -16,7 +17,7 @@ namespace Delos.Model
         public int Id { get; set; }
         public string Description { get; set; }
         public int IntervalInMinutes { get; set; }
-        public abstract List<artikal> Sync();
+        public abstract Task<List<artikal>> SyncAsync();
         public bool UdpateDb(DelosDbContext dbContext,List<artikal> artikli)
         {
             foreach (var a in artikli)

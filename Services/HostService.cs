@@ -26,17 +26,17 @@ namespace Delos.Services
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
+            _timer = new Timer(DoWorkAsync, null, TimeSpan.Zero,
                 TimeSpan.FromMinutes(this._serviceModel.IntervalInMinutes));
 
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWorkAsync(object state)
         {
             try
             {
-                var artikli = _serviceModel.Sync();
+                var artikli = await _serviceModel.SyncAsync();
                 _serviceModel.UdpateDb(this._dbContext,artikli);
             }
             catch (Exception ex)

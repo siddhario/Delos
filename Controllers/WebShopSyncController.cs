@@ -36,7 +36,7 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Route("sync")]
-        public IActionResult Sync(int serviceId)
+        public async System.Threading.Tasks.Task<IActionResult> SyncAsync(int serviceId)
         {
             var artikli = new List<artikal>();
             var syncServices = _configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
@@ -49,7 +49,7 @@ namespace WebApplication3.Controllers
 
                 var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
                 serviceInstance.Description = ss.Description;
-                artikli = serviceInstance.Sync();
+                artikli = await serviceInstance.SyncAsync();
                 serviceInstance.UdpateDb(_dbContext, artikli);
 
             }

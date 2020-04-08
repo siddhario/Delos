@@ -15,5 +15,6 @@ namespace Delos.Model
         public string naziv { get; set; }
         public decimal kolicina { get; set; }
         public decimal cijena_sa_rabatom { get; set; }
+        public string dostupnost { get; set; }
     }
 }

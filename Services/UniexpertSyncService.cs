@@ -1,7 +1,9 @@
 ﻿using Delos.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -9,7 +11,7 @@ namespace Delos.Services
 {
     public class UniexpertSyncService : ISyncService
     {
-        public override List<artikal> Sync()
+        public override Task<List<artikal>> SyncAsync()
         {
             String URLString = "https://www.ue.ba/ekupi.xml";
             XmlTextReader reader = new XmlTextReader(URLString);
@@ -27,20 +29,22 @@ namespace Delos.Services
                                 artikal = new artikal() { dobavljac = this.Description };
                                 artikli.Add(artikal);
                             }
-                            if(reader.Name == "Sifra")
+                            if (reader.Name == "Sifra")
                                 artikal.dobavljac_sifra = reader.ReadInnerXml().Split("<![CDATA[")[1].Split("]]>")[0].Trim();
                             if (reader.Name == "Naziv")
                                 artikal.naziv = reader.ReadInnerXml().Split("<![CDATA[")[1].Split("]]>")[0].Trim();
                             if (reader.Name == "Nabavna-cijena")
                             {
                                 string c = reader.ReadInnerXml().Trim();
+                                c = c.Replace(",", ".");
                                 decimal cijena;
-                                decimal.TryParse(c, out cijena);
+                                decimal.TryParse(c, System.Globalization.NumberStyles.Any, new CultureInfo("en-US"), out cijena);
                                 artikal.cijena_sa_rabatom = cijena;
                             }
                             if (reader.Name == "Kolicina")
                             {
                                 string k = reader.ReadInnerXml().Trim();
+                                artikal.dostupnost = k;
                                 decimal kolicina;
                                 decimal.TryParse(k, out kolicina);
                                 artikal.kolicina = kolicina;
@@ -50,10 +54,9 @@ namespace Delos.Services
                         }
                 }
             }
-            foreach (var art in artikli)
-                Console.WriteLine(art.dobavljac+" " + art.dobavljac_sifra + " " + art.naziv+" " + art.kolicina + " "+art.cijena_sa_rabatom);
 
-            return artikli;
+
+            return Task.FromResult(artikli);
         }
     }
 }
