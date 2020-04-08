@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Delos.Contexts;
 using Delos.Model;
-using Delos.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

@@ -3,12 +3,7 @@ using Delos.Model;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.ServiceModel.Security;
 using System.Threading.Tasks;
-using System.Xml;
 using static ComtradeService.CTProductsInStockSoapClient;
 
 namespace Delos.Services
