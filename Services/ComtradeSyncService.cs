@@ -30,6 +30,7 @@ namespace Delos.Services
                     a.cijena_sa_rabatom = cijena;
                     a.dostupnost = res.QTTYINSTOCK;
                     a.slike = res.IMAGE_URLS;
+                    a.vrste = new List<string>() { res.PRODUCTGROUPCODE };
                     decimal kolicina;
                     decimal.TryParse(res.QTTYINSTOCK, System.Globalization.NumberStyles.Any, new CultureInfo("en-US"), out kolicina);
                     artikli.Add(a);

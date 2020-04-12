@@ -64,6 +64,8 @@ namespace Delos.Services
                                                 }
                                                 if (reader.Name == "ProductName")
                                                     artikal.naziv = reader.ReadInnerXml().Trim();
+                                                if (reader.Name == "ProductType")
+                                                    artikal.vrste = new List<string>() { reader.ReadInnerXml().Trim() };
                                                 if (reader.Name == "ProductImageUrl")
                                                     artikal.slike = new List<string>() { reader.ReadInnerXml().Trim().Replace("https:","http:") };
                                                 break;

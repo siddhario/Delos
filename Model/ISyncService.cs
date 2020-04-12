@@ -37,6 +37,7 @@ namespace Delos.Model
                     art.kolicina = a.kolicina;
                     art.naziv = a.naziv;
                     art.slike = a.slike;
+                    art.vrste = a.vrste;
                 }
               
             }

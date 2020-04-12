@@ -64,6 +64,18 @@ namespace Delos.Services
                                     artikal.slike.Add(slikaUrl);
                                 }
                             }
+
+                            if (reader.Name.StartsWith("Kategorija"))
+                            {
+                                var kategorija = reader.ReadInnerXml().Trim();
+                                if (kategorija != "")
+                                {
+                                    kategorija = kategorija.Split("<![CDATA[")[1].Split("]]>")[0];
+                                    if (artikal.vrste == null)
+                                        artikal.vrste = new List<string>();
+                                    artikal.vrste.Add(kategorija);
+                                }
+                            }
                             break;
                         }
                 }

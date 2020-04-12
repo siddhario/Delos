@@ -30,6 +30,12 @@ namespace Delos.Services
                                 artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
                                 artikli.Add(artikal);
                             }
+                            if (reader.Name == "GROUP_NAME")
+                            {
+                                if (artikal.vrste == null)
+                                    artikal.vrste = new List<string>();
+                                artikal.vrste.Add(reader.ReadInnerXml().Trim());
+                            }
                             if (reader.Name == "WIC")
                             {
                                 artikal.dobavljac_sifra = reader.ReadInnerXml().Trim();

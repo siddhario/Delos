@@ -44,6 +44,18 @@ namespace Delos.Services
                                     artikal.slike = new List<string>() { url };
                                 }
                             }
+                          
+                            if (reader.Name == "skupinaIzdelka" || reader.Name == "kategorija")
+                            {
+                                string vrsta = reader.ReadInnerXml().Trim();
+                                if (vrsta != "")
+                                {
+                                    //vrsta = vrsta.Split("<![CDATA[")[1].Split("]]>")[0];
+                                    if (artikal.vrste == null)
+                                        artikal.vrste = new List<string>();
+                                    artikal.vrste.Add(vrsta);
+                                }
+                            }
                             if (reader.Name == "izdelekIme")
                             {
                                 artikal.naziv = reader.ReadInnerXml().Split("<![CDATA[")[1].Split("]]>")[0].Trim();

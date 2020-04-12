@@ -4,8 +4,22 @@
   <p *ngIf="!artikli"><em>Učitavanje...</em></p>
   <div style="overflow:auto" *ngIf="currentUser">
     <div style="float:left;margin: 4px;">
+      Naziv:
       <input class="form-control form-control-sm" style="width:300px" #searchInput [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
     </div>
+  </div>
+  <div>
+    Kategorija:
+    <select class="form-control form-control-sm" [ngModel]="selectedKategorija" (ngModelChange)="startSearch(null,$event,selectedDostupnost)">
+      <ng-container *ngFor="let k of distinctKategorije">
+        <option [value]="k">{{k}}</option>
+      </ng-container>
+    </select>
+    Dostupnost:
+    <select class="form-control form-control-sm"  [ngModel]="selectedDostupnost" (ngModelChange)="startSearch(null,selectedKategorija,$event)">
+      <option value="0" selected>--Sve--</option>
+      <option value="1">--Na stanju--</option>
+    </select>
   </div>
   <div class="row" *ngIf="isSearching">
     <div class="col-12 text-center">
@@ -15,23 +29,38 @@
   <table style="max-width:1440px" class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="artikli">
     <thead>
       <tr>
-        <th>Šifra</th>
-        <th >Naziv</th>
-        <th>Cijena</th>
-        <th>Dostupnost</th>
-        <th>Slike</th>
+        <th><a (click)="sortProperty('sifra')">Šifra</a><ng-container *ngIf="sortColumn=='sifra'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('naziv')">Naziv</a><ng-container *ngIf="sortColumn=='naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('cijena_sa_rabatom')">Cijena</a><ng-container *ngIf="sortColumn=='cijena_sa_rabatom'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('dostupnost')">Dostupnost</a><ng-container *ngIf="sortColumn=='dostupnost'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let artikal of artikli">
-        <td>{{ artikal.sifra }}</td>
-        <td >{{ artikal.naziv }}</td>
-        <td>{{ artikal.cijena_sa_rabatom }}</td>
-        <td>{{ artikal.dostupnost }}</td>
-        <td><ng-container *ngFor="let img of artikal.slike;index as i">
-              <a target="_blank" [href]="sanitize(img)">{{i+1}}.&nbsp;&nbsp;</a>
-          </ng-container></td>
-      </tr>
+      <ng-container *ngFor="let artikal of artikli">
+        <tr (click)="selectItem(artikal)">
+          <td  [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.sifra }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.naziv }}</td>
+          <td  [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_sa_rabatom | noComma }}</td>
+          <td  [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dostupnost }}</td>
+        </tr>
+        <tr  *ngIf="artikal.sifra==selectedItem?.sifra">
+          <td colspan="4">
+            Zadnje učitavanje:
+            <p>{{artikal.zadnje_ucitavanje|date:'dd.MM.yyyy HH:mm:ss'}}</p>
+            Kategorije:
+            <ng-container *ngFor="let vrsta of artikal.vrste;index as i">
+              <p>-{{vrsta}}</p>
+            </ng-container>
+            Slike:<br/>
+            <ng-container *ngFor="let img of artikal.slike;index as i">
+              <a *ngIf="sanitize(img)!=''" target="_blank" [href]="sanitize(img)">
+                {{img}}<br />
+                <img [src]="sanitize(img)" />
+              </a><br />
+            </ng-container>
+          </td>
+        </tr>
+      </ng-container>
     </tbody>
   </table>
 </div>
