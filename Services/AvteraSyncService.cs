@@ -31,9 +31,23 @@ namespace Delos.Services
                                 artikli.Add(artikal);
                             }
                             if (reader.Name == "izdelekID")
+                            {
                                 artikal.dobavljac_sifra = reader.ReadInnerXml().Trim();
+                                artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
+                            }
+                            if (reader.Name == "slikaVelika")
+                            {
+                                string url = reader.ReadInnerXml().Trim();
+                                if (url != "")
+                                {
+                                    url = url.Split("<![CDATA[")[1].Split("]]>")[0];
+                                    artikal.slike = new List<string>() { url };
+                                }
+                            }
                             if (reader.Name == "izdelekIme")
+                            {
                                 artikal.naziv = reader.ReadInnerXml().Split("<![CDATA[")[1].Split("]]>")[0].Trim();
+                            }
                             if (reader.Name == "nabavnaCena")
                             {
                                 string c = reader.ReadInnerXml().Trim();

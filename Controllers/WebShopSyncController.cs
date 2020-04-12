@@ -24,6 +24,22 @@ namespace WebApplication3.Controllers
             _logger = logger;
         }
 
+
+        [HttpGet]
+        [Route("artikli")]
+        public IEnumerable<artikal> GetArtikli()
+        {
+            return _dbContext.artikal.ToList();
+        }
+
+        [HttpGet]
+        [Route("artikliSearch")]
+        public IEnumerable<artikal> Search(string naziv)
+        {
+            var artikli = _dbContext.artikal.Where(p => p.naziv.ToLower().Contains(naziv.ToLower()) && p.dostupnost!=null && p.dostupnost!="0");
+            return artikli.ToList();
+        }
+
         [HttpGet]
         [Route("list")]
         public IActionResult List()

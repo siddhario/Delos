@@ -82,7 +82,7 @@ namespace WebApplication3
                     serviceInstance.IntervalInMinutes = s.IntervalInMinutes;
 
                     var hostService = new HostService(serviceInstance, new DelosDbContext(connectionString));
-                    //hostService.StartAsync(new System.Threading.CancellationToken());
+                    hostService.StartAsync(new System.Threading.CancellationToken());
                 }
                 catch(Exception ex)
                 {

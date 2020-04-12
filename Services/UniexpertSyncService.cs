@@ -27,10 +27,14 @@ namespace Delos.Services
                             if (reader.Name == "item")
                             {
                                 artikal = new artikal() { dobavljac = this.Description };
+                                artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
                                 artikli.Add(artikal);
                             }
                             if (reader.Name == "Sifra")
+                            {
                                 artikal.dobavljac_sifra = reader.ReadInnerXml().Split("<![CDATA[")[1].Split("]]>")[0].Trim();
+                                artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
+                            }
                             if (reader.Name == "Naziv")
                                 artikal.naziv = reader.ReadInnerXml().Split("<![CDATA[")[1].Split("]]>")[0].Trim();
                             if (reader.Name == "Nabavna-cijena")
@@ -49,7 +53,17 @@ namespace Delos.Services
                                 decimal.TryParse(k, out kolicina);
                                 artikal.kolicina = kolicina;
                             }
-
+                            if (reader.Name.StartsWith("Slika"))
+                            {
+                                var slikaUrl = reader.ReadInnerXml().Trim();
+                                if (slikaUrl != "")
+                                {
+                                    slikaUrl = slikaUrl.Split("<![CDATA[")[1].Split("]]>")[0];
+                                    if (artikal.slike == null)
+                                        artikal.slike = new List<string>();
+                                    artikal.slike.Add(slikaUrl);
+                                }
+                            }
                             break;
                         }
                 }

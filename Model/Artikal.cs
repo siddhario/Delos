@@ -16,5 +16,8 @@ namespace Delos.Model
         public decimal kolicina { get; set; }
         public decimal cijena_sa_rabatom { get; set; }
         public string dostupnost { get; set; }
+        public DateTime? zadnje_ucitavanje { get; set; }
+
+        public List<string> slike { get; set; }
     }
 }

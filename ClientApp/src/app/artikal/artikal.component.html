@@ -1,0 +1,37 @@
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+  <h2 id="tableLabel">Artikli</h2>
+
+  <p *ngIf="!artikli"><em>Učitavanje...</em></p>
+  <div style="overflow:auto" *ngIf="currentUser">
+    <div style="float:left;margin: 4px;">
+      <input class="form-control form-control-sm" style="width:300px" #searchInput [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+    </div>
+  </div>
+  <div class="row" *ngIf="isSearching">
+    <div class="col-12 text-center">
+      <h4>Searching ... </h4>
+    </div>
+  </div>
+  <table style="max-width:1440px" class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="artikli">
+    <thead>
+      <tr>
+        <th>Šifra</th>
+        <th >Naziv</th>
+        <th>Cijena</th>
+        <th>Dostupnost</th>
+        <th>Slike</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let artikal of artikli">
+        <td>{{ artikal.sifra }}</td>
+        <td >{{ artikal.naziv }}</td>
+        <td>{{ artikal.cijena_sa_rabatom }}</td>
+        <td>{{ artikal.dostupnost }}</td>
+        <td><ng-container *ngFor="let img of artikal.slike;index as i">
+              <a target="_blank" [href]="sanitize(img)">{{i+1}}.&nbsp;&nbsp;</a>
+          </ng-container></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

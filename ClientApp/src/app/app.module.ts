@@ -21,6 +21,8 @@ import { PonudaFilterPipe } from './pipes/ponudaFilterPipe';
 import { NoCommaPipe } from './pipes/noCommaPipe';
 import { PonudaDokumentComponent } from './ponuda-dokument/ponuda-dokument.component';
 import { WebShopServisComponent } from './webShopServis/webShopServis.component';
+import { ArtikalComponent } from './artikal/artikal.component';
+import { ArtikalFlterPipe } from './pipes/artikalFlterPipe';
 
 @NgModule({
     declarations: [
@@ -39,7 +41,9 @@ import { WebShopServisComponent } from './webShopServis/webShopServis.component'
         NoCommaPipe,
         NavMenuComponent,
         PonudaDokumentComponent,
-        WebShopServisComponent
+        WebShopServisComponent,
+        ArtikalComponent,
+        ArtikalFlterPipe
     ],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -56,6 +60,7 @@ import { WebShopServisComponent } from './webShopServis/webShopServis.component'
             { path: 'login', component: LoginComponent },
             { path: 'partneri', component: PartnerComponent },
             { path: 'servisi', component: WebShopServisComponent },
+            { path: 'artikli', component: ArtikalComponent }
         ])
     ],
     entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],

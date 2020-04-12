@@ -191,161 +191,174 @@
       <div style="border: solid 1px" [style.border-color]="stavka.mode==1?'gainsboro':'#17a2b8'" *ngFor="let stavka of sortStavke(selectedPonuda.stavke);let i=index">
         <div>
           <div class="form-row" style="padding: 15px;padding-bottom:5px;font-size:14px">
-            <div class="col-sm-3">
-              <label>Naziv</label>
-              <textarea #naziv [id]="stavka.stavka_broj" class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
-              <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px"><b>{{i+1}}.&nbsp;</b>{{stavka.artikal_naziv}}</div>
-            </div>
-            <div class="col-sm-6">
-              <label>Opis</label>
-              <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.opis"></textarea>
-              <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px">{{stavka.opis}}</div>
-            </div>
-
-            <div style="text-align:right" class="col-sm-3 align-self-sm-center">
-              <button *ngIf="stavka.mode==1&&selectedPonuda.status=='E'" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Izmijeni</button>
-              <button *ngIf="stavka.mode==1&&selectedPonuda.status=='E'" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="width:80px;margin:3px">Obriši</button>
-              <button *ngIf="stavka.mode==2" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="width:80px;margin:3px">Sačuvaj+</button>
-              <button *ngIf="stavka.mode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-outline-primary btn-sm" style="width:80px;margin:3px;" (click)="stavka.dokumentiVisible=!stavka.dokumentiVisible">Dokumenti</button>
-              <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="width:80px;margin:3px">Sačuvaj</button>
-              <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="cancelItemAdd(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
-            </div>
             <div class="col-sm-9">
-              <label *ngIf="(stavka.napomena!=null&&stavka.napomena!='')||stavka.mode==2||stavka.mode==3">Napomena</label>
-              <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.napomena"></textarea>
-              <div *ngIf="stavka.mode==1&&stavka.napomena!=null&&stavka.napomena!=''" style="font-style:italic;font-size:15px">{{stavka.napomena}}</div>
+              <input #naziv [id]="stavka.stavka_broj" class="form-control form-control-sm" placeholder="Pretraži..."
+                     *ngIf="stavka.mode==2||stavka.mode==3" type="text"
+                     (selectItem)="selectedItemArtikal($event,stavka)"
+                     [ngbTypeahead]="searchArtikal"
+                     [resultFormatter]="resultFormatArtikalListValue"
+                     [inputFormatter]="inputFormatArtikalListValue"
+                     #instance="ngbTypeahead" />
+              </div>
             </div>
-          </div>
+              <div class="form-row" style="padding: 15px;padding-bottom:5px;font-size:14px">
+                <div class="col-sm-3">
+                  <label>Naziv</label>
 
-          <div class="form-row" style="padding:15px">
+                  <textarea class="form-control form-control-sm" rows="4"
+                            *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.artikal_naziv" type="text"></textarea>
+                  <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px"><b>{{i+1}}.&nbsp;</b>{{stavka.artikal_naziv}}</div>
+                </div>
+                <div class="col-sm-6">
+                  <label>Opis</label>
+                  <textarea class="form-control form-control-sm" rows="4" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.opis"></textarea>
+                  <div *ngIf="stavka.mode==1" style="font-style:italic;font-size:15px">{{stavka.opis}}</div>
+                </div>
 
-
-            <div class="col-sm-1">
-              <label>Količina/JM</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.kolicina}}</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.jedinica_mjere}}</div>
-            </div>
-
-            <div class="col-sm-2" style="text-align:right">
-              <label>Nabavna cijena</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_nabavna |noComma}}</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna |noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.vrijednost_nabavna |noComma }}</div>
-            </div>
-
-            <div class="col-sm-1" style="text-align:right">
-              <label>Marža</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.marza_procenat |noComma}}&nbsp;%</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.ruc|noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.ruc |noComma}}</div>
-            </div>
-
-            <div class="col-sm-2" style="text-align:right">
-              <label>Cijena</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?"/>
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv |noComma}}</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv  |noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.iznos_bez_pdv |noComma}}</div>
-            </div>
-
-            <div class="col-sm-1" style="text-align:right">
-              <label>Rabat</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.rabat_iznos |noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.rabat_iznos|noComma}}</div>
-            </div>
-
-            <div class="col-sm-2" style="text-align:right">
-              <label>Cijena bez PDV-a</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv_sa_rabatom| noComma}}</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| noComma}}</div>
-            </div>
-
-            <div class="col-sm-1" style="text-align:right">
-              <label>PDV</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.pdv_stopa|noComma}}&nbsp;%</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.pdv | noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.pdv| noComma}}</div>
-            </div>
-
-            <div class="col-sm-2" style="text-align:right">
-              <label>Cijena sa PDV-om</label>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_sa_pdv |noComma}}</div>
-              <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | noComma" type="number" />
-              <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.iznos_sa_pdv| noComma}}</div>
-            </div>
-          </div>
-          <header *ngIf="stavka.dokumentiVisible==true">
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
-              <div class="container" style="padding:0px">
-                <label for="imageUpload" style="width:60px;margin:3px;" class="btn btn-outline-primary btn-sm">+</label>
-                <input id="imageUpload" style="display:none" type="file" accept="image/*" class="form-control form-control-sm" (change)="handleFileInput($event.target.files,selectedPonuda,stavka)" />
-
-
-                <button class="navbar-toggler"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target=".navbar-collapse"
-                        aria-label="Toggle navigation"
-                        [attr.aria-expanded]="isExpanded"
-                        (click)="toggle()">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
-                     [ngClass]="{ show: isExpanded }">
-
-
+                <div style="text-align:right" class="col-sm-3 align-self-sm-center">
+                  <button *ngIf="stavka.mode==1&&selectedPonuda.status=='E'" (click)="startItemEdit(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Izmijeni</button>
+                  <button *ngIf="stavka.mode==1&&selectedPonuda.status=='E'" (click)="deleteStavka(stavka)" class="btn btn-outline-danger btn-sm" style="width:80px;margin:3px">Obriši</button>
+                  <button *ngIf="stavka.mode==2" (click)="save(stavka,true)" class="btn btn-outline-primary btn-sm" style="width:80px;margin:3px">Sačuvaj+</button>
+                  <button *ngIf="stavka.mode==1&&selectedPonuda.status=='E'" type="button" class="btn btn-outline-primary btn-sm" style="width:80px;margin:3px;" (click)="stavka.dokumentiVisible=!stavka.dokumentiVisible">Dokumenti</button>
+                  <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="save(stavka,false)" class="btn btn-outline-success btn-sm" style="width:80px;margin:3px">Sačuvaj</button>
+                  <button *ngIf="stavka.mode==2||stavka.mode==3" (click)="cancelItemAdd(stavka)" class="btn btn-outline-warning btn-sm" style="width:80px;margin:3px">Odustani</button>
+                </div>
+                <div class="col-sm-9">
+                  <label *ngIf="(stavka.napomena!=null&&stavka.napomena!='')||stavka.mode==2||stavka.mode==3">Napomena</label>
+                  <textarea class="form-control form-control-sm" rows="2" *ngIf="stavka.mode==2||stavka.mode==3" [(ngModel)]="stavka.napomena"></textarea>
+                  <div *ngIf="stavka.mode==1&&stavka.napomena!=null&&stavka.napomena!=''" style="font-style:italic;font-size:15px">{{stavka.napomena}}</div>
                 </div>
               </div>
-            </nav>
-          </header>
 
-          <app-ponuda-dokument *ngIf="stavka.dokumentiVisible==true" [ponudaStavka]="stavka" [ponuda]="selectedPonuda"></app-ponuda-dokument>
-        </div>
-      </div>
-      <div class="form-row form-group" style="border-top: solid 1px;border-color:#17a2b8;padding-top: 10px;padding:15px;background-color:#f8f9fa!important">
-        <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">Total:</div>
-        <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
-          Nabavna vrijednost <br />
-          {{selectedPonuda.nabavna_vrijednost|noComma}}
-        </div>
-        <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
-          RUC <br />
-          {{selectedPonuda.ruc|noComma}}
-        </div>
-        <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
-          Iznos bez rabata <br />
-          {{selectedPonuda.iznos_bez_rabata|noComma}}
-        </div>
-        <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
-          Rabat <br />
-          {{selectedPonuda.rabat|noComma}}
-        </div>
-        <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
-          Iznos bez PDV-a <br />
-          {{selectedPonuda.iznos_sa_rabatom|noComma}}
-        </div>
-        <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
-          PDV <br />
-          {{selectedPonuda.pdv|noComma}}
-        </div>
-        <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
-          Iznos sa PDV-om <br />
-          {{selectedPonuda.iznos_sa_pdv|noComma}}
-        </div>
+              <div class="form-row" style="padding:15px">
 
-      </div>
 
-    </div>
+                <div class="col-sm-1">
+                  <label>Količina/JM</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.kolicina" (ngModelChange)="calculate(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.kolicina}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.jedinica_mjere" type="text" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.jedinica_mjere}}</div>
+                </div>
+
+                <div class="col-sm-2" style="text-align:right">
+                  <label>Nabavna cijena</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.cijena_nabavna" (ngModelChange)="calculate(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_nabavna |noComma}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.vrijednost_nabavna |noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.vrijednost_nabavna |noComma }}</div>
+                </div>
+
+                <div class="col-sm-1" style="text-align:right">
+                  <label>Marža</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.marza_procenat" (ngModelChange)="calculate(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.marza_procenat |noComma}}&nbsp;%</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.ruc|noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.ruc |noComma}}</div>
+                </div>
+
+                <div class="col-sm-2" style="text-align:right">
+                  <label>Cijena</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.cijena_bez_pdv" (ngModelChange)="calculate2(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv |noComma}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv  |noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.iznos_bez_pdv |noComma}}</div>
+                </div>
+
+                <div class="col-sm-1" style="text-align:right">
+                  <label>Rabat</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.rabat_procenat" (ngModelChange)="calculate3(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.rabat_procenat| number : '1.2-2'}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.rabat_iznos |noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.rabat_iznos|noComma}}</div>
+                </div>
+
+                <div class="col-sm-2" style="text-align:right">
+                  <label>Cijena bez PDV-a</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [(ngModel)]="stavka.cijena_bez_pdv_sa_rabatom" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_bez_pdv_sa_rabatom| noComma}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.iznos_bez_pdv_sa_rabatom | noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.iznos_bez_pdv_sa_rabatom| noComma}}</div>
+                </div>
+
+                <div class="col-sm-1" style="text-align:right">
+                  <label>PDV</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" [(ngModel)]="stavka.pdv_stopa" (ngModelChange)="calculate4(stavka)" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.pdv_stopa|noComma}}&nbsp;%</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.pdv | noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.pdv| noComma}}</div>
+                </div>
+
+                <div class="col-sm-2" style="text-align:right">
+                  <label>Cijena sa PDV-om</label>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.cijena_sa_pdv | noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right;border-bottom:dashed 1px gainsboro">{{stavka.cijena_sa_pdv |noComma}}</div>
+                  <input class="form-control form-control-sm" *ngIf="stavka.mode==2||stavka.mode==3" style="text-align:right" disabled [ngModel]="stavka.iznos_sa_pdv | noComma" type="number" />
+                  <div *ngIf="stavka.mode==1" style="text-align:right">{{stavka.iznos_sa_pdv| noComma}}</div>
+                </div>
+              </div>
+              <header *ngIf="stavka.dokumentiVisible==true">
+                <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
+                  <div class="container" style="padding:0px">
+                    <label for="imageUpload" style="width:60px;margin:3px;" class="btn btn-outline-primary btn-sm">+</label>
+                    <input id="imageUpload" style="display:none" type="file" accept="image/*" class="form-control form-control-sm" (change)="handleFileInput($event.target.files,selectedPonuda,stavka)" />
+
+
+                    <button class="navbar-toggler"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target=".navbar-collapse"
+                            aria-label="Toggle navigation"
+                            [attr.aria-expanded]="isExpanded"
+                            (click)="toggle()">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
+                         [ngClass]="{ show: isExpanded }">
+
+
+                    </div>
+                  </div>
+                </nav>
+              </header>
+
+              <app-ponuda-dokument *ngIf="stavka.dokumentiVisible==true" [ponudaStavka]="stavka" [ponuda]="selectedPonuda"></app-ponuda-dokument>
+            </div>
+          </div>
+          <div class="form-row form-group" style="border-top: solid 1px;border-color:#17a2b8;padding-top: 10px;padding:15px;background-color:#f8f9fa!important">
+            <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">Total:</div>
+            <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+              Nabavna vrijednost <br />
+              {{selectedPonuda.nabavna_vrijednost|noComma}}
+            </div>
+            <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
+              RUC <br />
+              {{selectedPonuda.ruc|noComma}}
+            </div>
+            <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+              Iznos bez rabata <br />
+              {{selectedPonuda.iznos_bez_rabata|noComma}}
+            </div>
+            <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
+              Rabat <br />
+              {{selectedPonuda.rabat|noComma}}
+            </div>
+            <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+              Iznos bez PDV-a <br />
+              {{selectedPonuda.iznos_sa_rabatom|noComma}}
+            </div>
+            <div class="col-sm-1" style="text-align:right;font-weight:bold;font-size:14px">
+              PDV <br />
+              {{selectedPonuda.pdv|noComma}}
+            </div>
+            <div class="col-sm-2" style="text-align:right;font-weight:bold;font-size:14px">
+              Iznos sa PDV-om <br />
+              {{selectedPonuda.iznos_sa_pdv|noComma}}
+            </div>
+
+          </div>
+
+        </div>
 
     <div *ngIf="formMode==2||formMode==3" style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem" class="navbar-light bg-light border-bottom box-shadow mb-3">
       <button type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="savePonuda(selectedPonuda)">Sačuvaj</button>

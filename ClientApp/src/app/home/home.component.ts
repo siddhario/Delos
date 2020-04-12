@@ -134,6 +134,9 @@ export class HomeComponent {
     webShopServisi() {
         this.router.navigateByUrl('/servisi');
     }
+    artikli() {
+        this.router.navigateByUrl('/artikli');
+    }
     ponude() {
         this.router.navigateByUrl('/ponude');
     }

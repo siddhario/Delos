@@ -619,6 +619,7 @@ export class PonudaDetailsComponent implements OnInit {
         return value;
 
     }
+
     searchPartner(term: string) {
         if (term === '') {
             return of([]);
@@ -631,6 +632,51 @@ export class PonudaDetailsComponent implements OnInit {
                 })
             );
     }
+
+    searchArtikal = (text$: Observable<string>) => {
+        return text$.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            // switchMap allows returning an observable rather than maps array
+            switchMap((searchText) => this.searchArtikli(searchText)),
+            catchError(null)
+        );
+    }
+    resultFormatArtikalListValue(value) {
+        return value.sifra + " - " + " [Dostupnost:" + value.dostupnost + ", Cijena:" + (value.cijena_sa_rabatom != null ? (value.cijena_sa_rabatom.toFixed("2")+" KM]"):"")+" - "+value.naziv;
+    }
+    inputFormatArtikalListValue(value: any) {
+        return "";
+        if (value.naziv)
+            return value.naziv
+        return value;
+
+    }
+
+    searchArtikli(term: string) {
+        if (term === '' || term.length<3) {
+            return of([]);
+        }
+        return this.http.get(this.baseUrl + 'webShopSync/artikliSearch?naziv=' + term)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+
+    selectedItemArtikal(item, stavka: PonudaStavka) {
+        stavka.artikal_naziv = item["item"]["naziv"];
+        stavka.opis = item["item"]["naziv"];
+        stavka.cijena_nabavna = item["item"]["cijena_sa_rabatom"];
+        stavka.kolicina = 1;
+        stavka.vrijednost_nabavna = +(stavka.kolicina * stavka.cijena_nabavna).toFixed(2);
+        stavka.cijena_bez_pdv = 0;
+        stavka.cijena_bez_pdv_sa_rabatom = 0;
+        stavka.cijena_sa_pdv = 0;
+    }
+
+  
     reloadItem(continueAdd: boolean) {
         this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
             this.selectedPonuda = result;

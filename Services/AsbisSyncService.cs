@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -26,10 +27,14 @@ namespace Delos.Services
                             if (reader.Name == "PRICE")
                             {
                                 artikal = new artikal() { dobavljac = this.Description };
+                                artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
                                 artikli.Add(artikal);
                             }
                             if (reader.Name == "WIC")
+                            {
                                 artikal.dobavljac_sifra = reader.ReadInnerXml().Trim();
+                                artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
+                            }
                             if (reader.Name == "DESCRIPTION")
                                 artikal.naziv = reader.ReadInnerXml().Trim();
                             if (reader.Name == "MY_PRICE")
@@ -47,9 +52,33 @@ namespace Delos.Services
                         break;
                 }
             }
-            foreach (var art in artikli)
-                Console.WriteLine(art.dobavljac + " " + art.dobavljac_sifra + " " + art.naziv + " " + art.kolicina + " " + art.cijena_sa_rabatom);
 
+            string catalogUrl = "https://services.it4profit.com/product/hr/756/ProductList.xml?USERNAME=info@mintict.com&PASSWORD=6S3260b7w8";
+            //foreach (var art in artikli)
+            //    Console.WriteLine(art.dobavljac + " " + art.dobavljac_sifra + " " + art.naziv + " " + art.kolicina + " " + art.cijena_sa_rabatom);
+            reader = new XmlTextReader(catalogUrl);
+        
+            while (reader.Read())
+            {
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element: // The node is an element.
+                        {
+                            if (reader.Name == "ProductCode")
+                            {
+                                var sifra = reader.ReadInnerXml().Trim();
+                                artikal = artikli.FirstOrDefault(a => a.dobavljac == this.Description && a.dobavljac_sifra == sifra);
+                            }
+                            if (reader.Name == "Image" && artikal!=null)
+                            {
+                                if (artikal.slike == null)
+                                    artikal.slike = new List<string>();
+                                artikal.slike.Add(reader.ReadInnerXml().Trim());
+                            }
+                        }
+                        break;
+                }
+            }
             return Task.FromResult(artikli);
         }
     }

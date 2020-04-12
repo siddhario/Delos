@@ -1,4 +1,5 @@
 ﻿using Delos.Contexts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,16 +27,20 @@ namespace Delos.Model
 
                 if (art == null)
                 {
-                    a.sifra = a.dobavljac + "_" + a.dobavljac_sifra;
+                    a.zadnje_ucitavanje = DateTime.Now;
                     dbContext.Add(a);
                 }
                 else
                 {
+                    art.zadnje_ucitavanje = DateTime.Now;
                     art.cijena_sa_rabatom = a.cijena_sa_rabatom;
                     art.kolicina = a.kolicina;
                     art.naziv = a.naziv;
+                    art.slike = a.slike;
                 }
+              
             }
+            
             dbContext.SaveChanges();
             return true;
         }

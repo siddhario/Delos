@@ -23,11 +23,13 @@ namespace Delos.Services
                     artikal a = new artikal();
                     a.dobavljac_sifra = res.CODE;
                     a.dobavljac = this.Description;
+                    a.sifra = a.dobavljac + "_" + a.dobavljac_sifra;
                     a.naziv = res.NAME;
                     decimal cijena;
                     decimal.TryParse(res.RETAILPRICE.Replace(",", "."), System.Globalization.NumberStyles.Any, new CultureInfo("en-US"), out cijena);
                     a.cijena_sa_rabatom = cijena;
                     a.dostupnost = res.QTTYINSTOCK;
+                    a.slike = res.IMAGE_URLS;
                     decimal kolicina;
                     decimal.TryParse(res.QTTYINSTOCK, System.Globalization.NumberStyles.Any, new CultureInfo("en-US"), out kolicina);
                     artikli.Add(a);
