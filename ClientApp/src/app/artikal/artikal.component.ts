@@ -87,7 +87,6 @@ export class ArtikalComponent implements AfterViewInit {
             kategorija = null;
 
         this.searchArtikli(this.searchText, kategorija, this.selectedDostupnost).subscribe((res) => {
-            console.log('res', res);
             this.isSearching = false;
             this.artikli = res;
             if (kategorija == null) {

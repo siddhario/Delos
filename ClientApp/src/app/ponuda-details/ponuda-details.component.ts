@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild, ElementRef, ViewChildren, QueryList } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Pipe, PipeTransform } from '@angular/core';
 import { jsonIgnore } from 'json-ignore';
 import { NgbActiveModal, NgbTypeahead, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -19,6 +19,7 @@ import { FormMode } from '../enums/formMode';
 import { PonudaDokument } from '../model/ponudaDokument';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
+import { UrlResolver } from '@angular/compiler';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -280,7 +281,7 @@ export class PonudaDetailsComponent implements OnInit {
                     { width: 40, text: s.jedinica_mjere, alignment: 'center' },
                     { width: 90, text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
                     { width: 50, text: s.rabat_procenat.toFixed(2) + "%", alignment: 'right' },
-                    { width: 90, text: s.iznos_bez_pdv.toFixed(2) , alignment: 'right' }]
+                    { width: 90, text: s.iznos_bez_pdv.toFixed(2), alignment: 'right' }]
             }],
             );
         });
@@ -291,10 +292,10 @@ export class PonudaDetailsComponent implements OnInit {
             alignment: 'right',
             unbreakable: true,
             stack: [
-                { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2)+" KM", width: 100, alignment: 'right' }] },
-                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2) , width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
+                { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2), width: 100, alignment: 'right' }] },
                 { columns: [{ text: "Ukupan iznos bez PDV-a:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
-                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2) , width: 100, alignment: 'right' }] },
+                { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2), width: 100, alignment: 'right' }] },
                 { columns: [{ text: "Ukupan iznos sa PDV-om:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] }
             ]
         }
@@ -313,7 +314,7 @@ export class PonudaDetailsComponent implements OnInit {
         });
 
         this.selectedPonuda.dokumenti.filter(d => d.stavka_broj == null).forEach(d => {
-            let img = images.find(i=>i.naziv==d.naziv);
+            let img = images.find(i => i.naziv == d.naziv);
             dd.content.push({
                 image: img.dokument, width: 520
             });
@@ -323,7 +324,7 @@ export class PonudaDetailsComponent implements OnInit {
         //{
         //    if (this.selectedPonuda.dokumenti[i].stavka_broj == null)
         //    dd.content.push({ image: images[this.selectedPonuda.dokumenti[i], width: 520 })
-            
+
         //    if (images != null)
         //        images.forEach(s => dd.content.push({ image: s, width: 520 }));
         //}
@@ -398,7 +399,7 @@ export class PonudaDetailsComponent implements OnInit {
     //    ).toPromise();
     //    return this._sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,'
     //        + this._arrayBufferToBase64(result));
-         
+
     //}
     async pdf() {
         var images = [{}];
@@ -643,7 +644,7 @@ export class PonudaDetailsComponent implements OnInit {
         );
     }
     resultFormatArtikalListValue(value) {
-        return value.sifra + " - " + " [Dostupnost:" + value.dostupnost + ", Cijena:" + (value.cijena_sa_rabatom != null ? (value.cijena_sa_rabatom.toFixed("2")+" KM]"):"")+" - "+value.naziv;
+        return value.sifra + " - " + " [Dostupnost:" + value.dostupnost + ", Cijena:" + (value.cijena_sa_rabatom != null ? (value.cijena_sa_rabatom.toFixed("2") + " KM]") : "") + " - " + value.naziv;
     }
     inputFormatArtikalListValue(value: any) {
         return "";
@@ -654,7 +655,7 @@ export class PonudaDetailsComponent implements OnInit {
     }
 
     searchArtikli(term: string) {
-        if (term === '' || term.length<3) {
+        if (term === '' || term.length < 3) {
             return of([]);
         }
         return this.http.get(this.baseUrl + 'webShopSync/artikliSearch?naziv=' + term)
@@ -665,8 +666,7 @@ export class PonudaDetailsComponent implements OnInit {
             );
     }
 
-    selectedItemArtikal(item, stavka: PonudaStavka) {
-        stavka.artikal_naziv = item["item"]["naziv"];
+    async selectedItemArtikal(item, stavka: PonudaStavka) {
         stavka.opis = item["item"]["naziv"];
         stavka.cijena_nabavna = item["item"]["cijena_sa_rabatom"];
         stavka.kolicina = 1;
@@ -674,9 +674,19 @@ export class PonudaDetailsComponent implements OnInit {
         stavka.cijena_bez_pdv = 0;
         stavka.cijena_bez_pdv_sa_rabatom = 0;
         stavka.cijena_sa_pdv = 0;
+        let slike = item["item"]["slike"] as Array<string>;
+        for (let i = 0; i < slike.length; i++) {
+            this.http.get(this.baseUrl + 'ponuda/add_image?url='+encodeURIComponent(slike[i])+'&ponudabroj=' + this.selectedPonuda.broj + (stavka == null ? '' : '&stavkabroj=' + stavka.stavka_broj)).subscribe(result => {
+                console.log("OK");
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            })
+        }
     }
 
-  
+
+
     reloadItem(continueAdd: boolean) {
         this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
             this.selectedPonuda = result;
@@ -792,7 +802,7 @@ export class PonudaDetailsComponent implements OnInit {
         });
         modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati stavku ponude " + stavka.artikal_naziv + "-" + stavka.opis + " ?";
     }
-  
+
     convertToNumber(text: any) {
         if (text == undefined)
             return text;
@@ -803,9 +813,10 @@ export class PonudaDetailsComponent implements OnInit {
             return text;
     }
     save(stavka: PonudaStavka, continueAdd: boolean) {
-      
+
+
         this.convertProperties(stavka);
-       
+
         if (stavka.mode == FormMode.Add)
             this.http.post<PonudaStavka>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
                 console.log("OK");
@@ -862,7 +873,7 @@ export class PonudaDetailsComponent implements OnInit {
             if (oReq.readyState == 4 && oReq.status == 200) {
                 this.toastr.success("Dokument je uspješno povezan...");
                 this.reloadItem(false);
-                
+
             }
             else if (oReq.readyState == 4 && oReq.status != 200) {
                 this.toastr.error("Greška...");

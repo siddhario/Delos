@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
@@ -508,6 +509,56 @@ namespace WebApplication3.Controllers
         {
             var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj&&(sp.stavka_broj==stavka_broj)).ToList();
             return dokumenti.ToList().WithoutDatas();
+        }
+
+        [HttpGet]
+        [Route("add_image")]
+        public IActionResult AddImage(string url,string ponudabroj, short? stavkabroj)
+        {
+            HttpWebRequest httpWebRequest;
+
+            httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+            httpWebRequest.ContentType = "image/jpeg";
+            httpWebRequest.Method = "GET";
+
+            using (var response = (HttpWebResponse)httpWebRequest.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    //using (var sr = new StreamReader(stream))
+                    //{
+                        //var content = sr.ReadToEnd();
+
+                        var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+                        if (pon == null)
+                            return NotFound();
+                        else
+                        {
+
+                            short? ponuda_dokument = null;
+                            var dokumenti = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == ponudabroj);
+                            if (dokumenti != null && dokumenti.Count() > 0)
+                                ponuda_dokument = dokumenti.Max(ps => ps.dokument_broj);
+
+                            ponuda_dokument = ponuda_dokument == null ? (short)1 : (short)(ponuda_dokument.Value + 1);
+                            //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            //{
+                            var ms = new MemoryStream();
+                            stream.CopyTo(ms);
+                            byte[] Value = ms.ToArray();
+                            var dokument = new ponuda_dokument() { stavka_broj = null, ponuda_broj = ponudabroj, dokument = Value, naziv = url, opis = response.ContentType, dokument_broj = ponuda_dokument.Value };
+                            _dbContext.ponuda_dokument.Add(dokument);
+                            _dbContext.SaveChanges();
+                            //    await blob.CopyToAsync(fileStream);
+                            //}
+                            return Ok(dokument);
+
+                        }
+
+                    //}
+                }
+            }
+            return Ok();
         }
 
         [HttpGet]
