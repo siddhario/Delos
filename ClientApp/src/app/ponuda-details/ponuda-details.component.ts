@@ -16,10 +16,12 @@ import { PonudaStavka } from '../model/ponudaStavka';
 import { partner } from '../model/partner';
 import { Korisnik } from '../model/korisnik';
 import { FormMode } from '../enums/formMode';
-import { PonudaDokument } from '../model/ponudaDokument';
+import { PonudaDokument, Dokument } from '../model/ponudaDokument';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { UrlResolver } from '@angular/compiler';
+import { Artikal } from '../model/artikal';
+import { PonudaDokumentComponent } from '../ponuda-dokument/ponuda-dokument.component';
 
 @Component({
     selector: 'app-ponuda-details',
@@ -38,8 +40,11 @@ export class PonudaDetailsComponent implements OnInit {
     public selectedPonuda: Ponuda;
     dokumentForm: FormGroup;
 
+    @ViewChild("dokumenti", { static: false }) dokumenti: PonudaDokumentComponent;
+    @ViewChildren("dokumentiStavke") dokumenti_stavke: QueryList<PonudaDokumentComponent>;
     @ViewChild("partnerElement", { static: false }) partnerElement: ElementRef;
     @ViewChildren("naziv") naziv: QueryList<ElementRef>;
+    selectedArtikal: Artikal;
 
     constructor(private _sanitizer: DomSanitizer,
         private formBuilder: FormBuilder, private authenticationService: AuthenticationService, private modalService: NgbModal, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public activeModal: NgbActiveModal, private toastr: ToastrService) {
@@ -312,13 +317,19 @@ export class PonudaDetailsComponent implements OnInit {
         this.selectedPonuda.dokumenti.filter(d => d.stavka_broj == null).forEach(d => {
 
         });
-
-        this.selectedPonuda.dokumenti.filter(d => d.stavka_broj == null).forEach(d => {
-            let img = images.find(i => i.naziv == d.naziv);
+        let stavka = "";
+        for (let index = 0; index < images.length; index++) {
+            let img = images[index];
+            //let img = images.find(i => i.naziv == d.naziv);
+            if (img.stavka.artikal_naziv != stavka) {
+                dd.content.push("\n");
+                dd.content.push({ text: img.stavka.artikal_naziv+":",bold:true });
+                stavka = img.stavka.artikal_naziv;
+            }
             dd.content.push({
-                image: img.dokument, width: 520
+                image: img.dokument, width: 200
             });
-        });
+        };
 
         //for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++)
         //{
@@ -401,8 +412,9 @@ export class PonudaDetailsComponent implements OnInit {
     //        + this._arrayBufferToBase64(result));
 
     //}
+
     async pdf() {
-        var images = [{}];
+        var images = new Array<Dokument>();
         //let images = [];
         for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++) {
             let asyncResult = await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + this.selectedPonuda.dokumenti[i].naziv + '&broj=' + this.selectedPonuda.dokumenti[i].ponuda_broj
@@ -410,10 +422,20 @@ export class PonudaDetailsComponent implements OnInit {
                     responseType: 'arraybuffer'
                 }
             ).toPromise();
-            images.push({ naziv: this.selectedPonuda.dokumenti[i].naziv, dokument: 'data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult) });
+            images.push({ stavka: this.selectedPonuda.stavke.find(s => s.stavka_broj == this.selectedPonuda.dokumenti[i].stavka_broj), naziv: this.selectedPonuda.dokumenti[i].naziv, dokument: 'data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult) });
         }
+        let imgs = [];
+        imgs = images.sort((a, b) => {
+            if (a.stavka.stavka_broj < b.stavka.stavka_broj)
+                    return -1;
+            else if (a.stavka.stavka_broj > b.stavka.stavka_broj)
+                    return 1;
+                else
+                    return 0;
+            })
+       
 
-        var dd = this.makeDocument(images);
+        var dd = this.makeDocument(imgs);
         pdfMake.vfs = pdfFonts.pdfMake.vfs;
         var pdf = pdfMake.createPdf(dd);
         pdf.download();
@@ -647,10 +669,9 @@ export class PonudaDetailsComponent implements OnInit {
         return value.sifra + " - " + " [Dostupnost:" + value.dostupnost + ", Cijena:" + (value.cijena_sa_rabatom != null ? (value.cijena_sa_rabatom.toFixed("2") + " KM]") : "") + " - " + value.naziv;
     }
     inputFormatArtikalListValue(value: any) {
-        return "";
-        if (value.naziv)
-            return value.naziv
-        return value;
+               return value.sifra + " - " + " [Dostupnost:" + value.dostupnost + ", Cijena:" + (value.cijena_sa_rabatom != null ? (value.cijena_sa_rabatom.toFixed("2") + " KM]") : "") + " - " + value.naziv;
+
+       
 
     }
 
@@ -667,22 +688,16 @@ export class PonudaDetailsComponent implements OnInit {
     }
 
     async selectedItemArtikal(item, stavka: PonudaStavka) {
-        stavka.opis = item["item"]["naziv"];
-        stavka.cijena_nabavna = item["item"]["cijena_sa_rabatom"];
+        this.selectedArtikal = item["item"];
+        stavka.artikal_sifra = this.selectedArtikal.sifra;
+        stavka.artikal_naziv = this.selectedArtikal.naziv;
+        stavka.opis = this.selectedArtikal.naziv;
+        stavka.cijena_nabavna = this.selectedArtikal.cijena_sa_rabatom;
         stavka.kolicina = 1;
         stavka.vrijednost_nabavna = +(stavka.kolicina * stavka.cijena_nabavna).toFixed(2);
         stavka.cijena_bez_pdv = 0;
         stavka.cijena_bez_pdv_sa_rabatom = 0;
         stavka.cijena_sa_pdv = 0;
-        let slike = item["item"]["slike"] as Array<string>;
-        for (let i = 0; i < slike.length; i++) {
-            this.http.get(this.baseUrl + 'ponuda/add_image?url='+encodeURIComponent(slike[i])+'&ponudabroj=' + this.selectedPonuda.broj + (stavka == null ? '' : '&stavkabroj=' + stavka.stavka_broj)).subscribe(result => {
-                console.log("OK");
-            }, error => {
-                this.toastr.error("Greška..");
-                console.error(error)
-            })
-        }
     }
 
 
@@ -762,9 +777,11 @@ export class PonudaDetailsComponent implements OnInit {
         setTimeout(_ => {
             this.naziv.find(s => s.nativeElement.id == stavka.stavka_broj).nativeElement.focus();
         }, 0);
+        this.selectedArtikal = stavka.artikal;
     }
     cancelItemAdd(stavka: PonudaStavka) {
-        this.selectedPonuda.stavke.splice(0, 1);
+        if (stavka.stavka_broj == null)
+            this.selectedPonuda.stavke.splice(0, 1);
         stavka.mode = FormMode.View;
     }
     startItemAdd() {
@@ -812,6 +829,40 @@ export class PonudaDetailsComponent implements OnInit {
         else
             return text;
     }
+    addImages(stavka: PonudaStavka, ponuda: Ponuda) {
+        if (stavka.artikal != null && stavka.artikal.slike != null) {
+            let h = new HttpHeaders();
+            h.append('Content-Type', 'application/json');
+            this.http.post<string[]>(this.baseUrl + 'ponuda/add_images?ponudabroj=' + ponuda.broj + '&stavkabroj=' + stavka.stavka_broj, stavka.artikal.slike, { headers: h }).subscribe(result => {
+                console.log("OK");
+
+                this.dokumenti_stavke.find(s => s.ponudaStavka.stavka_broj == stavka.stavka_broj).load();
+
+                //this.dokumenti.load();
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            })
+        }
+    }
+
+    deleteImages(stavka: PonudaStavka, ponuda: Ponuda) {
+        if (stavka.artikal != null && stavka.artikal.slike != null) {
+            let h = new HttpHeaders();
+            h.append('Content-Type', 'application/json');
+            this.http.post<string[]>(this.baseUrl + 'ponuda/delete_images?ponudabroj=' + ponuda.broj + '&stavkabroj=' + stavka.stavka_broj, stavka.artikal.slike, { headers: h }).subscribe(result => {
+                console.log("OK");
+
+                this.dokumenti_stavke.find(s => s.ponudaStavka.stavka_broj == stavka.stavka_broj).load();
+
+                //this.dokumenti.load();
+            }, error => {
+                this.toastr.error("Greška..");
+                console.error(error)
+            })
+        }
+    }
+
     save(stavka: PonudaStavka, continueAdd: boolean) {
 
 
@@ -821,6 +872,7 @@ export class PonudaDetailsComponent implements OnInit {
             this.http.post<PonudaStavka>(this.baseUrl + 'ponuda/stavka_add', stavka).subscribe(result => {
                 console.log("OK");
                 this.toastr.success("Stavka ponude je uspješno dodata..");
+                //this.addImages(this.selectedArtikal.slike, result, this.selectedPonuda);
                 this.reloadItem(continueAdd);
             }, error => {
                 this.toastr.error("Greška..");
@@ -830,6 +882,7 @@ export class PonudaDetailsComponent implements OnInit {
             this.http.put<PonudaStavka>(this.baseUrl + 'ponuda/stavka_update', stavka).subscribe(result => {
                 console.log("OK");
                 this.toastr.success("Stavka ponude je uspješno sačuvana..");
+                //this.addImages(this.selectedArtikal.slike, result, this.selectedPonuda);
                 this.reloadItem(false);
             }, error => {
                 this.toastr.error("Greška..");

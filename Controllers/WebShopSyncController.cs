@@ -40,6 +40,14 @@ namespace WebApplication3.Controllers
             return artikli.ToList();
         }
 
+
+        [HttpGet]
+        [Route("artikliGetBySifra")]
+        public artikal SearchBySifra(string sifra)
+        {
+            return _dbContext.artikal.First(p => p.sifra == sifra);
+        }
+
         [HttpGet]
         [Route("list")]
         public IActionResult List()

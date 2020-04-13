@@ -39,15 +39,15 @@ namespace WebApplication3.Controllers
         public IEnumerable<ponuda> Get()
         {
 
-            var ponude = _dbContext.ponuda.Include(p => p.stavke).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
-            return ponude.OrderByDescending(p=>p.datum.Year*1000+p.broj.Substring(p.broj.IndexOf("/")+1));
+            var ponude = _dbContext.ponuda.Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
+            return ponude.OrderByDescending(p => p.datum.Year * 1000 + p.broj.Substring(p.broj.IndexOf("/") + 1));
         }
 
         [HttpGet]
         [Route("getbybroj")]
         public ponuda GetByBroj(string broj)
         {
-            var ponuda = _dbContext.ponuda.Include(p => p.stavke).Include(p=>p.dokumenti).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
             return ponuda;
         }
 
@@ -204,7 +204,7 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
                 if (pon == null)
                     return NotFound();
                 else
@@ -247,7 +247,7 @@ namespace WebApplication3.Controllers
         [Route("excel")]
         public IActionResult Excel(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -262,15 +262,15 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Route("dokument_download")]
-        public IActionResult Download(string naziv,string broj)
+        public IActionResult Download(string naziv, string broj)
         {
-            var dokument = _dbContext.ponuda_dokument.FirstOrDefault(p => p.ponuda_broj == broj&& p.naziv== naziv);
+            var dokument = _dbContext.ponuda_dokument.FirstOrDefault(p => p.ponuda_broj == broj && p.naziv == naziv);
             if (dokument == null)
                 return NotFound();
             else
             {
                 Stream stream = new MemoryStream(dokument.dokument);
-                return new FileStreamResult(stream,dokument.opis);
+                return new FileStreamResult(stream, dokument.opis);
             }
         }
 
@@ -278,7 +278,7 @@ namespace WebApplication3.Controllers
         [Route("email")]
         public IActionResult Email(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -324,7 +324,7 @@ namespace WebApplication3.Controllers
         [Route("zakljuciPonudu")]
         public IActionResult ZakljuciPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -414,7 +414,7 @@ namespace WebApplication3.Controllers
         [Route("statusiraj")]
         public IActionResult Statusiraj(string broj, string status)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -436,7 +436,7 @@ namespace WebApplication3.Controllers
         [Route("otkljucajPonudu")]
         public IActionResult OtkljucajPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -464,10 +464,13 @@ namespace WebApplication3.Controllers
             if (stavke != null && stavke.Count() > 0)
                 ponuda_stavka = stavke.Max(ps => ps.stavka_broj);
 
+            if (stavka.artikal != null)
+                stavka.artikal = _dbContext.artikal.FirstOrDefault(a => a.sifra == stavka.artikal.sifra);
+
             stavka.stavka_broj = ponuda_stavka == null ? 1 : (ponuda_stavka.Value + 1);
             _dbContext.Add(stavka);
             _dbContext.SaveChanges();
-            return Ok();
+            return Ok(stavka);
         }
         [HttpPut]
         [Route("stavka_update")]
@@ -476,6 +479,10 @@ namespace WebApplication3.Controllers
             var ponuda_stavka = _dbContext.ponuda_stavka.Where(ps => ps.ponuda_broj == stavka.ponuda_broj && ps.stavka_broj == stavka.stavka_broj).FirstOrDefault();
             if (ponuda_stavka == null)
                 return NotFound();
+
+            if (stavka.artikal != null)
+                stavka.artikal = _dbContext.artikal.FirstOrDefault(a => a.sifra == stavka.artikal.sifra);
+
 
             Helper.CopyPropertiesTo<ponuda_stavka, ponuda_stavka>(stavka, ponuda_stavka);
             _dbContext.SaveChanges();
@@ -499,66 +506,77 @@ namespace WebApplication3.Controllers
         [Route("/ponuda_stavka")]
         public IEnumerable<ponuda_stavka> GetStavke(string ponuda_broj)
         {
-            var stavke = _dbContext.ponuda_stavka.Where(sp => sp.ponuda_broj == ponuda_broj).ToList();
+            var stavke = _dbContext.ponuda_stavka.Where(sp => sp.ponuda_broj == ponuda_broj).Include(ps => ps.artikal).ToList();
             return stavke;
         }
 
         [HttpGet]
         [Route("/ponuda_dokument")]
-        public IEnumerable<ponuda_dokument> GetDokument(string ponuda_broj,short? stavka_broj)
+        public IEnumerable<ponuda_dokument> GetDokument(string ponuda_broj, short? stavka_broj)
         {
-            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj&&(sp.stavka_broj==stavka_broj)).ToList();
+            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj && (sp.stavka_broj == stavka_broj || stavka_broj==null)).ToList();
             return dokumenti.ToList().WithoutDatas();
         }
-
-        [HttpGet]
-        [Route("add_image")]
-        public IActionResult AddImage(string url,string ponudabroj, short? stavkabroj)
+        [HttpPost]
+        [Route("delete_images")]
+        public IActionResult DeleteImages([FromBody]string[] urls, string ponudabroj, short? stavkabroj)
         {
-            HttpWebRequest httpWebRequest;
-
-            httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
-            httpWebRequest.ContentType = "image/jpeg";
-            httpWebRequest.Method = "GET";
-
-            using (var response = (HttpWebResponse)httpWebRequest.GetResponse())
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+            if (pon == null)
+                return NotFound();
+            else
             {
-                using (var stream = response.GetResponseStream())
-                {
-                    //using (var sr = new StreamReader(stream))
-                    //{
-                        //var content = sr.ReadToEnd();
-
-                        var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
-                        if (pon == null)
-                            return NotFound();
-                        else
-                        {
-
-                            short? ponuda_dokument = null;
-                            var dokumenti = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == ponudabroj);
-                            if (dokumenti != null && dokumenti.Count() > 0)
-                                ponuda_dokument = dokumenti.Max(ps => ps.dokument_broj);
-
-                            ponuda_dokument = ponuda_dokument == null ? (short)1 : (short)(ponuda_dokument.Value + 1);
-                            //using (var fileStream = new FileStream(filePath, FileMode.Create))
-                            //{
-                            var ms = new MemoryStream();
-                            stream.CopyTo(ms);
-                            byte[] Value = ms.ToArray();
-                            var dokument = new ponuda_dokument() { stavka_broj = null, ponuda_broj = ponudabroj, dokument = Value, naziv = url, opis = response.ContentType, dokument_broj = ponuda_dokument.Value };
-                            _dbContext.ponuda_dokument.Add(dokument);
-                            _dbContext.SaveChanges();
-                            //    await blob.CopyToAsync(fileStream);
-                            //}
-                            return Ok(dokument);
-
-                        }
-
-                    //}
-                }
+                foreach (var st in pon.dokumenti.Where(d => d.stavka_broj == stavkabroj && d.ponuda_broj == ponudabroj))
+                    _dbContext.Remove(st);
+                _dbContext.SaveChanges();
+                return Ok();
             }
-            return Ok();
+        }
+        [HttpPost]
+        [Route("add_images")]
+        public IActionResult AddImages([FromBody]string[] urls, string ponudabroj, short? stavkabroj)
+        {
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+
+                HttpWebRequest httpWebRequest;
+
+                short? ponuda_dokument = null;
+                var dokumenti = _dbContext.ponuda_dokument.Where(ps => ps.ponuda_broj == ponudabroj);
+
+                if (dokumenti != null && dokumenti.Count() > 0)
+                    ponuda_dokument = dokumenti.Max(ps => ps.dokument_broj);
+                short i = 0;
+                ponuda_dokument = ponuda_dokument == null ? (short)1 : (short)(ponuda_dokument.Value + 1);
+                foreach (var url in urls)
+                {
+                    if (dokumenti.FirstOrDefault(d => d.naziv == url) == null)
+                    {
+                        httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+                        httpWebRequest.ContentType = "image/jpeg";
+                        httpWebRequest.Method = "GET";
+
+                        using (var response = (HttpWebResponse)httpWebRequest.GetResponse())
+                        {
+                            using (var stream = response.GetResponseStream())
+                            {
+                                var ms = new MemoryStream();
+                                stream.CopyTo(ms);
+                                byte[] Value = ms.ToArray();
+                                var dokument = new ponuda_dokument() { stavka_broj = stavkabroj, ponuda_broj = ponudabroj, dokument = Value, naziv = url, opis = response.ContentType, dokument_broj = (short)(ponuda_dokument.Value + i) };
+                                _dbContext.ponuda_dokument.Add(dokument);
+                                i++;
+                            }
+                        }
+                    }
+                }
+                _dbContext.SaveChanges();
+
+                return Ok();
+            }
         }
 
         [HttpGet]
@@ -576,7 +594,7 @@ namespace WebApplication3.Controllers
 
         [HttpPost]
         [Route("upload_dokument")]
-        public IActionResult UploadDokument(IFormFile blob, string ponudabroj,short? stavkabroj)
+        public IActionResult UploadDokument(IFormFile blob, string ponudabroj, short? stavkabroj)
         {
             string filePath = null;
             try
@@ -584,7 +602,7 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
                 if (pon == null)
                     return NotFound();
                 else
@@ -601,7 +619,7 @@ namespace WebApplication3.Controllers
                     var ms = new MemoryStream();
                     blob.OpenReadStream().CopyTo(ms);
                     byte[] Value = ms.ToArray();
-                    var dokument = new ponuda_dokument() {stavka_broj= stavkabroj, ponuda_broj = ponudabroj, dokument = Value, naziv = blob.FileName,opis=blob.ContentType, dokument_broj = ponuda_dokument.Value };
+                    var dokument = new ponuda_dokument() { stavka_broj = stavkabroj, ponuda_broj = ponudabroj, dokument = Value, naziv = blob.FileName, opis = blob.ContentType, dokument_broj = ponuda_dokument.Value };
                     _dbContext.ponuda_dokument.Add(dokument);
                     _dbContext.SaveChanges();
                     //    await blob.CopyToAsync(fileStream);

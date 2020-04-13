@@ -5,7 +5,7 @@
       <thead>
         <tr>
           <th>Dokument</th>
-          <th>Opis</th>
+          <th></th>
           <th></th>
           <th></th>
         </tr>
@@ -13,7 +13,11 @@
       <tbody>
         <tr *ngFor="let dokument of dokumenti">
           <td>{{ dokument.naziv }}</td>
-          <td>{{ dokument.opis }}</td>
+          <td>
+            <a *ngIf="sanitize(dokument.naziv)!=''" target="_blank" [href]="sanitize(dokument.naziv)">
+              <img width="240" [src]="sanitize(dokument.naziv)" />
+            </a><br />
+          </td>
           <td style="text-align:right">
             <button (click)="dokument_download(dokument)" class="btn btn-outline-primary btn-sm" style="width:80px;margin:3px">Preuzmi</button>
             <button *ngIf="ponuda?.status=='E'" (click)="deleteDokument(dokument)" class="btn btn-outline-danger btn-sm" style="width:80px;margin:3px">Obriši</button>

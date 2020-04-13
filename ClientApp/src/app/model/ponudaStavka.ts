@@ -1,5 +1,6 @@
 import { jsonIgnore } from "json-ignore";
 import { FormMode } from "../enums/formMode";
+import { Artikal } from "./artikal";
 
 export class PonudaStavka {
     ponuda_broj: string;
@@ -27,4 +28,7 @@ export class PonudaStavka {
     mode?: FormMode = FormMode.View;
     @jsonIgnore()
     dokumentiVisible: boolean = false;
+    artikal_sifra: string;
+    @jsonIgnore()
+    artikal: Artikal;
 }

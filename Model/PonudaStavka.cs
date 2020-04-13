@@ -27,6 +27,10 @@ namespace Delos.Model
         public decimal cijena_sa_pdv { get; set; }
         public decimal iznos_sa_pdv { get; set; }
 
+        public string artikal_sifra { get; set; }
+
+        [ForeignKey("artikal_sifra")]
+        public artikal artikal { get; set; }
         [JsonIgnore]
         [ForeignKey("ponuda_broj")]
         public ponuda ponuda { get; set; }

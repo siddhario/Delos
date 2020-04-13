@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Ponuda } from '../model/ponuda';
 import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
 import { PonudaStavka } from '../model/ponudaStavka';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-ponuda-dokument',
@@ -30,6 +31,10 @@ export class PonudaDokumentComponent implements OnInit {
     itemEdit: boolean = false;
     itemAdd: boolean = false;
     isExpanded = false;
+
+    sanitize(url: string) {
+        return this.sanitizer.bypassSecurityTrustUrl(url);
+    }
     add() {
         let modalRef = this.modalService.open(PartnerDetailsComponent
             , {
@@ -56,7 +61,7 @@ export class PonudaDokumentComponent implements OnInit {
     }
 
     currentUser: Korisnik;
-    constructor(private toastr: ToastrService, private router: Router, private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
+    constructor(private sanitizer: DomSanitizer, private toastr: ToastrService, private router: Router, private authenticationService: AuthenticationService, public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private modalService: NgbModal) {
 
         this.authenticationService.currentUser.subscribe(x => {
             this.currentUser = x;
