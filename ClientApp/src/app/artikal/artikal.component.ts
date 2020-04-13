@@ -23,13 +23,15 @@ export class ArtikalComponent implements AfterViewInit {
     distinctKategorije: Set<string>;
     @ViewChild('searchInput', { static: false }) searchInput: ElementRef<any>;
 
-
+    dobavljaci = ["--Svi--","ASBIS", "AVTERA", "COMTRADE", "KIMTEC", "MINT", "UNIEXPERT"];
     artikliOriginal: Array<Artikal> = [];
     isSearching: boolean;
-    selectedDostupnost: string="0";
-    searchArtikli(searchText: string, kategorija: string,dostupnost:string): Observable<any> {
+    selectedDostupnost: string = "0";
+    searchArtikli(searchText: string, kategorija: string, dostupnost: string,dobavljac:string): Observable<any> {
         if (!searchText || this.searchText.length < 3)
             return of([]);
+        if (kategorija != null)
+            kategorija = kategorija.substring(kategorija.indexOf("] ") + 2);
         let words = this.searchText.split(" ");
         let exp = "";
         for (let i = 0; i < words.length; i++) {
@@ -45,9 +47,13 @@ export class ArtikalComponent implements AfterViewInit {
                 (it.vrste && it.vrste.filter(vr => vr == kategorija).length > 0)
             )
             &&
+            (
+            dobavljac==null || dobavljac == it.dobavljac
+            )
+            &&
             (dostupnost == "0"
-            ||
-            (it.dostupnost != null && it.dostupnost != "0"))
+                ||
+                (it.dostupnost != null && it.dostupnost != "0"))
         )
         );
     }
@@ -75,25 +81,46 @@ export class ArtikalComponent implements AfterViewInit {
             , distinctUntilChanged()
             // subscription for response
         ).subscribe((text: string) => {
-            this.startSearch(text, null, this.selectedDostupnost);
+            this.startSearch(text, null, this.selectedDostupnost,this.selectedDobavljac);
         });
-    }
 
-    private startSearch(text: string, kategorija: string,dostupnost:string) {
+        //this.selectedDobavljac = "--Svi--";
+    }
+    selectedDobavljac: string;
+
+    private startSearch(text: string, kategorija: string, dostupnost: string,dobavljac:string) {
         this.selectedDostupnost = dostupnost;
         this.selectedKategorija = kategorija;
+        this.selectedDobavljac = dobavljac;
         this.isSearching = true;
         if (kategorija == "--Sve--")
             kategorija = null;
+        if (dobavljac == "--Svi--")
+            dobavljac = null;
 
-        this.searchArtikli(this.searchText, kategorija, this.selectedDostupnost).subscribe((res) => {
+
+        this.searchArtikli(this.searchText, kategorija, this.selectedDostupnost, dobavljac).subscribe((res) => {
             this.isSearching = false;
             this.artikli = res;
             if (kategorija == null) {
                 this.kategorije = new Array<string>();
                 this.kategorije.push("--Sve--");
-                this.artikli.forEach(a => this.kategorije = this.kategorije.concat(a.vrste != null ? a.vrste:[]));
-                this.distinctKategorije = new Set(this.kategorije);
+
+                this.artikli.forEach(a => {
+                    if (a.vrste != null)
+                        a.vrste.forEach(v => this.kategorije.push("[" + a.dobavljac + "] " + v));
+                });
+                let katgs = []
+                katgs = this.kategorije.sort((a, b) => {
+                    if (a < b)
+                        return -1;
+                    else if (a > b)
+                        return 1;
+                    else
+                        return 0;
+                })
+
+                this.distinctKategorije = new Set(katgs);
             }
         }, (err) => {
             this.isSearching = false;
