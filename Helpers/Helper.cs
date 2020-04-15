@@ -346,5 +346,29 @@ namespace Delos.Helpers
             }
 
         }
+
+
+        public static void LogException(Exception ex)
+        {
+            string logDirectory = "C:\\Delos\\log";
+            DirectoryInfo d = new DirectoryInfo(logDirectory);
+            if (d.Exists == false)
+                d.Create();
+            using (StreamWriter sw = new StreamWriter(Path.Combine(logDirectory, "log.txt"), true))
+            {
+                string msg = null;
+
+                var exception = ex;
+                msg = exception.Message + "\t\t" + exception.StackTrace + "\t\t" + exception.Source + "\t\t" + exception.TargetSite + "\t\t" + exception.Data;
+                while (exception.InnerException != null)
+                {
+                    exception = exception.InnerException;
+                    msg += Environment.NewLine + exception.Message + "\t\t" + exception.StackTrace + "\t\t" + exception.Source + "\t\t" + exception.TargetSite + "\t\t" + exception.Data;
+                }
+                sw.WriteLine(DateTime.Now);
+                sw.WriteLine(msg);
+                sw.Close();
+            }
+        }
     }
 }

@@ -88,7 +88,7 @@ export class ArtikalComponent implements AfterViewInit {
     }
     selectedDobavljac: string;
 
-    private startSearch(text: string, kategorija: string, dostupnost: string,dobavljac:string) {
+    public startSearch(text: string, kategorija: string, dostupnost: string,dobavljac:string) {
         this.selectedDostupnost = dostupnost;
         this.selectedKategorija = kategorija;
         this.selectedDobavljac = dobavljac;

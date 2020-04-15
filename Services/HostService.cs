@@ -22,7 +22,7 @@ namespace Delos.Services
         public Task StartAsync(CancellationToken stoppingToken)
         {
             _timer = new Timer(DoWorkAsync, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(this._serviceModel.IntervalInMinutes));
+                TimeSpan.FromMinutes(this._serviceModel.Config.IntervalInMinutes));
 
             return Task.CompletedTask;
         }
@@ -36,6 +36,7 @@ namespace Delos.Services
             }
             catch (Exception ex)
             {
+                Helpers.Helper.LogException(ex);
             }
         }
 

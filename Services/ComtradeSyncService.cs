@@ -17,12 +17,12 @@ namespace Delos.Services
             {
                 CTProductsInStockSoapClient cl = new CTProductsInStockSoapClient(EndpointConfiguration.CTProductsInStockSoap12);
 
-                var result = await cl.GetCTProducts_WithAttributesAsync("mint", "marko2020", null, null, null).ConfigureAwait(false);
+                var result = await cl.GetCTProducts_WithAttributesAsync(Config.Username, Config.Password, null, null, null).ConfigureAwait(false);
                 foreach (var res in result.Body.GetCTProducts_WithAttributesResult)
                 {
                     artikal a = new artikal();
                     a.dobavljac_sifra = res.CODE;
-                    a.dobavljac = this.Description;
+                    a.dobavljac = this.Config.Description;
                     a.sifra = a.dobavljac + "_" + a.dobavljac_sifra;
                     a.naziv = res.NAME;
                     decimal cijena;

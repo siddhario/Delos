@@ -13,7 +13,7 @@ namespace Delos.Services
     {
         public override Task<List<artikal>> SyncAsync()
         {
-            String URLString = "https://www.ue.ba/ekupi.xml";
+            String URLString = Config.Url[0];
             XmlTextReader reader = new XmlTextReader(URLString);
 
             List<artikal> artikli = new List<artikal>();
@@ -26,7 +26,7 @@ namespace Delos.Services
                         {
                             if (reader.Name == "item")
                             {
-                                artikal = new artikal() { dobavljac = this.Description };
+                                artikal = new artikal() { dobavljac = this.Config.Description };
                                 artikal.sifra = artikal.dobavljac + "_" + artikal.dobavljac_sifra;
                                 artikli.Add(artikal);
                             }

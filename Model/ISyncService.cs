@@ -12,38 +12,50 @@ namespace Delos.Model
         public string Description { get; set; }
         public int IntervalInMinutes { get; set; }
         public string Implementation { get; set; }
+        public string Path { get; set; }
+        public string CertificatePath { get; set; }
+        public string CertificatePass { get; set; }
+        public string[] Url { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
     public abstract class ISyncService
     {
-        public int Id { get; set; }
-        public string Description { get; set; }
-        public int IntervalInMinutes { get; set; }
+        public SyncServiceConfig Config { get; set; }
         public abstract Task<List<artikal>> SyncAsync();
         public bool UdpateDb(DelosDbContext dbContext,List<artikal> artikli)
         {
-            foreach (var a in artikli)
+            try
             {
-                var art = dbContext.artikal.FirstOrDefault(ar => a.dobavljac_sifra == ar.dobavljac_sifra && a.dobavljac == ar.dobavljac);
+                foreach (var a in artikli)
+                {
+                    var art = dbContext.artikal.FirstOrDefault(ar => a.dobavljac_sifra == ar.dobavljac_sifra && a.dobavljac == ar.dobavljac);
 
-                if (art == null)
-                {
-                    a.zadnje_ucitavanje = DateTime.Now;
-                    dbContext.Add(a);
+                    if (art == null)
+                    {
+                        a.zadnje_ucitavanje = DateTime.Now;
+                        dbContext.Add(a);
+                    }
+                    else
+                    {
+                        art.zadnje_ucitavanje = DateTime.Now;
+                        art.cijena_sa_rabatom = a.cijena_sa_rabatom;
+                        art.kolicina = a.kolicina;
+                        art.dostupnost = a.dostupnost;
+                        art.naziv = a.naziv;
+                        art.slike = a.slike;
+                        art.vrste = a.vrste;
+                    }
+
                 }
-                else
-                {
-                    art.zadnje_ucitavanje = DateTime.Now;
-                    art.cijena_sa_rabatom = a.cijena_sa_rabatom;
-                    art.kolicina = a.kolicina;
-                    art.naziv = a.naziv;
-                    art.slike = a.slike;
-                    art.vrste = a.vrste;
-                }
-              
+
+                dbContext.SaveChanges();
+                return true;
             }
-            
-            dbContext.SaveChanges();
-            return true;
+            catch(Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

@@ -70,7 +70,7 @@ namespace WebApplication3.Controllers
                 var objectType = Type.GetType(objectToInstantiate);
 
                 var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
-                serviceInstance.Description = ss.Description;
+                serviceInstance.Config.Description = ss.Description;
                 artikli = await serviceInstance.SyncAsync();
                 serviceInstance.UdpateDb(_dbContext, artikli);
 
