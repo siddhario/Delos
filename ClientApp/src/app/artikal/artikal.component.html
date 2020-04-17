@@ -2,31 +2,43 @@
   <h2 id="tableLabel">Artikli</h2>
 
   <div class="row">
-    <div *ngIf="currentUser" class="col-12">
-        Naziv:
-        <input class="form-control form-control-sm"  #searchInput [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+    <div *ngIf="currentUser" class="col-4">
+      Naziv:
+      <input class="form-control form-control-sm" #searchInput [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje" [disabled]="loadAll=='1'">
+    </div>
+
+    <div *ngIf="currentUser" class="col-4" style="align-self:center">
+      Filter:
+      <select class="form-control form-control-sm" [ngModel]="loadAll" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,selectedDobavljac,$event)">
+        <option value="1">--Bez filtera--</option>
+        <option value="0" selected>--Sa filterom--</option>
+      </select>
+    </div>
+    <div class="col-4" style="align-self:center">
+      <button (click)="exportAsXLSX()" >Eksport u .xlsx</button>
     </div>
   </div>
   <div class="row">
+
+
     <div class="col-4">
-      Kategorija:
-      <select class="form-control form-control-sm" [ngModel]="selectedKategorija" (ngModelChange)="startSearch(null,$event,selectedDostupnost,selectedDobavljac)">
-        <ng-container *ngFor="let k of distinctKategorije">
-          <option [value]="k">{{k}}</option>
+      Kategorija (WEB SHOP):
+      <select class="form-control form-control-sm" [ngModel]="selectedKategorijaWebShop" (ngModelChange)="startSearch(searchText,$event,selectedDostupnost,selectedDobavljac,loadAll)">
+        <ng-container *ngFor="let k of kategorijeWebShop">
+          <option [value]="k.naziv">{{k.naziv}}</option>
         </ng-container>
       </select>
     </div>
-
     <div class="col-4">
       Dostupnost:
-      <select class="form-control form-control-sm" [ngModel]="selectedDostupnost" (ngModelChange)="startSearch(null,selectedKategorija,$event,selectedDobavljac)">
-        <option value="0" selected>--Sve--</option>
-        <option value="1">--Na stanju--</option>
+      <select class="form-control form-control-sm" [ngModel]="selectedDostupnost" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,$event,selectedDobavljac,loadAll)">
+        <option value="0">--Sve--</option>
+        <option value="1" selected>--Na stanju--</option>
       </select>
     </div>
     <div class="col-4">
       Dobavljač:
-      <select class="form-control form-control-sm" [ngModel]="selectedDobavljac" (ngModelChange)="startSearch(null,selectedKategorija,selectedDostupnost,$event)">
+      <select class="form-control form-control-sm" [ngModel]="selectedDobavljac" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,$event,loadAll)">
         <ng-container *ngFor="let k of dobavljaci">
           <option [value]="k">{{k}}</option>
         </ng-container>
@@ -35,15 +47,17 @@
   </div>
   <div class="row" *ngIf="isSearching">
     <div class="col-12 text-center">
-      <h4>Searching ... </h4>
+      <h5>Pretraga u toku ... </h5>
     </div>
   </div>
   <br />  <br />
+
   <table style="max-width:1440px" class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="artikli">
     <thead>
       <tr>
         <th><a (click)="sortProperty('sifra')">Šifra</a><ng-container *ngIf="sortColumn=='sifra'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('naziv')">Naziv</a><ng-container *ngIf="sortColumn=='naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kategorija')">Kategorija</a><ng-container *ngIf="sortColumn=='kategorija'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('cijena_sa_rabatom')">Cijena</a><ng-container *ngIf="sortColumn=='cijena_sa_rabatom'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('dostupnost')">Dostupnost</a><ng-container *ngIf="sortColumn=='dostupnost'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
       </tr>
@@ -53,6 +67,7 @@
         <tr (click)="selectItem(artikal)">
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.sifra }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.naziv }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.kategorija }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_sa_rabatom | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dostupnost }}</td>
         </tr>

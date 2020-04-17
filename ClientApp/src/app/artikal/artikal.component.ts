@@ -7,171 +7,161 @@ import { Router } from '@angular/router';
 import { fromEvent, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap, switchMap, catchError, map, filter } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ExcelService } from '../../services/export-excel-service';
+import { Kategorija } from '../model/kategorija';
 
 @Component({
-    selector: 'app-korisnik',
-    templateUrl: './artikal.component.html'
+  selector: 'app-korisnik',
+  templateUrl: './artikal.component.html'
 })
 export class ArtikalComponent implements AfterViewInit {
-    public artikli: Artikal[];
-    sortOrder: boolean;
-    sortColumn: string;
-    searchText: string;
-    currentUser: Korisnik;
-    kategorije: Array<string> = new Array<string>();
-    selectedKategorija: string;
-    distinctKategorije: Set<string>;
-    @ViewChild('searchInput', { static: false }) searchInput: ElementRef<any>;
+  public artikli: Artikal[];
+  sortOrder: boolean;
+  sortColumn: string;
+  searchText: string;
+  loadAll: string = "0";
+  currentUser: Korisnik;
+  kategorije: Array<string> = new Array<string>();
+  selectedKategorija: string;
+  distinctKategorije: Set<string>;
+  @ViewChild('searchInput', { static: false }) searchInput: ElementRef<any>;
 
-    dobavljaci = ["--Svi--","ASBIS", "AVTERA", "COMTRADE", "KIMTEC", "MINT", "UNIEXPERT"];
-    artikliOriginal: Array<Artikal> = [];
-    isSearching: boolean;
-    selectedDostupnost: string = "0";
-    searchArtikli(searchText: string, kategorija: string, dostupnost: string,dobavljac:string): Observable<any> {
-        if (!searchText || this.searchText.length < 3)
-            return of([]);
-        if (kategorija != null)
-            kategorija = kategorija.substring(kategorija.indexOf("] ") + 2);
-        let words = this.searchText.split(" ");
-        let exp = "";
-        for (let i = 0; i < words.length; i++) {
-            exp += "(?=.*" + words[i].toLowerCase() + ".*)";
-        }
-        exp += ".+";
+  dobavljaci = ["--Svi--", "ASBIS", "AVTERA", "COMTRADE", "KIMTEC", "MINT", "UNIEXPERT"];
+  kategorijeWebShop = [];
+  artikliOriginal: Array<Artikal> = [];
+  isSearching: boolean;
+  selectedDostupnost: string = "1";
+  http: HttpClient;
+  baseUrl: string;
+  selectedKategorijaWebShop: string;
+
+  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string) {
+    this.selectedKategorijaWebShop = selectedKategorijaWebShop;
+    this.loadAll = loadAll;
+    this.selectedDostupnost = dostupnost;
+    //this.selectedKategorija = kategorija;
+    this.selectedDobavljac = dobavljac;
+    this.isSearching = true;
+    if (selectedKategorijaWebShop == "--Sve--")
+      selectedKategorijaWebShop = null;
+    if (dobavljac == "--Svi--")
+      dobavljac = null;
+
+    this.http.get<Artikal[]>(this.baseUrl + 'webShopSync/artikliSearch?'
+      + (naziv ? 'naziv=' + naziv : '')
+      + (selectedKategorijaWebShop ? '&kategorija=' + selectedKategorijaWebShop : '')
+      + (dostupnost ? '&dostupnost=' + dostupnost : '')
+      + (dobavljac ? '&dobavljac=' + dobavljac : '')
+      + (loadAll ? '&loadAll=' + loadAll : '')
+    ).subscribe(result => {
+      this.artikli = result;
+
+      this.isSearching = false;
+      //if (selectedKategorijaWebShop == null) {
+      //  this.kategorije = new Array<string>();
+      //  this.kategorije.push("--Sve--");
+
+      //  this.artikli.forEach(a => {
+      //    if (a.vrste != null)
+      //      a.vrste.forEach(v => this.kategorije.push("[" + a.dobavljac + "] " + v));
+      //  });
+      //  let katgs = []
+      //  katgs = this.kategorije.sort((a, b) => {
+      //    if (a < b)
+      //      return -1;
+      //    else if (a > b)
+      //      return 1;
+      //    else
+      //      return 0;
+      //  })
+
+      //  this.distinctKategorije = new Set(katgs);
+      //}
+    }, error => console.error(error));
+  }
+  selectedItem: Artikal;
+  selectItem(artikal: Artikal) {
+    if (this.selectedItem == artikal)
+      this.selectedItem = null;
+    else
+      this.selectedItem = artikal;
+  }
+  sanitize(url: string) {
+    return this.sanitizer.bypassSecurityTrustUrl(url);
+  }
+  ngAfterViewInit() {
+    fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
+      // get value
+      map((event: any) => {
+        return event.target.value;
+      })
+      // if character length greater then 2
+      , filter(res => res.length > 2 || res == "")
+      // Time in milliseconds between key events
+      , debounceTime(1000)
+      // If previous query is diffent from current   
+      , distinctUntilChanged()
+      // subscription for response
+    ).subscribe((text: string) => {
+      this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll);
+    });
+
+ 
+  }
+  selectedDobavljac: string;
 
 
-        return of(this.artikliOriginal.filter(it => (it.naziv.toLowerCase().match(exp) != null)
-            &&
-            (
-                kategorija == null ||
-                (it.vrste && it.vrste.filter(vr => vr == kategorija).length > 0)
-            )
-            &&
-            (
-            dobavljac==null || dobavljac == it.dobavljac
-            )
-            &&
-            (dostupnost == "0"
-                ||
-                (it.dostupnost != null && it.dostupnost != "0"))
-        )
-        );
+  sortProperty(property) {
+    this.sortColumn = property;
+    if (property == "sifra")
+      this.sort(p => p.sifra, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "naziv")
+      this.sort(p => p.naziv, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "kategorija")
+      this.sort(p => p.kategorija, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "cijena_sa_rabatom")
+      this.sort(p => p.cijena_sa_rabatom, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "dostupnost")
+      this.sort(p => p.dostupnost, this.sortOrder == true ? "ASC" : "DESC");
+
+  }
+  sort<T>(prop: (c: Artikal) => T, order: "ASC" | "DESC"): void {
+    this.artikli.sort((a, b) => {
+      if (prop(a) < prop(b))
+        return -1;
+      if (prop(a) > prop(b))
+        return 1;
+      return 0;
+    });
+
+    if (order === "DESC") {
+      this.artikli.reverse();
+      this.sortOrder = true;
+    } else {
+      this.sortOrder = false;
     }
-    selectedItem: Artikal;
-    selectItem(artikal: Artikal) {
-        if (this.selectedItem == artikal)
-            this.selectedItem = null;
-        else
-            this.selectedItem = artikal;
-    }
-    sanitize(url: string) {
-        return this.sanitizer.bypassSecurityTrustUrl(url);
-    }
-    ngAfterViewInit() {
-        fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
-            // get value
-            map((event: any) => {
-                return event.target.value;
-            })
-            // if character length greater then 2
-            , filter(res => res.length > 2 || res == "")
-            // Time in milliseconds between key events
-            , debounceTime(1000)
-            // If previous query is diffent from current   
-            , distinctUntilChanged()
-            // subscription for response
-        ).subscribe((text: string) => {
-            this.startSearch(text, null, this.selectedDostupnost,this.selectedDobavljac);
-        });
+  }
+  exportAsXLSX(): void {
+    this.excelService.exportAsExcelFile(this.artikli, 'Artikli');
+  }
+  constructor(private excelService:ExcelService,private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
+    this.baseUrl = baseUrl;
+    this.http = http;
+    this.sortColumn = 'naziv';
+    this.sortOrder = true;
+    this.selectedDobavljac = "--Svi--";
+    this.selectedKategorijaWebShop = "--Sve--";
+    this.authenticationService.currentUser.subscribe(x => {
+      this.currentUser = x;
+      if (this.currentUser == null)
+        this.router.navigate(['/login']);
+    });
 
-        //this.selectedDobavljac = "--Svi--";
-    }
-    selectedDobavljac: string;
+    http.get<Kategorija[]>(baseUrl + 'webShopSync/kategorije').subscribe(result => {
+      this.kategorijeWebShop = [{ naziv: "--Sve--" }];
+      this.kategorijeWebShop = this.kategorijeWebShop.concat(result);
+    }, error => console.error(error));
 
-    public startSearch(text: string, kategorija: string, dostupnost: string,dobavljac:string) {
-        this.selectedDostupnost = dostupnost;
-        this.selectedKategorija = kategorija;
-        this.selectedDobavljac = dobavljac;
-        this.isSearching = true;
-        if (kategorija == "--Sve--")
-            kategorija = null;
-        if (dobavljac == "--Svi--")
-            dobavljac = null;
-
-
-        this.searchArtikli(this.searchText, kategorija, this.selectedDostupnost, dobavljac).subscribe((res) => {
-            this.isSearching = false;
-            this.artikli = res;
-            if (kategorija == null) {
-                this.kategorije = new Array<string>();
-                this.kategorije.push("--Sve--");
-
-                this.artikli.forEach(a => {
-                    if (a.vrste != null)
-                        a.vrste.forEach(v => this.kategorije.push("[" + a.dobavljac + "] " + v));
-                });
-                let katgs = []
-                katgs = this.kategorije.sort((a, b) => {
-                    if (a < b)
-                        return -1;
-                    else if (a > b)
-                        return 1;
-                    else
-                        return 0;
-                })
-
-                this.distinctKategorije = new Set(katgs);
-            }
-        }, (err) => {
-            this.isSearching = false;
-            console.log('error', err);
-        });
-
-    }
-
-    sortProperty(property) {
-        this.sortColumn = property;
-        if (property == "sifra")
-            this.sort(p => p.sifra, this.sortOrder == true ? "ASC" : "DESC");
-        else if (property == "naziv")
-            this.sort(p => p.naziv, this.sortOrder == true ? "ASC" : "DESC");
-        else if (property == "cijena_sa_rabatom")
-            this.sort(p => p.cijena_sa_rabatom, this.sortOrder == true ? "ASC" : "DESC");
-        else if (property == "dostupnost")
-            this.sort(p => p.dostupnost, this.sortOrder == true ? "ASC" : "DESC");
-
-    }
-    sort<T>(prop: (c: Artikal) => T, order: "ASC" | "DESC"): void {
-        this.artikli.sort((a, b) => {
-            if (prop(a) < prop(b))
-                return -1;
-            if (prop(a) > prop(b))
-                return 1;
-            return 0;
-        });
-
-        if (order === "DESC") {
-            this.artikli.reverse();
-            this.sortOrder = true;
-        } else {
-            this.sortOrder = false;
-        }
-    }
-
-    constructor(private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
-        http.get<Artikal[]>(baseUrl + 'webShopSync/artikli').subscribe(result => {
-            //this.artikli = result;
-            Object.assign(this.artikliOriginal, result);
-        }, error => console.error(error));
-        this.sortColumn = 'naziv';
-        this.sortOrder = true;
-
-        this.authenticationService.currentUser.subscribe(x => {
-            this.currentUser = x;
-            if (this.currentUser == null)
-                this.router.navigate(['/login']);
-        });
-
-    }
+  }
 }
 

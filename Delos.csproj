@@ -49,6 +49,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\app\enums\formMode.ts" />
     <None Remove="ClientApp\src\app\model\artikal.ts" />
+    <None Remove="ClientApp\src\app\model\kategorija.ts" />
     <None Remove="ClientApp\src\app\model\korisnik.ts" />
     <None Remove="ClientApp\src\app\model\partner.ts" />
     <None Remove="ClientApp\src\app\model\ponuda.ts" />
@@ -63,6 +64,9 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\enums\formMode.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\model\kategorija.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\model\artikal.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

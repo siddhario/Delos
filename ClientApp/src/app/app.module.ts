@@ -23,50 +23,54 @@ import { PonudaDokumentComponent } from './ponuda-dokument/ponuda-dokument.compo
 import { WebShopServisComponent } from './webShopServis/webShopServis.component';
 import { ArtikalComponent } from './artikal/artikal.component';
 import { ArtikalFlterPipe } from './pipes/artikalFlterPipe';
+import { ExcelService } from '../services/export-excel-service';
+import { KategorijaComponent } from './kategorija/kategorija.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        HomeComponent,
-        KorisnikComponent,
-        PonudaComponent,
-        PonudaDetailsComponent,
-        PartnerComponent,
-        PartnerDetailsComponent,
-        PonudaFilterPipe,
-        FilterPartnerPipe,
-        NgbdModalConfirm,
-        LoginComponent,
-        NgbdModalFocus,
-        NoCommaPipe,
-        NavMenuComponent,
-        PonudaDokumentComponent,
-        WebShopServisComponent,
-        ArtikalComponent,
-        ArtikalFlterPipe
-    ],
-    imports: [
-        BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-        HttpClientModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NgbModule,
-        BrowserAnimationsModule, // required animations module
-        ToastrModule.forRoot(), // ToastrModule added
-        RouterModule.forRoot([
-            { path: '', component: HomeComponent, pathMatch: 'full' },
-            { path: 'korisnici', component: KorisnikComponent },
-            { path: 'ponude', component: PonudaComponent },
-            { path: 'login', component: LoginComponent },
-            { path: 'partneri', component: PartnerComponent },
-            { path: 'servisi', component: WebShopServisComponent },
-            { path: 'artikli', component: ArtikalComponent }
-        ])
-    ],
-    entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
-    providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    KorisnikComponent,
+    PonudaComponent,
+    PonudaDetailsComponent,
+    PartnerComponent,
+    PartnerDetailsComponent,
+    PonudaFilterPipe,
+    FilterPartnerPipe,
+    NgbdModalConfirm,
+    LoginComponent,
+    NgbdModalFocus,
+    NoCommaPipe,
+    NavMenuComponent,
+    PonudaDokumentComponent,
+    WebShopServisComponent,
+    ArtikalComponent,
+    ArtikalFlterPipe,
+    KategorijaComponent
+  ],
+  imports: [
+    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgbModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot(), // ToastrModule added
+    RouterModule.forRoot([
+      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: 'korisnici', component: KorisnikComponent },
+      { path: 'ponude', component: PonudaComponent },
+      { path: 'login', component: LoginComponent },
+      { path: 'partneri', component: PartnerComponent },
+      { path: 'servisi', component: WebShopServisComponent },
+      { path: 'artikli', component: ArtikalComponent },
+      { path: 'kategorije', component: KategorijaComponent }
+    ])
+  ],
+  entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
+  providers: [ExcelService, { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
 
-    bootstrap: [AppComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
 

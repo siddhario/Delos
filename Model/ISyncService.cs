@@ -40,6 +40,7 @@ namespace Delos.Model
                     {
                         art.zadnje_ucitavanje = DateTime.Now;
                         art.cijena_sa_rabatom = a.cijena_sa_rabatom;
+                        art.cijena_prodajna = a.cijena_prodajna;
                         art.kolicina = a.kolicina;
                         art.dostupnost = a.dostupnost;
                         art.naziv = a.naziv;

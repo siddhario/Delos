@@ -13,6 +13,8 @@ namespace Delos.Contexts
         public DbSet<ponuda_dokument> ponuda_dokument { get; set; }
 
         public DbSet<artikal> artikal { get; set; }
+
+        public DbSet<kategorija> kategorija { get; set; }
         public DelosDbContext(DbContextOptions<DelosDbContext> options) : base(options) { }
         public DelosDbContext(string connectionString) : base()
         {

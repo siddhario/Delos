@@ -70,21 +70,24 @@ namespace WebApplication3
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var syncServices = Configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
-            foreach (var s in syncServices)
+            if (syncServices != null)
             {
-                string objectToInstantiate = s.Implementation+", Delos";
-                var objectType = Type.GetType(objectToInstantiate);
-                try
+                foreach (var s in syncServices)
                 {
-                    var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
-                    serviceInstance.Config = s;
+                    string objectToInstantiate = s.Implementation + ", Delos";
+                    var objectType = Type.GetType(objectToInstantiate);
+                    try
+                    {
+                        var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
+                        serviceInstance.Config = s;
 
-                    var hostService = new HostService(serviceInstance, new DelosDbContext(connectionString));
-                    hostService.StartAsync(new System.Threading.CancellationToken());
-                }
-                catch(Exception ex)
-                {
+                        var hostService = new HostService(serviceInstance, new DelosDbContext(connectionString));
+                        hostService.StartAsync(new System.Threading.CancellationToken());
+                    }
+                    catch (Exception ex)
+                    {
 
+                    }
                 }
             }
         }

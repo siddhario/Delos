@@ -15,9 +15,24 @@ namespace Delos.Model
         public string naziv { get; set; }
         public decimal kolicina { get; set; }
         public decimal cijena_sa_rabatom { get; set; }
+        public decimal? cijena_prodajna { get; set; }
         public string dostupnost { get; set; }
         public DateTime? zadnje_ucitavanje { get; set; }
         public List<string> slike { get; set; }
         public List<string> vrste { get; set; }
+        public string kategorija { get; set; }
+        public string vrsteString
+        {
+            get
+            {
+                var str = "";
+                if (this.vrste != null)
+                {
+                    foreach (var s in this.vrste)
+                        str += s + ";";
+                }
+                return str;
+            }
+        }
     }
 }
