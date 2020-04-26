@@ -20,10 +20,13 @@ namespace WebApplication3
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
+
+        IWebHostEnvironment Environment;
 
         public IConfiguration Configuration { get; }
 
@@ -46,50 +49,34 @@ namespace WebApplication3
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
-            // configure jwt authentication
-            var appSettings = appSettingsSection.Get<AppSettings>();
-            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+            //if (Environment.EnvironmentName != "Testing")
+            //{
+                // configure jwt authentication
+                var appSettings = appSettingsSection.Get<AppSettings>();
+                var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+                services.AddAuthentication(x =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+            //}
+
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            var syncServices = Configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
-            if (syncServices != null)
-            {
-                foreach (var s in syncServices)
-                {
-                    string objectToInstantiate = s.Implementation + ", Delos";
-                    var objectType = Type.GetType(objectToInstantiate);
-                    try
-                    {
-                        var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
-                        serviceInstance.Config = s;
 
-                        var hostService = new HostService(serviceInstance, new DelosDbContext(connectionString));
-                        hostService.StartAsync(new System.Threading.CancellationToken());
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                }
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,8 +102,10 @@ namespace WebApplication3
 
             app.UseRouting();
 
+
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {
@@ -124,24 +113,24 @@ namespace WebApplication3
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
-
             app.UseSpa(spa =>
-            {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
+                 {
+                     // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                     // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                spa.Options.SourcePath = Path.Join(env.ContentRootPath, "ClientApp");
+                     spa.Options.SourcePath = Path.Join(env.ContentRootPath, "ClientApp");
 
-                if (env.IsDevelopment())
-                {
-                    //spa.UseAngularCliServer(npmScript: "start");
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
-                }
-                //else
-                //{
-                //    spa.UseAngularCliServer(npmScript: "start");
-                //}
-            });
+                     if (env.IsDevelopment())
+                     {
+                         //spa.UseAngularCliServer(npmScript: "start");
+                         spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+                     }
+                     //else
+                     //{
+                     //    spa.UseAngularCliServer(npmScript: "start");
+                     //}
+                 });
         }
+
     }
 }

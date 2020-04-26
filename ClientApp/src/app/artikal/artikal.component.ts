@@ -119,8 +119,14 @@ export class ArtikalComponent implements AfterViewInit {
       this.sort(p => p.naziv, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "kategorija")
       this.sort(p => p.kategorija, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "dobavljac")
+      this.sort(p => p.dobavljac, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "cijena_sa_rabatom")
       this.sort(p => p.cijena_sa_rabatom, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "cijena_prodajna")
+      this.sort(p => p.cijena_prodajna, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "cijena_mp")
+      this.sort(p => p.cijena_mp, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "dostupnost")
       this.sort(p => p.dostupnost, this.sortOrder == true ? "ASC" : "DESC");
 

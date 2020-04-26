@@ -57,8 +57,11 @@
       <tr>
         <th><a (click)="sortProperty('sifra')">Šifra</a><ng-container *ngIf="sortColumn=='sifra'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('naziv')">Naziv</a><ng-container *ngIf="sortColumn=='naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('dobavljac')">Dobavljač</a><ng-container *ngIf="sortColumn=='dobavljac'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('kategorija')">Kategorija</a><ng-container *ngIf="sortColumn=='kategorija'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('cijena_sa_rabatom')">Cijena</a><ng-container *ngIf="sortColumn=='cijena_sa_rabatom'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('cijena_prodajna')">Cijena prodajna</a><ng-container *ngIf="sortColumn=='cijena_prodajna'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('cijena_mp')">MPC</a><ng-container *ngIf="sortColumn=='cijena_mp'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('dostupnost')">Dostupnost</a><ng-container *ngIf="sortColumn=='dostupnost'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
       </tr>
     </thead>
@@ -67,8 +70,11 @@
         <tr (click)="selectItem(artikal)">
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.sifra }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.naziv }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dobavljac }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.kategorija }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_sa_rabatom | noComma }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_prodajna | noComma }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_mp | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dostupnost }}</td>
         </tr>
         <tr *ngIf="artikal.sifra==selectedItem?.sifra">

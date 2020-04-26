@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Delos.Contexts;
+using Delos.Helpers;
 using Delos.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared.Model;
 
 namespace WebApplication3.Controllers
 {
@@ -37,34 +41,30 @@ namespace WebApplication3.Controllers
         [Route("kategorije")]
         public IEnumerable<kategorija> GetKategorije()
         {
-            return _dbContext.kategorija.ToList();
+            return _dbContext.kategorija.OrderBy(k => k.naziv).ToList();
         }
         [HttpGet]
         [Route("updateKategorije")]
         public IActionResult UpdateKategorije()
         {
-            var artikli = _dbContext.artikal.ToList();
-            foreach (var kat in _dbContext.kategorija)
+           Delos.Helpers.Helper.UpdateKategorije(_dbContext);
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("updateKategorija")]
+        public IActionResult UpdateKategorije(kategorija kategorija)
+        {
+            var kat = _dbContext.kategorija.FirstOrDefault(k => k.sifra == kategorija.sifra);
+            if (kat != null)
             {
-                if (kat.kategorije_dobavljaca != null)
-                {
-                    foreach (var kd in kat.kategorije_dobavljaca)
-                    {
-                        foreach (var art in artikli)
-                        {
-                            if (art.vrste != null)
-                            {
-                                foreach (var vrsta in art.vrste)
-                                {
-                                    if (vrsta == kd)
-                                        art.kategorija = kat.naziv;
-                                }
-                            }
-                        }
-                    }
-                }
+                kat.marza = kategorija.marza;
+                kat.kategorije_dobavljaca = kategorija.kategorije_dobavljaca;
+
+                Helper.UpdateCijene(_dbContext, kategorija);
+
+                _dbContext.SaveChanges();
             }
-            _dbContext.SaveChanges();
             return Ok();
         }
 
@@ -127,31 +127,89 @@ namespace WebApplication3.Controllers
         [Route("list")]
         public IActionResult List()
         {
-            var syncServices = _configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
+            var syncServices = _configuration.GetSection("Services").Get<List<ImportServiceConfig>>();
             return Ok(syncServices);
         }
 
         [HttpGet]
-        [Route("sync")]
-        public async System.Threading.Tasks.Task<IActionResult> SyncAsync(int serviceId)
+        [Route("import")]
+        public IActionResult Import()
         {
-            var artikli = new List<artikal>();
-            var syncServices = _configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
-            var ss = syncServices.FirstOrDefault(ss => ss.Id == serviceId);
+            List<KeyValuePair<string, string>> lista = new List<KeyValuePair<string, string>>();
+            lista.Add(new KeyValuePair<string, string>("ASBIS", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_ASBIS.xlsx"));
+            lista.Add(new KeyValuePair<string, string>("KIMTEC", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_KIMTEC.xlsx"));
+            lista.Add(new KeyValuePair<string, string>("COMTRADE", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Copy of Artikli_export_ct kategorisano.xlsx"));
+            lista.Add(new KeyValuePair<string, string>("UNIEXPERT", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_UNIEXPERT  ZAVRSENO.xlsx"));
+            lista.Add(new KeyValuePair<string, string>("MINT", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Copy of mint veze2.xlsx"));
+            lista.Add(new KeyValuePair<string, string>("AVTERA", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_AVTERA- ZAVRSENO.xlsx"));
 
-            if (ss != null)
+            foreach (var file in lista)
             {
-                string objectToInstantiate = ss.Implementation + ", Delos";
-                var objectType = Type.GetType(objectToInstantiate);
+                var workbook = new XLWorkbook(file.Value);
+                var ws1 = workbook.Worksheet("Veze");
+                for (int i = 1; i < ws1.RowCount(); i++)
+                {
+                    var k1 = ws1.Cell(i + 1, 1).Value.ToString().Trim();
+                    if(k1.Contains("Tastature"))
+                    {
+                        int ix = 0;
+                    }    
+                    var k2 = ws1.Cell(i + 1, 2).Value.ToString().Trim();
+                    if (k1 != "" && k2 != "")
+                    {
+                        var kat1 = _dbContext.kategorija.FirstOrDefault(k => k.naziv.ToLower() == k2.ToLower());
+                        if (kat1 == null)
+                        {
+                            kat1 = new kategorija() { naziv = k2 };
+                            string maxSifra = _dbContext.kategorija.Max(k => k.sifra);
+                            if (maxSifra == null)
+                                maxSifra = "0";
+                            int maxSifraInt = int.Parse(maxSifra);
+                            string novaSifra = (maxSifraInt + 1).ToString().PadLeft(3, '0');
+                            kat1.sifra = novaSifra;
+                            _dbContext.Add(kat1);
+                        }
+                        if (kat1.kategorije_dobavljaca == null)
+                            kat1.kategorije_dobavljaca = new List<string>();
+                        foreach (var kd in k1.Split(";"))
+                        {
+                            if (kd != "" && kd != ";")
+                            {
+                                string katd = kd.Trim();
+                                var exist = kat1.kategorije_dobavljaca.FirstOrDefault(k => k.ToLower() == ("[" + file.Key + "] " + katd).ToLower());
+                                if (exist == null)
+                                    kat1.kategorije_dobavljaca.Add("[" + file.Key + "] " + katd);
+                            }
+                        }
 
-                var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
-                serviceInstance.Config.Description = ss.Description;
-                artikli = await serviceInstance.SyncAsync();
-                serviceInstance.UdpateDb(_dbContext, artikli);
-
+                        _dbContext.SaveChanges();
+                    }
+                }
             }
-            return Ok(artikli);
+            return Ok();
         }
+
+        //[HttpGet]
+        //[Route("sync")]
+        //public async System.Threading.Tasks.Task<IActionResult> SyncAsync(int serviceId)
+        //{
+        //    var artikli = new List<artikal>();
+        //    var syncServices = _configuration.GetSection("Services").Get<List<SyncServiceConfig>>();
+        //    var ss = syncServices.FirstOrDefault(ss => ss.Id == serviceId);
+
+        //    if (ss != null)
+        //    {
+        //        string objectToInstantiate = ss.Implementation + ", Delos";
+        //        var objectType = Type.GetType(objectToInstantiate);
+
+        //        var serviceInstance = Activator.CreateInstance(objectType) as ISyncService;
+        //        serviceInstance.Config.Description = ss.Description;
+        //        artikli = await serviceInstance.SyncAsync();
+        //        serviceInstance.UdpateDb(_dbContext, artikli);
+
+        //    }
+        //    return Ok(artikli);
+        //}
 
     }
 }

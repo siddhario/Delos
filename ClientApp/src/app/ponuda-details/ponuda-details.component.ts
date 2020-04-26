@@ -441,7 +441,7 @@ export class PonudaDetailsComponent implements OnInit {
     pdf.download();
   }
   async email() {
-    var images = [{}];
+    var images = new Array<Dokument>();
     //let images = [];
     for (let i = 0; i < this.selectedPonuda.dokumenti.length; i++) {
       let asyncResult = await this.http.get(this.baseUrl + 'ponuda/dokument_download?naziv=' + this.selectedPonuda.dokumenti[i].naziv + '&broj=' + this.selectedPonuda.dokumenti[i].ponuda_broj
@@ -449,11 +449,23 @@ export class PonudaDetailsComponent implements OnInit {
           responseType: 'arraybuffer'
         }
       ).toPromise();
-      images.push({ naziv: this.selectedPonuda.dokumenti[i].naziv, dokument: 'data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult) });
+      images.push({ stavka: this.selectedPonuda.stavke.find(s => s.stavka_broj == this.selectedPonuda.dokumenti[i].stavka_broj), naziv: this.selectedPonuda.dokumenti[i].naziv, dokument: 'data:' + this.selectedPonuda.dokumenti[i].opis + ';base64,' + this._arrayBufferToBase64(asyncResult) });
     }
-    var dd = this.makeDocument(images);
+    let imgs = [];
+    imgs = images.sort((a, b) => {
+      if (a.stavka.stavka_broj < b.stavka.stavka_broj)
+        return -1;
+      else if (a.stavka.stavka_broj > b.stavka.stavka_broj)
+        return 1;
+      else
+        return 0;
+    })
+
+
+    var dd = this.makeDocument(imgs);
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
     var pdf = pdfMake.createPdf(dd);
+
     pdf.getBlob((b) => {
       var oReq = new XMLHttpRequest();
       oReq.open("POST", this.baseUrl + 'ponuda/uploadPDF?broj=' + this.selectedPonuda.broj, true);

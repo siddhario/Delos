@@ -63,6 +63,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\enums\formMode.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\model\kategorija.ts">
       <SubType>Code</SubType>

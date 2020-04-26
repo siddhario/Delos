@@ -34,19 +34,26 @@ export class KategorijaComponent {
   baseUrl: string;
   selectedKategorijaWebShop: string;
 
-  
-  selectedItem: Artikal;
-  selectItem(artikal: Artikal) {
-    if (this.selectedItem == artikal)
+
+  selectedItem: Kategorija;
+  selectItem(kategorija: Kategorija) {
+    if (this.selectedItem == kategorija)
       this.selectedItem = null;
     else
-      this.selectedItem = artikal;
+      this.selectedItem = kategorija;
   }
   sanitize(url: string) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
 
   selectedDobavljac: string;
+
+  save(selectedItem: Kategorija) {
+    selectedItem.marza= this.convertToNumber(selectedItem.marza);
+    this.http.put<Kategorija>("webShopSync/updateKategorija", selectedItem).subscribe(result => {
+      alert('OK');
+    }, error => console.error(error));
+  }
 
 
   sortProperty(property) {
@@ -55,7 +62,20 @@ export class KategorijaComponent {
       this.sort(p => p.sifra, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "naziv")
       this.sort(p => p.naziv, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "marza")
+      this.sort(p => p.marza, this.sortOrder == true ? "ASC" : "DESC");
 
+
+  }
+
+  convertToNumber(text: any) {
+    if (text == undefined)
+      return text;
+    let n = +(text.toString().replace(",", "."));
+    if (!Number.isNaN(n))
+      return n;
+    else
+      return text;
   }
   sort<T>(prop: (c: Kategorija) => T, order: "ASC" | "DESC"): void {
     this.kategorije.sort((a, b) => {

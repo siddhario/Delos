@@ -6,20 +6,25 @@
       <tr>
         <th><a (click)="sortProperty('sifra')">Šifra</a><ng-container *ngIf="sortColumn=='sifra'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('naziv')">Naziv</a><ng-container *ngIf="sortColumn=='naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
-        </tr>
+        <th><a (click)="sortProperty('naziv')">Marža %</a><ng-container *ngIf="sortColumn=='naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+      </tr>
     </thead>
     <tbody>
       <ng-container *ngFor="let kategorija of kategorije">
         <tr (click)="selectItem(kategorija)">
           <td [ngStyle]="{'font-weight':kategorija==selectedItem? 'bold' : 'normal' }">{{ kategorija.sifra }}</td>
           <td [ngStyle]="{'font-weight':kategorija==selectedItem? 'bold' : 'normal' }">{{ kategorija.naziv }}</td>
-            </tr>
+          <td [ngStyle]="{'font-weight':kategorija==selectedItem? 'bold' : 'normal' }">{{ kategorija.marza }}</td>
+        </tr>
         <tr *ngIf="kategorija.sifra==selectedItem?.sifra">
           <td colspan="4">
-            Kategorije dobavljača:<br/><br />
+            Kategorije dobavljača:<br /><br />
             <ng-container *ngFor="let vrsta of kategorija.kategorije_dobavljaca;index as i">
-             {{vrsta}}<br />
+              {{vrsta}}<br />
             </ng-container>
+            <label>Marža:</label>
+            <input class="form-control form-control-sm" style="text-align:right;width:100px" [(ngModel)]="kategorija.marza" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+            <button type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="save(selectedItem)">Sačuvaj</button>
           </td>
         </tr>
       </ng-container>

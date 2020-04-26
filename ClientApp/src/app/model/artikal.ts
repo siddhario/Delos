@@ -7,6 +7,7 @@ export class Artikal {
   dostupnost: string;
   cijena_sa_rabatom?: number;
   cijena_prodajna?: number;
+  cijena_mp?: number;
   zadnje_ucitavanje: Date;
   slike?: string[];
   vrste?: string[];
