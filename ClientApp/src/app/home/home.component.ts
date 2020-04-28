@@ -153,7 +153,7 @@ export class HomeComponent {
     this.router.navigateByUrl('/ugovori');
   }
   servisneprijave() {
-    this.router.navigateByUrl('/servisneprijave');
+    this.router.navigateByUrl('/prijave');
   }
   izvjestaji() {
     this.router.navigateByUrl('/izvjestaji');

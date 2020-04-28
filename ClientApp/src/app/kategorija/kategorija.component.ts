@@ -49,7 +49,7 @@ export class KategorijaComponent {
   selectedDobavljac: string;
 
   save(selectedItem: Kategorija) {
-    selectedItem.marza= this.convertToNumber(selectedItem.marza);
+    selectedItem.marza = this.convertToNumber(selectedItem.marza);
     this.http.put<Kategorija>("webShopSync/updateKategorija", selectedItem).subscribe(result => {
       alert('OK');
     }, error => console.error(error));
@@ -66,6 +66,17 @@ export class KategorijaComponent {
       this.sort(p => p.marza, this.sortOrder == true ? "ASC" : "DESC");
 
 
+  }
+  expand: boolean = false;
+  toggleExpand() {
+    this.expand = !this.expand;
+  }
+  removeKategorija(vrsta) {
+    this.selectedItem.kategorije_dobavljaca.splice(this.selectedItem.kategorije_dobavljaca.indexOf(vrsta), 1);
+  }
+  novaKategorija: string;
+  addKategorija(vrsta) {
+    this.selectedItem.kategorije_dobavljaca.push(vrsta);
   }
 
   convertToNumber(text: any) {
@@ -102,7 +113,7 @@ export class KategorijaComponent {
   exportAsXLSX(): void {
     this.excelService.exportAsExcelFile(this.kategorije, 'Kategorije');
   }
-  constructor(private excelService:ExcelService,private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
+  constructor(private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
     this.baseUrl = baseUrl;
     this.http = http;
     this.sortColumn = 'naziv';

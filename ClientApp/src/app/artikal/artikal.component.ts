@@ -44,6 +44,8 @@ export class ArtikalComponent implements AfterViewInit {
     this.isSearching = true;
     if (selectedKategorijaWebShop == "--Sve--")
       selectedKategorijaWebShop = null;
+    if (selectedKategorijaWebShop == "--Nekategorisano--")
+      selectedKategorijaWebShop = "NULL";
     if (dobavljac == "--Svi--")
       dobavljac = null;
 
@@ -164,7 +166,7 @@ export class ArtikalComponent implements AfterViewInit {
     });
 
     http.get<Kategorija[]>(baseUrl + 'webShopSync/kategorije').subscribe(result => {
-      this.kategorijeWebShop = [{ naziv: "--Sve--" }];
+      this.kategorijeWebShop = [{ naziv: "--Sve--" }, { naziv: "--Nekategorisano--" }];
       this.kategorijeWebShop = this.kategorijeWebShop.concat(result);
     }, error => console.error(error));
 

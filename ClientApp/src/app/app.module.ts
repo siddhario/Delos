@@ -25,6 +25,8 @@ import { ArtikalComponent } from './artikal/artikal.component';
 import { ArtikalFlterPipe } from './pipes/artikalFlterPipe';
 import { ExcelService } from '../services/export-excel-service';
 import { KategorijaComponent } from './kategorija/kategorija.component';
+import { PrijavaComponent } from './prijava/prijava.component';
+import { PrijavaDetailsComponent } from './prijava-details/prijava-details.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,9 @@ import { KategorijaComponent } from './kategorija/kategorija.component';
     WebShopServisComponent,
     ArtikalComponent,
     ArtikalFlterPipe,
-    KategorijaComponent
+    KategorijaComponent,
+    PrijavaComponent,
+    PrijavaDetailsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -64,10 +68,11 @@ import { KategorijaComponent } from './kategorija/kategorija.component';
       { path: 'partneri', component: PartnerComponent },
       { path: 'servisi', component: WebShopServisComponent },
       { path: 'artikli', component: ArtikalComponent },
-      { path: 'kategorije', component: KategorijaComponent }
+      { path: 'kategorije', component: KategorijaComponent },
+      { path: 'prijave', component: PrijavaComponent }
     ])
   ],
-  entryComponents: [PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
+  entryComponents: [PrijavaDetailsComponent,PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
   providers: [ExcelService, { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
 
   bootstrap: [AppComponent]

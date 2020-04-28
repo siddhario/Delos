@@ -96,7 +96,7 @@ namespace WebApplication3.Controllers
                 &&
                 (
                     kategorija == null ||
-                    it.kategorija == kategorija
+                    it.kategorija == kategorija || (kategorija=="NULL"&&it.kategorija==null)
                 )
                 &&
                 (
@@ -140,7 +140,7 @@ namespace WebApplication3.Controllers
             lista.Add(new KeyValuePair<string, string>("KIMTEC", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_KIMTEC.xlsx"));
             lista.Add(new KeyValuePair<string, string>("COMTRADE", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Copy of Artikli_export_ct kategorisano.xlsx"));
             lista.Add(new KeyValuePair<string, string>("UNIEXPERT", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_UNIEXPERT  ZAVRSENO.xlsx"));
-            lista.Add(new KeyValuePair<string, string>("MINT", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Copy of mint veze2.xlsx"));
+            lista.Add(new KeyValuePair<string, string>("MINT", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\mint veze2.xlsx"));
             lista.Add(new KeyValuePair<string, string>("AVTERA", @"C:\Users\Dario\source\repos\Delos\Delos\TestData\Artikli_export_AVTERA- ZAVRSENO.xlsx"));
 
             foreach (var file in lista)
@@ -150,10 +150,7 @@ namespace WebApplication3.Controllers
                 for (int i = 1; i < ws1.RowCount(); i++)
                 {
                     var k1 = ws1.Cell(i + 1, 1).Value.ToString().Trim();
-                    if(k1.Contains("Tastature"))
-                    {
-                        int ix = 0;
-                    }    
+                    
                     var k2 = ws1.Cell(i + 1, 2).Value.ToString().Trim();
                     if (k1 != "" && k2 != "")
                     {
@@ -171,16 +168,26 @@ namespace WebApplication3.Controllers
                         }
                         if (kat1.kategorije_dobavljaca == null)
                             kat1.kategorije_dobavljaca = new List<string>();
-                        foreach (var kd in k1.Split(";"))
-                        {
-                            if (kd != "" && kd != ";")
-                            {
-                                string katd = kd.Trim();
-                                var exist = kat1.kategorije_dobavljaca.FirstOrDefault(k => k.ToLower() == ("[" + file.Key + "] " + katd).ToLower());
-                                if (exist == null)
-                                    kat1.kategorije_dobavljaca.Add("[" + file.Key + "] " + katd);
-                            }
-                        }
+
+                        
+
+                        string katd = k1.Trim();
+                        if (katd.EndsWith(";"))
+                            katd = katd.Substring(0, katd.Length - 1).Trim();
+                        var exist = kat1.kategorije_dobavljaca.FirstOrDefault(k => k.ToLower() == ("[" + file.Key + "] " + katd).ToLower());
+                        if (exist == null)
+                            kat1.kategorije_dobavljaca.Add("[" + file.Key + "] " + katd);
+
+                        //foreach (var kd in k1.Split(";"))
+                        //{
+                        //    if (kd != "" && kd != ";")
+                        //    {
+                        //        string katd = kd.Trim();
+                        //        var exist = kat1.kategorije_dobavljaca.FirstOrDefault(k => k.ToLower() == ("[" + file.Key + "] " + katd).ToLower());
+                        //        if (exist == null)
+                        //            kat1.kategorije_dobavljaca.Add("[" + file.Key + "] " + katd);
+                        //    }
+                        //}
 
                         _dbContext.SaveChanges();
                     }

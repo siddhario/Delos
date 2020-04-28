@@ -3,5 +3,5 @@ export class Kategorija {
   naziv: string;
   sifra_nad: string;
   marza?: number;
-  kategorije_dobavljac?: string[];
+  kategorije_dobavljaca?: string[];
 }

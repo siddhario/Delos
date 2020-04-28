@@ -1,6 +1,6 @@
 <div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
   <h2 id="tableLabel">Kategorije</h2>
-  <button (click)="azurirajKategorije()">Ažuriraj kategorije artikala</button>
+  <button (click)="azurirajKategorije()">Ažuriraj kategorije artikala</button>  <button (click)="toggleExpand()">Expand all</button>
   <table style="max-width:1440px" class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="kategorije">
     <thead>
       <tr>
@@ -16,15 +16,29 @@
           <td [ngStyle]="{'font-weight':kategorija==selectedItem? 'bold' : 'normal' }">{{ kategorija.naziv }}</td>
           <td [ngStyle]="{'font-weight':kategorija==selectedItem? 'bold' : 'normal' }">{{ kategorija.marza }}</td>
         </tr>
-        <tr *ngIf="kategorija.sifra==selectedItem?.sifra">
+        <tr *ngIf="kategorija.sifra==selectedItem?.sifra||expand==true">
           <td colspan="4">
             Kategorije dobavljača:<br /><br />
             <ng-container *ngFor="let vrsta of kategorija.kategorije_dobavljaca;index as i">
-              {{vrsta}}<br />
+              <a (click)="removeKategorija(vrsta)">x</a>&nbsp;{{vrsta}}<br />
             </ng-container>
-            <label>Marža:</label>
-            <input class="form-control form-control-sm" style="text-align:right;width:100px" [(ngModel)]="kategorija.marza" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-            <button type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="save(selectedItem)">Sačuvaj</button>
+            <br/><br />
+            <Div class="form-row form-group">
+              <div >
+                <label>Kategorija</label>
+                <input class="form-control form-control-sm" style="text-align:right;width:100px" [(ngModel)]="novaKategorija" type="text" />
+              </div>
+              <div  style="align-self:flex-end">
+                <button type="button" class="btn btn-outline-info btn-sm" (click)="addKategorija(novaKategorija)">+</button>
+              </div>
+              <div>
+                <label>Marža:</label>
+                <input class="form-control form-control-sm" style="text-align:right;width:100px" [(ngModel)]="kategorija.marza" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+              </div>
+            </Div>
+            <div class="form-row">
+              <button type="button" class="btn btn-success btn-sm" (click)="save(selectedItem)">Sačuvaj</button>
+            </div>
           </td>
         </tr>
       </ng-container>

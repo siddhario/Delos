@@ -55,6 +55,7 @@
     <None Remove="ClientApp\src\app\model\ponuda.ts" />
     <None Remove="ClientApp\src\app\model\ponudaDokument.ts" />
     <None Remove="ClientApp\src\app\model\ponudaStavka.ts" />
+    <None Remove="ClientApp\src\app\model\prijava.ts" />
     <None Remove="ClientApp\src\app\model\webShopServis.ts" />
     <None Remove="ClientApp\src\app\pipes\artikalFlterPipe.ts" />
     <None Remove="ClientApp\src\app\pipes\noCommaPipe.ts" />
@@ -72,6 +73,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\model\artikal.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\app\model\prijava.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\model\webShopServis.ts">
