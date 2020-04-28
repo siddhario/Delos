@@ -146,7 +146,34 @@ export class PrijavaDetailsComponent {
     this.selectedPrijava.kupac_email = item["item"]["email"];
     this.selectedPrijava.kupac_telefon = item["item"]["telefon"];
   }
+  downLoadFile(data: any, type: string) {
+    let blob = new Blob([data], { type: type });
+    let url = window.URL.createObjectURL(blob);
+    let pwa = window.open(url);
+    if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+      alert('Please disable your Pop-up blocker and try again.');
+    }
+  }
+  excel() {
+    if (this.selectedPrijava != undefined) {
 
+      this.http.get(this.baseUrl + 'prijava/excel?broj=' + this.selectedPrijava.broj
+        , {
+          responseType: 'arraybuffer'
+        }
+      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+    }
+  }
+  radniNalog() {
+    if (this.selectedPrijava != undefined) {
+
+      this.http.get(this.baseUrl + 'prijava/radniNalog?broj=' + this.selectedPrijava.broj
+        , {
+          responseType: 'arraybuffer'
+        }
+      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+    }
+  }
   selectedItemDobavljac(item) {
     this.selectedPrijava.dobavljac_sifra = item["item"]["sifra"];
     this.selectedPrijava.dobavljac= item["item"]["naziv"];

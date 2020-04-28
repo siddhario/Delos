@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using ClosedXML.Excel;
 using Delos.Contexts;
 using Delos.Helpers;
 using Delos.Model;
@@ -19,8 +21,10 @@ namespace WebApplication3.Controllers
 
         private DelosDbContext _dbContext;
 
+        private readonly ILogger<PrijavaController> _logger;
         public PrijavaController(DelosDbContext context, ILogger<PrijavaController> logger)
         {
+            _logger = logger;
             _dbContext = context;
         }
 
@@ -28,7 +32,7 @@ namespace WebApplication3.Controllers
         public IEnumerable<prijava> Get()
         {
 
-            var prijave = _dbContext.prijava.Include(p=>p.partner).Include(p=>p.Korisnik).Include(p => p.dobavljac_partner).ToList().OrderByDescending(p => p.broj);
+            var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).ToList().OrderByDescending(p => p.broj);
             return prijave;
 
         }
@@ -37,7 +41,7 @@ namespace WebApplication3.Controllers
         [Route("search")]
         public IEnumerable<prijava> Search(string naziv)
         {
-            var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).Where(p => naziv==null|| p.kupac_ime.ToLower().Contains(naziv.ToLower())|| p.predmet.ToLower().Contains(naziv.ToLower()));;
+            var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).Where(p => naziv == null || p.kupac_ime.ToLower().Contains(naziv.ToLower()) || p.predmet.ToLower().Contains(naziv.ToLower())); ;
             return prijave;
 
         }
@@ -176,6 +180,40 @@ namespace WebApplication3.Controllers
                 }
             }
         }
+
+        [HttpGet]
+        [Route("excel")]
+        public IActionResult Excel(string broj)
+        {
+            var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                string file = Helper.StampaPrijave(pon);
+                var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                _logger.LogError(file);
+                return new FileStreamResult(fileStream, "application/vnd.ms-excel");
+            }
+        }
+
+        [HttpGet]
+        [Route("radniNalog")]
+        public IActionResult radniNalog(string broj)
+        {
+            var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                string file = Helper.StampaRadnogNaloga(pon);
+                var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                _logger.LogError(file);
+                return new FileStreamResult(fileStream, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            }
+        }
+
+
 
     }
 }
