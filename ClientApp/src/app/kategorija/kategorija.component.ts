@@ -1,4 +1,4 @@
-import { Component, Inject, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
+import { Component, Inject, ViewChild, ElementRef, OnInit, AfterViewInit, ViewChildren, QueryList } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Artikal } from '../model/artikal';
 import { Korisnik } from '../model/korisnik';
@@ -9,6 +9,9 @@ import { debounceTime, distinctUntilChanged, tap, switchMap, catchError, map, fi
 import { DomSanitizer } from '@angular/platform-browser';
 import { ExcelService } from '../../services/export-excel-service';
 import { Kategorija } from '../model/kategorija';
+import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-kategorija',
@@ -19,7 +22,6 @@ export class KategorijaComponent {
   sortOrder: boolean;
   sortColumn: string;
   searchText: string;
-  loadAll: string = "0";
   currentUser: Korisnik;
   selectedKategorija: string;
   distinctKategorije: Set<string>;
@@ -51,7 +53,7 @@ export class KategorijaComponent {
   save(selectedItem: Kategorija) {
     selectedItem.marza = this.convertToNumber(selectedItem.marza);
     this.http.put<Kategorija>("webShopSync/updateKategorija", selectedItem).subscribe(result => {
-      alert('OK');
+      this.toastr.success("Web shop kategorija je uspješno izmjenjena..");
     }, error => console.error(error));
   }
 
@@ -72,12 +74,95 @@ export class KategorijaComponent {
     this.expand = !this.expand;
   }
   removeKategorija(vrsta) {
-    this.selectedItem.kategorije_dobavljaca.splice(this.selectedItem.kategorije_dobavljaca.indexOf(vrsta), 1);
+
+    let modalRef = this.modalService.open(NgbdModalConfirm);
+    modalRef.result.then((data) => {
+
+      this.selectedItem.kategorije_dobavljaca.splice(this.selectedItem.kategorije_dobavljaca.indexOf(vrsta), 1);
+
+      this.save(this.selectedItem);
+    });
+
+    modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati kategoriju dobavljača " + vrsta + " iz kategorije " + this.selectedItem.naziv+" ? ";
   }
-  novaKategorija: string;
-  addKategorija(vrsta) {
-    this.selectedItem.kategorije_dobavljaca.push(vrsta);
+  @ViewChildren("novaKategorija") novaKategorija: QueryList<ElementRef<any>>;
+
+  novaWebShopKategorija: string;
+  addWebShopKategorija(kategorija) {
+    let kat = new Kategorija();
+    kat.naziv = kategorija;
+    kat.kategorije_dobavljaca = [];
+    this.http.post<Kategorija>("webShopSync/insertKategorija", kat).subscribe(result => {
+      this.toastr.success("Web shop kategorija je uspješno dodana..");
+      this.loadAll();
+    },
+      error => console.error(error));
   }
+  loadAll() {
+    this.http.get<Kategorija[]>(this.baseUrl + 'webShopSync/kategorije').subscribe(result => {
+      this.kategorije = result;
+    }, error => console.error(error));
+  }
+
+  toggleAktivna(kategorija: Kategorija) {
+    let modalRef = this.modalService.open(NgbdModalConfirm);
+    modalRef.result.then((data) => {
+      kategorija.aktivna = !kategorija.aktivna;
+      this.save(kategorija);
+    });
+
+    modalRef.componentInstance.confirmText = "Da li ste sigurni da želite " +( kategorija.aktivna==true?"deaktivirati":"aktivirati") + " kategoriju  " + kategorija.naziv + " ? ";
+  }
+
+  changeKategorija(kategorija, vrsta) {
+  }
+
+  //novaKategorija: string;
+  addKategorija(kat, vrsta) {
+
+    let kategorija = this.kategorije.find(k => k.naziv == kat);
+    if (vrsta == null) {
+      vrsta = this.novaKategorija.find(s => s.nativeElement.id == "nk_" + kategorija.sifra).nativeElement.value;
+      vrsta = vrsta.trim();
+    }
+
+
+    let uKategorijama = this.kategorije.filter(k => k.kategorije_dobavljaca.includes(vrsta));
+    if (uKategorijama.length == 1 && uKategorijama.includes(kategorija))
+      return;
+    if (uKategorijama && uKategorijama.length > 0) {
+      let modalRef = this.modalService.open(NgbdModalConfirm);
+      modalRef.result.then((data) => {
+        uKategorijama.forEach(k => {
+          k.kategorije_dobavljaca.splice(k.kategorije_dobavljaca.indexOf(vrsta), 1);
+        });
+
+        if (kategorija.kategorije_dobavljaca.includes(vrsta) == false)
+          kategorija.kategorije_dobavljaca.push(vrsta);
+
+        this.save(kategorija);
+      }, (reason) => {
+        //  if (kategorija.kategorije_dobavljaca.includes(vrsta) == false) {
+        //    kategorija.kategorije_dobavljaca.push(vrsta);
+        //    this.save(kategorija);
+        //}
+      });
+      let nazivi = uKategorijama.map(k => {
+        return k.naziv;
+      }).join("\n,");
+      modalRef.componentInstance.confirmText = "Ova kategorija dobavljača pripada web shop kategorijama \n" + nazivi + ". Da li želite da je obrišete iz istih i dodate u kategoriju " + kategorija.naziv + "?";
+    }
+    else {
+      if (kategorija.kategorije_dobavljaca.includes(vrsta) == false) {
+        kategorija.kategorije_dobavljaca.push(vrsta);
+        this.save(kategorija);
+      }
+
+    }
+
+  }
+
+
 
   convertToNumber(text: any) {
     if (text == undefined)
@@ -104,16 +189,36 @@ export class KategorijaComponent {
       this.sortOrder = false;
     }
   }
-
+  updateInProgress: boolean = false;
   azurirajKategorije() {
+    this.updateInProgress = true;
     this.http.get(this.baseUrl + 'webShopSync/updateKategorije').subscribe(result => {
-      alert('OK');
-    }, error => console.error(error));
+      this.toastr.success("Kategorije su uspješno ažurirane..");
+      this.updateInProgress = false;
+    }, error => { this.updateInProgress = false; console.error(error) });
+  }
+
+  obrisiKategoriju(kategorija) {
+    let modalRef = this.modalService.open(NgbdModalConfirm);
+    modalRef.result.then((data) => {
+      this.http.delete(this.baseUrl + 'webShopSync/deleteKategorija?sifra=' + kategorija.sifra).subscribe(result => {
+        this.toastr.success("Kategorija je uspješno obrisana..");
+        this.kategorije.splice(this.kategorije.indexOf(kategorija), 1);
+      }, error => {
+        this.toastr.error("Greška..");
+        console.error(error)
+      });
+    }, (reason) => {
+    });
+
+    modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati kategoriju " + kategorija.naziv + " ?";
+
+
   }
   exportAsXLSX(): void {
     this.excelService.exportAsExcelFile(this.kategorije, 'Kategorije');
   }
-  constructor(private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
+  constructor(private modalService: NgbModal, private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router, private toastr: ToastrService) {
     this.baseUrl = baseUrl;
     this.http = http;
     this.sortColumn = 'naziv';
@@ -126,9 +231,7 @@ export class KategorijaComponent {
         this.router.navigate(['/login']);
     });
 
-    http.get<Kategorija[]>(baseUrl + 'webShopSync/kategorije').subscribe(result => {
-      this.kategorije = result;
-    }, error => console.error(error));
+    this.loadAll();
 
   }
 }

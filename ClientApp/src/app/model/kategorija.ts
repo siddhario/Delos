@@ -4,4 +4,5 @@ export class Kategorija {
   sifra_nad: string;
   marza?: number;
   kategorije_dobavljaca?: string[];
+  aktivna?: boolean;
 }

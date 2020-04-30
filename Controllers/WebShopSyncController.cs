@@ -37,6 +37,59 @@ namespace WebApplication3.Controllers
             return _dbContext.artikal.ToList();
         }
 
+
+        [HttpDelete]
+        [Route("deleteKategorija")]
+        public IActionResult DeleteKategorija(string sifra)
+        {
+            try
+            {
+                var kat = _dbContext.kategorija.FirstOrDefault(k => k.sifra == sifra);
+                if (kat == null)
+                    return NotFound();
+                _dbContext.Remove(kat);
+                _dbContext.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Helper.LogException(ex);
+                return BadRequest();
+            }
+        }
+
+
+        [HttpPost]
+        [Route("insertKategorija")]
+        public IActionResult InsertKategorija(kategorija kategorija)
+        {
+            try
+            {
+                string maxsifra = null;
+
+                int? sifra = null;
+                if (_dbContext.kategorija != null && _dbContext.kategorija.Count() > 0)
+                {
+                    maxsifra = _dbContext.kategorija.Max(p => p.sifra);
+                    int dbroj = int.Parse(maxsifra);
+                    sifra = dbroj + 1;
+                }
+                else
+                    sifra = 1;
+
+                kategorija.sifra = sifra.ToString().PadLeft(3, '0');
+
+                _dbContext.kategorija.Add(kategorija);
+                _dbContext.SaveChanges();
+                return Ok(kategorija);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception");
+                return BadRequest(ex);
+            }
+        }
+
         [HttpGet]
         [Route("kategorije")]
         public IEnumerable<kategorija> GetKategorije()
@@ -47,7 +100,7 @@ namespace WebApplication3.Controllers
         [Route("updateKategorije")]
         public IActionResult UpdateKategorije()
         {
-           Delos.Helpers.Helper.UpdateKategorije(_dbContext);
+            Delos.Helpers.Helper.UpdateKategorije(_dbContext);
             return Ok();
         }
 
@@ -59,9 +112,10 @@ namespace WebApplication3.Controllers
             if (kat != null)
             {
                 kat.marza = kategorija.marza;
+                kat.aktivna = kategorija.aktivna;
                 kat.kategorije_dobavljaca = kategorija.kategorije_dobavljaca;
-
-                Helper.UpdateCijene(_dbContext, kategorija);
+                if (kategorija.marza.HasValue)
+                    Helper.UpdateCijene(_dbContext, kategorija);
 
                 _dbContext.SaveChanges();
             }
@@ -96,7 +150,7 @@ namespace WebApplication3.Controllers
                 &&
                 (
                     kategorija == null ||
-                    it.kategorija == kategorija || (kategorija=="NULL"&&it.kategorija==null)
+                    it.kategorija == kategorija || (kategorija == "NULL" && it.kategorija == null)
                 )
                 &&
                 (
@@ -150,7 +204,7 @@ namespace WebApplication3.Controllers
                 for (int i = 1; i < ws1.RowCount(); i++)
                 {
                     var k1 = ws1.Cell(i + 1, 1).Value.ToString().Trim();
-                    
+
                     var k2 = ws1.Cell(i + 1, 2).Value.ToString().Trim();
                     if (k1 != "" && k2 != "")
                     {
@@ -169,7 +223,7 @@ namespace WebApplication3.Controllers
                         if (kat1.kategorije_dobavljaca == null)
                             kat1.kategorije_dobavljaca = new List<string>();
 
-                        
+
 
                         string katd = k1.Trim();
                         if (katd.EndsWith(";"))
