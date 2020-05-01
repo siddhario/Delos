@@ -16,7 +16,6 @@ namespace Delos.Helpers
     {
         public static string StampaRadnogNaloga(prijava prijava)
         {
-            //  //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
 
             string dir = "C:\\temp";
 
