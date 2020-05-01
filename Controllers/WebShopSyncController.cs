@@ -114,8 +114,7 @@ namespace WebApplication3.Controllers
                 kat.marza = kategorija.marza;
                 kat.aktivna = kategorija.aktivna;
                 kat.kategorije_dobavljaca = kategorija.kategorije_dobavljaca;
-                if (kategorija.marza.HasValue)
-                    Helper.UpdateCijene(_dbContext, kategorija);
+                    Helper.UpdateCijenaIKategorijaArtikala(_dbContext, kategorija);
 
                 
 
