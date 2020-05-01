@@ -1,0 +1,24 @@
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto"  class=" table-responsive">
+  <h2 id="tableLabel">Korisnici</h2>
+
+  <p *ngIf="!korisnici"><em>Učitavanje...</em></p>
+
+  <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="korisnici">
+    <thead>
+      <tr>
+        <th>Ime</th>
+        <th>Prezime</th>
+        <th>Email</th>
+        <th>Admin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let korisnik of korisnici">
+        <td>{{ korisnik.ime }}</td>
+        <td>{{ korisnik.prezime }}</td>
+        <td>{{ korisnik.email }}</td>
+        <td>{{ korisnik.admin }}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>

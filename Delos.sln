@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delos", "Delos\Delos.csproj", "{DD14279A-8E6B-4D6C-9426-332EE0CE59CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebShopSyncService", "WebShopSyncService\WebShopSyncService.csproj", "{417FE75D-7E0A-4C24-8158-6814D052E1B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{16F48F4B-0A72-4326-8447-1A35AC94DD8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD14279A-8E6B-4D6C-9426-332EE0CE59CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD14279A-8E6B-4D6C-9426-332EE0CE59CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD14279A-8E6B-4D6C-9426-332EE0CE59CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD14279A-8E6B-4D6C-9426-332EE0CE59CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{417FE75D-7E0A-4C24-8158-6814D052E1B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{417FE75D-7E0A-4C24-8158-6814D052E1B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{417FE75D-7E0A-4C24-8158-6814D052E1B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{417FE75D-7E0A-4C24-8158-6814D052E1B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16F48F4B-0A72-4326-8447-1A35AC94DD8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16F48F4B-0A72-4326-8447-1A35AC94DD8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16F48F4B-0A72-4326-8447-1A35AC94DD8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16F48F4B-0A72-4326-8447-1A35AC94DD8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A26DF52-0448-4C96-8456-E33CF3409687}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,165 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Provide sufficient contrast against white background */
+
+body {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size:small   
+}
+a {
+  color: #0366d6;
+}
+
+code {
+  color: #e01a76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.container{
+  max-width:1450px;
+}
+.filter-green {
+  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+}
+
+.filter-blue {
+  filter: invert(46%) sepia(80%) saturate(1245%) hue-rotate(159deg) brightness(91%) contrast(101%);
+}
+.filter-red {
+  filter: invert(28%) sepia(88%) saturate(1389%) hue-rotate(339deg) brightness(104%) contrast(95%);
+}
+
+.row{
+  font-weight:normal;
+}
+
+.rowSelected {
+  font-weight:bold!important;
+}
+
+.headerLabel {
+  font-size:14px;font-weight:bold;
+}
+
+.table-bordered {padding:10px;}
+
+input {padding:2px;border-radius:4px;}
+
+.email {
+  background: url('assets/img/email-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.print {
+  background: url('assets/img/print-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.confirm {
+  background: url('assets/img/check_circle-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.delete {
+  background: url('assets/img/delete-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.deepcopy {
+  background: url('assets/img/deepcopy-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.status {
+  background: url('assets/img/status-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+.add {
+  background: url('assets/img/add-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 40px;
+  height: 40px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+
+.save {
+  background: url('assets/img/save-24px.svg') no-repeat;
+  background-color:gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+
+.cancel {
+  background: url('assets/img/cancel-24px.svg') no-repeat;
+  background-color: gainsboro;
+  width: 150px;
+  background-position-x: right;
+  background-position-y: center;
+}
+.modal-xl {
+  max-width: 100% !important;
+}
+
+
+.modal-content{
+  width:75%;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+label {
+  font-weight:bold;
+  margin-bottom:0px;
+}
+.form-control-sm{
+  padding:0.25rem 0.2rem;
+}
+.color-toolbar {
+  background-color: #e6edf2
+}
+
+.color-itemdetail {
+  background-color: #e6edf2
+}
+
+.nav-link{
+  font-size:14px !important;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #e6edf2;
+}
+
+.white {
+  filter: invert(100%);
+}
+
+
+.form-control:disabled {
+  background-color: #f8f9fa !important;
+}

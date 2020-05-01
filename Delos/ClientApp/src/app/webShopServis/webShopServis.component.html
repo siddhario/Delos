@@ -1,0 +1,24 @@
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto"  class=" table-responsive">
+  <h2 id="tableLabel">Servisi</h2>
+
+  <p *ngIf="!servisi"><em>Učitavanje...</em></p>
+
+  <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="servisi">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Opis</th>
+        <th>Interval (u minutama)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let servis of servisi">
+        <td>{{ servis.id }}</td>
+        <td>{{ servis.description }}</td>
+        <td>{{ servis.intervalInMinutes }}</td>
+        <td><a href="/webShopSync/sync?serviceId={{servis.id}}">Pokreni</a></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>

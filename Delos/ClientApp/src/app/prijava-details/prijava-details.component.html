@@ -1,0 +1,170 @@
+<div style="width:100%;padding:10px;">
+
+  <header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
+      <div class="container" style="padding:0px">
+
+        <button type="button" *ngIf="formMode==1" class="btn btn-primary btn-sm" style="width:60px;margin:3px;" (click)="startAdd()">+</button>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                aria-label="Toggle navigation"
+                [attr.aria-expanded]="isExpanded"
+                (click)="toggle()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
+             [ngClass]="{ show: isExpanded }">
+          <ul class="navbar-nav flex-grow">
+
+
+
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <button type="button" class="btn btn-info  btn-sm" style="width:80px;margin:3px;" *ngIf="formMode==1" (click)="izmijeniPrijavu()">Izmijeni</button>
+
+            </li>
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <button type="button" class="btn btn-danger  btn-sm" style="width:80px;margin:3px;" *ngIf="formMode==1" (click)="obrisiPrijavu()">Obriši</button>
+
+            </li>
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <button type="button" class="btn btn-secondary  btn-sm" style="width:60px;margin:3px;" *ngIf="formMode==1" (click)="excel()">Štampa</button>
+            </li>
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <button type="button" class="btn btn-secondary  btn-sm" style="width:60px;margin:3px;" *ngIf="formMode==1" (click)="radniNalog()">Radni nalog</button>
+            </li>
+
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <button type="button" class="btn btn-light  btn-sm" style="margin:3px" (click)="cancel()">X</button>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div *ngIf="selectedPrijava&&prijavaVisible==true" style="margin:10px">
+    <div class="form-row form-group">
+      <div *ngIf="formMode!=2" class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPrijava.broj" type="text" /></div>
+      <div class="col-sm-2">
+        <label>Datum</label><div class="input-group">
+          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.datum"
+                 value="selectedPrijava.datum"
+                 ngbDatepicker #d="ngbDatepicker">
+          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+        </div>
+      </div>
+      <div *ngIf="formMode!=2" class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [value]="selectedPrijava.korisnik.ime+' '+selectedPrijava.korisnik.prezime" type="text" /></div>
+      <div class="col-sm-2">
+        <label>Završeno</label><div class="input-group">
+          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.zavrseno"
+                 value="selectedPrijava.zavrseno"
+                 ngbDatepicker #d="ngbDatepicker">
+          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="form-row form-group">
+      <div class="col-sm-6">
+        <label for="partner_naziv">Partner</label>
+        <input id="partner_naziv" type="text" [disabled]="formMode==1" #partnerElement (keyup.enter)="console.log('enter')"
+               name="partner_naziv"
+               class="form-control  form-control-sm"
+               [(ngModel)]="selectedPrijava.partner"
+               (selectItem)="selectedItem($event)"
+               [ngbTypeahead]="search"
+               [resultFormatter]="resultFormatPartnerListValue"
+               [inputFormatter]="inputFormatPartnerListValue"
+               #instance="ngbTypeahead" />
+      </div>
+      <div class="col-sm-6" hidden><label>Naziv</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.kupac_ime" type="text" /></div>
+      <div class="col-sm-6"><label>Adresa</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.kupac_adresa" type="text" /></div>
+
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-4"><label>Telefon</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.kupac_telefon" type="text" /></div>
+      <div class="col-sm-4"><label>Email</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.kupac_email" type="text" /></div>
+    </div>
+
+    <div class="form-row form-group">
+      <div class="col-sm-9"><label>Predmet</label><textarea rows="3" class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.predmet"></textarea></div>
+
+      <div class="col-sm-3"><label>Dodatna oprema</label><textarea rows="3" class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.dodatna_oprema"></textarea></div>
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-3"><label>Model</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.model" type="text" /></div>
+      <div class="col-sm-3"><label>Ser.broj</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.serijski_broj" type="text" /></div>
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-6"><label>Instalacije</label><textarea rows="2" class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.instalacija" type="text"></textarea></div>
+      <div class="col-sm-1" style="text-align: -webkit-center;"><label>OS</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.instalacija_os" type="checkbox" /></div>
+      <div class="col-sm-1" style="text-align: -webkit-center;"><label>Office</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.instalacija_office" type="checkbox" /></div>
+      <div class="col-sm-1" style="text-align: -webkit-center;"><label>Ostalo</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedPrijava.instalacija_ostalo" type="checkbox" /></div>
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-2"><label>Br.naloga</label><input readonly [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.broj_naloga" type="text" /></div>
+      <div class="col-sm-2"><label>Br.garantnog lista</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.broj_garantnog_lista" type="text" /></div>
+      <div class="col-sm-2"><label>Garantni rok</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.garantni_rok" type="text" pattern="[0-9]+([,\.][0-9]+)?" /></div>
+
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-9"><label>Napomena servisera</label><textarea rows="3" [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.napomena_servisera" type="text"></textarea></div>
+      <div class="col-sm-3"><label>Serviser</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.serviser" type="text" /></div>
+
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-6">
+        <label for="dobavljac_naziv">Dobavljač</label>
+        <input id="dobavljac_naziv" type="text" [disabled]="formMode==1" #partnerElement (keyup.enter)="console.log('enter')"
+               name="dobavljac_naziv"
+               class="form-control  form-control-sm"
+               [(ngModel)]="selectedPrijava.dobavljac_partner"
+               (selectItem)="selectedItemDobavljac($event)"
+               [ngbTypeahead]="search"
+               [resultFormatter]="resultFormatPartnerListValue"
+               [inputFormatter]="inputFormatPartnerListValue"
+               #instance="ngbTypeahead" />
+      </div>
+      <div class="col-sm-2"><label>Br.računa</label><input  [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.broj_racuna" type="text" /></div>
+
+    
+    </div>
+    <div class="form-row form-group">
+      <div class="col-sm-2" *ngIf="selectedPrijava.dobavljac_sifra">
+        <label>Datum vraćanja</label><div class="input-group">
+          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.datum_vracanja"
+                 value="selectedPrijava.datum_vracanja"
+                 ngbDatepicker #d="ngbDatepicker">
+          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+        </div>
+      </div>
+      <div class="col-sm-2" *ngIf="selectedPrijava.dobavljac_sifra">
+        <label>Mejl dobavljaču</label><div class="input-group">
+          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.mejl_dobavljacu"
+                 value="selectedPrijava.mejl_dobavljacu"
+                 ngbDatepicker #d="ngbDatepicker">
+          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
+      <div class="container" style="padding:0px">
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
+             [ngClass]="{ show: isExpanded }">
+          <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-warning btn-sm" style="width:80px;margin:3px;" (click)="cancel()">Odustani</button>
+          <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="savePrijava(selectedPrijava)">Sačuvaj</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+</div>
