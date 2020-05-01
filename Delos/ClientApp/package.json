@@ -27,7 +27,7 @@
     "bootstrap": "^4.3.1",
     "core-js": "^2.6.5",
     "file-saver": "^2.0.2",
-    "jquery": "3.4.1",
+    "jquery": "3.5.0",
     "json-ignore": "^0.4.0",
     "ngb-modal": "^2.0.3",
     "ngx-toastr": "^11.1.2",
