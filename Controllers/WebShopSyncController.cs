@@ -117,14 +117,31 @@ namespace WebApplication3.Controllers
                 if (kategorija.marza.HasValue)
                     Helper.UpdateCijene(_dbContext, kategorija);
 
+                
+
                 _dbContext.SaveChanges();
             }
             return Ok();
         }
 
+        [HttpPut]
+        [Route("updateArtikal")]
+        public IActionResult UpdateArtikal(artikal artikal)
+        {
+            var art = _dbContext.artikal.FirstOrDefault(p => p.sifra == artikal.sifra);
+            if (art != null)
+            {
+                art.aktivan = artikal.aktivan;
+                _dbContext.SaveChanges();
+                return Ok(art);
+            }
+            else
+                return NotFound();
+
+        }
         [HttpGet]
         [Route("artikliSearch")]
-        public IEnumerable<artikal> Search(string naziv, string kategorija, string dostupnost, string dobavljac, string loadAll)
+        public IEnumerable<artikal> Search(string naziv, string kategorija, string dostupnost, string dobavljac, string loadAll,string brend,string aktivan)
         {
 
             if (loadAll == "0" && (naziv == null || naziv.Length < 3))
@@ -151,6 +168,16 @@ namespace WebApplication3.Controllers
                 (
                     kategorija == null ||
                     it.kategorija == kategorija || (kategorija == "NULL" && it.kategorija == null)
+                )
+                   &&
+                (
+                    brend == null ||
+                    it.brend == brend || (brend == "NULL" && it.brend == null)
+                )
+                     &&
+                (
+                    aktivan == "0" ||
+                    (it.aktivan == true &&aktivan=="1") || (it.aktivan == false && aktivan == "2")
                 )
                 &&
                 (

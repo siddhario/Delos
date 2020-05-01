@@ -61,6 +61,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
         }
 
+    
 
         [HttpPost]
         public IActionResult InsertPrijava(prijava prijava)

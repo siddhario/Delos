@@ -1,46 +1,64 @@
-<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table">
   <h2 id="tableLabel">Artikli</h2>
 
   <div class="row">
-    <div *ngIf="currentUser" class="col-4">
+    <div *ngIf="currentUser" class="col-3">
       Naziv:
       <input class="form-control form-control-sm" #searchInput [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje" [disabled]="loadAll=='1'">
     </div>
 
-    <div *ngIf="currentUser" class="col-4" style="align-self:center">
+    <div *ngIf="currentUser" class="col-3" style="align-self:center">
       Filter:
-      <select class="form-control form-control-sm" [ngModel]="loadAll" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,selectedDobavljac,$event)">
+      <select class="form-control form-control-sm" [ngModel]="loadAll" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,selectedDobavljac,$event,selectedBrend,selectedAktivan)">
         <option value="1">--Bez filtera--</option>
         <option value="0" selected>--Sa filterom--</option>
       </select>
     </div>
-    <div class="col-4" style="align-self:center">
-      <button (click)="exportAsXLSX()" >Eksport u .xlsx</button>
+
+    <div class="col-3">
+      Aktivan:
+      <select class="form-control form-control-sm" [ngModel]="selectedAktivan" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,selectedDobavljac,loadAll,selectedBrend,$event)">
+        <option value="0">--Svi--</option>
+        <option value="1" selected>--Aktivni--</option>
+        <option value="2">--Neaktivni--</option>
+      </select>
+    </div>
+    <div class="col-3" style="align-self:center">
+      <button (click)="exportAsXLSX()">Eksport u .xlsx</button>
     </div>
   </div>
   <div class="row">
 
 
-    <div class="col-4">
+    <div class="col-3">
       Kategorija (WEB SHOP):
-      <select class="form-control form-control-sm" [ngModel]="selectedKategorijaWebShop" (ngModelChange)="startSearch(searchText,$event,selectedDostupnost,selectedDobavljac,loadAll)">
+      <select class="form-control form-control-sm" [ngModel]="selectedKategorijaWebShop" (ngModelChange)="startSearch(searchText,$event,selectedDostupnost,selectedDobavljac,loadAll,selectedBrend,selectedAktivan)">
         <ng-container *ngFor="let k of kategorijeWebShop">
           <option [value]="k.naziv">{{k.naziv}}</option>
         </ng-container>
       </select>
     </div>
-    <div class="col-4">
+    <div class="col-3">
       Dostupnost:
-      <select class="form-control form-control-sm" [ngModel]="selectedDostupnost" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,$event,selectedDobavljac,loadAll)">
+      <select class="form-control form-control-sm" [ngModel]="selectedDostupnost" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,$event,selectedDobavljac,loadAll,selectedBrend,selectedAktivan)">
         <option value="0">--Sve--</option>
         <option value="1" selected>--Na stanju--</option>
       </select>
     </div>
-    <div class="col-4">
+
+    <div class="col-3">
       Dobavljač:
-      <select class="form-control form-control-sm" [ngModel]="selectedDobavljac" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,$event,loadAll)">
+      <select class="form-control form-control-sm" [ngModel]="selectedDobavljac" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,$event,loadAll,selectedBrend,selectedAktivan)">
         <ng-container *ngFor="let k of dobavljaci">
           <option [value]="k">{{k}}</option>
+        </ng-container>
+      </select>
+    </div>
+    <div class="col-3">
+      Brend:
+      <select class="form-control form-control-sm" [ngModel]="selectedBrend" (ngModelChange)="startSearch(searchText,selectedKategorijaWebShop,selectedDostupnost,selectedDobavljac,loadAll,$event,selectedAktivan)">
+        <ng-container *ngFor="let b of distinctBrendovi">
+          <option [value]="b">{{b}}</option>
         </ng-container>
       </select>
     </div>
@@ -56,40 +74,56 @@
     <thead>
       <tr>
         <th><a (click)="sortProperty('sifra')">Šifra</a><ng-container *ngIf="sortColumn=='sifra'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('barkod')">Barkod</a><ng-container *ngIf="sortColumn=='barkod'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('naziv')">Naziv</a><ng-container *ngIf="sortColumn=='naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('dobavljac')">Dobavljač</a><ng-container *ngIf="sortColumn=='dobavljac'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('brend')">Brend</a><ng-container *ngIf="sortColumn=='brend'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('kategorija')">Kategorija</a><ng-container *ngIf="sortColumn=='kategorija'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('cijena_sa_rabatom')">Cijena</a><ng-container *ngIf="sortColumn=='cijena_sa_rabatom'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('cijena_prodajna')">Cijena prodajna</a><ng-container *ngIf="sortColumn=='cijena_prodajna'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('cijena_mp')">MPC</a><ng-container *ngIf="sortColumn=='cijena_mp'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
         <th><a (click)="sortProperty('dostupnost')">Dostupnost</a><ng-container *ngIf="sortColumn=='dostupnost'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('aktivan')">Aktivan</a><ng-container *ngIf="sortColumn=='aktivan'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
       </tr>
     </thead>
     <tbody>
       <ng-container *ngFor="let artikal of artikli">
         <tr (click)="selectItem(artikal)">
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.sifra }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.barkod }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.naziv }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dobavljac }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.brend }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.kategorija }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_sa_rabatom | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_prodajna | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_mp | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dostupnost }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.aktivan==true?'DA':'NE' }}</td>
         </tr>
         <tr *ngIf="artikal.sifra==selectedItem?.sifra">
-          <td colspan="4">
+          <td colspan="11">
+            Opis:
+            <p style="font-weight:bold;max-width:1000px">{{artikal.opis}}</p>
+            Barkod:
+            <p style="font-weight:bold">{{artikal.barkod}}</p>
+            Garancija:
+            <p style="font-weight:bold">{{artikal.garancija}}</p>
+            Brend:
+            <p style="font-weight:bold">{{artikal.brend}}</p>
             Zadnje učitavanje:
-            <p>{{artikal.zadnje_ucitavanje|date:'dd.MM.yyyy HH:mm:ss'}}</p>
+            <p style="font-weight:bold">{{artikal.zadnje_ucitavanje|date:'dd.MM.yyyy HH:mm:ss'}}</p>
             Kategorije:
             <ng-container *ngFor="let vrsta of artikal.vrste;index as i">
-              <p>-{{vrsta}}</p>
+              <p style="font-weight:bold">-{{vrsta}}</p>
             </ng-container>
+            <button [disabled]="updateInProgress==true" (click)="toggleAktivan(artikal)" type="button" class="btn btn-info btn-sm">{{ artikal.aktivan==true?'Deaktiviraj':'Aktiviraj' }}</button>
+            <br/>
             Slike:<br />
             <ng-container *ngFor="let img of artikal.slike;index as i">
               <a *ngIf="sanitize(img)!=''" target="_blank" [href]="sanitize(img)">
                 {{img}}<br />
-                <img [src]="sanitize(img)" />
+                <img [src]="sanitize(img)" style="max-width:1000px" />
               </a><br />
             </ng-container>
           </td>

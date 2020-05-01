@@ -175,9 +175,9 @@ export class KategorijaComponent {
   }
   sort<T>(prop: (c: Kategorija) => T, order: "ASC" | "DESC"): void {
     this.kategorije.sort((a, b) => {
-      if (prop(a) < prop(b))
+      if (prop(a) < prop(b) || prop(a) == null)
         return -1;
-      if (prop(a) > prop(b))
+      if (prop(a) > prop(b) || prop(b) == null)
         return 1;
       return 0;
     });

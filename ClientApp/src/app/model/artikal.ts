@@ -12,4 +12,9 @@ export class Artikal {
   slike?: string[];
   vrste?: string[];
   kategorija: string;
+  opis: string;
+  barkod: string;
+  garancija: string;
+  brend: string;
+  aktivan: boolean;
 }

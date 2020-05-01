@@ -9,6 +9,9 @@ import { debounceTime, distinctUntilChanged, tap, switchMap, catchError, map, fi
 import { DomSanitizer } from '@angular/platform-browser';
 import { ExcelService } from '../../services/export-excel-service';
 import { Kategorija } from '../model/kategorija';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-korisnik',
@@ -34,13 +37,21 @@ export class ArtikalComponent implements AfterViewInit {
   http: HttpClient;
   baseUrl: string;
   selectedKategorijaWebShop: string;
+  selectedBrend: string;
+  distinctBrendovi: Set<any>;
+  brendovi: string[];
+  selectedAktivan: string = "1";
 
-  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string) {
+  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string, brend: string, aktivan: string) {
     this.selectedKategorijaWebShop = selectedKategorijaWebShop;
     this.loadAll = loadAll;
     this.selectedDostupnost = dostupnost;
     //this.selectedKategorija = kategorija;
     this.selectedDobavljac = dobavljac;
+
+    this.selectedBrend = brend;
+    this.selectedAktivan = aktivan;
+
     this.isSearching = true;
     if (selectedKategorijaWebShop == "--Sve--")
       selectedKategorijaWebShop = null;
@@ -48,6 +59,11 @@ export class ArtikalComponent implements AfterViewInit {
       selectedKategorijaWebShop = "NULL";
     if (dobavljac == "--Svi--")
       dobavljac = null;
+    if (brend == "--Svi--")
+      brend = null;
+    if (aktivan == "--Svi--")
+      aktivan = null;
+
 
     this.http.get<Artikal[]>(this.baseUrl + 'webShopSync/artikliSearch?'
       + (naziv ? 'naziv=' + naziv : '')
@@ -55,30 +71,31 @@ export class ArtikalComponent implements AfterViewInit {
       + (dostupnost ? '&dostupnost=' + dostupnost : '')
       + (dobavljac ? '&dobavljac=' + dobavljac : '')
       + (loadAll ? '&loadAll=' + loadAll : '')
+      + (brend ? '&brend=' + brend : '')
+      + (aktivan ? '&aktivan=' + aktivan : '')
     ).subscribe(result => {
       this.artikli = result;
 
       this.isSearching = false;
-      //if (selectedKategorijaWebShop == null) {
-      //  this.kategorije = new Array<string>();
-      //  this.kategorije.push("--Sve--");
+      if (brend == null) {
+        this.brendovi = new Array<string>();
+        this.brendovi.push("--Svi--");
 
-      //  this.artikli.forEach(a => {
-      //    if (a.vrste != null)
-      //      a.vrste.forEach(v => this.kategorije.push("[" + a.dobavljac + "] " + v));
-      //  });
-      //  let katgs = []
-      //  katgs = this.kategorije.sort((a, b) => {
-      //    if (a < b)
-      //      return -1;
-      //    else if (a > b)
-      //      return 1;
-      //    else
-      //      return 0;
-      //  })
+        this.artikli.forEach(a => {
+          this.brendovi.push(a.brend);
+        });
+        let brnds = []
+        brnds = this.brendovi.sort((a, b) => {
+          if (a < b)
+            return -1;
+          else if (a > b)
+            return 1;
+          else
+            return 0;
+        })
 
-      //  this.distinctKategorije = new Set(katgs);
-      //}
+        this.distinctBrendovi = new Set(brnds);
+      }
     }, error => console.error(error));
   }
   selectedItem: Artikal;
@@ -105,10 +122,10 @@ export class ArtikalComponent implements AfterViewInit {
       , distinctUntilChanged()
       // subscription for response
     ).subscribe((text: string) => {
-      this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll);
+      this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan);
     });
 
- 
+
   }
   selectedDobavljac: string;
 
@@ -117,12 +134,18 @@ export class ArtikalComponent implements AfterViewInit {
     this.sortColumn = property;
     if (property == "sifra")
       this.sort(p => p.sifra, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "barkod")
+      this.sort(p => p.barkod, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "aktivan")
+      this.sort(p => p.aktivan, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "naziv")
       this.sort(p => p.naziv, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "kategorija")
       this.sort(p => p.kategorija, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "dobavljac")
       this.sort(p => p.dobavljac, this.sortOrder == true ? "ASC" : "DESC");
+    else if (property == "brend")
+      this.sort(p => p.brend, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "cijena_sa_rabatom")
       this.sort(p => p.cijena_sa_rabatom, this.sortOrder == true ? "ASC" : "DESC");
     else if (property == "cijena_prodajna")
@@ -135,9 +158,9 @@ export class ArtikalComponent implements AfterViewInit {
   }
   sort<T>(prop: (c: Artikal) => T, order: "ASC" | "DESC"): void {
     this.artikli.sort((a, b) => {
-      if (prop(a) < prop(b))
+      if (prop(a) < prop(b) || prop(a)==null)
         return -1;
-      if (prop(a) > prop(b))
+      if (prop(a) > prop(b)|| prop(b)==null)
         return 1;
       return 0;
     });
@@ -149,10 +172,24 @@ export class ArtikalComponent implements AfterViewInit {
       this.sortOrder = false;
     }
   }
+
+  toggleAktivan(artikal: Artikal) {
+    let modalRef = this.modalService.open(NgbdModalConfirm);
+    modalRef.result.then((data) => {
+      artikal.aktivan = !artikal.aktivan;
+      this.http.put<Kategorija>("webShopSync/updateArtikal", artikal).subscribe(result => {
+        this.toastr.success("Artikal je uspješno izmjenjen..");
+      }, error => console.error(error));
+    });
+
+    modalRef.componentInstance.confirmText = "Da li ste sigurni da želite " + (artikal.aktivan == true ? "deaktivirati" : "aktivirati") + " artikal  " + artikal.naziv + " ? ";
+
+
+  }
   exportAsXLSX(): void {
     this.excelService.exportAsExcelFile(this.artikli, 'Artikli');
   }
-  constructor(private excelService:ExcelService,private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
+  constructor(private modalService: NgbModal, private toastr: ToastrService, private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
     this.baseUrl = baseUrl;
     this.http = http;
     this.sortColumn = 'naziv';

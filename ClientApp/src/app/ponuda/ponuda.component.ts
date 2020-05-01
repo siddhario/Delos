@@ -51,11 +51,11 @@ export class PonudaComponent {
     }
     sort<T>(prop: (c: Ponuda) => T, order: "ASC" | "DESC"): void {
         this.ponude.sort((a, b) => {
-            if (prop(a) < prop(b))
-                return -1;
-            if (prop(a) > prop(b))
-                return 1;
-            return 0;
+          if (prop(a) < prop(b) || prop(a) == null)
+            return -1;
+          if (prop(a) > prop(b) || prop(b) == null)
+            return 1;
+          return 0;
         });
 
         if (order === "DESC") {
