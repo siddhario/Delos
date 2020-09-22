@@ -2,6 +2,7 @@
 using Delos.Helpers;
 using Delos.Model;
 using Microsoft.Extensions.Hosting;
+using Shared.Model;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace Delos.Services
             try
             {
                 var artikli = await _serviceModel.SyncAsync();
-                _serviceModel.UdpateDb(this._dbContext, artikli);
+                _serviceModel.UdpateDb(this._dbContext, artikli, _serviceModel.Config.Description);
             }
             catch (Exception ex)
             {

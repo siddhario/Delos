@@ -1,4 +1,4 @@
-<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table">
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
   <h2 id="tableLabel">Artikli</h2>
 
   <div class="row">
@@ -95,7 +95,7 @@
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dobavljac }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.brend }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.kategorija }}</td>
-          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_sa_rabatom | noComma }}</td>
+          <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_sa_rabatom  }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_prodajna | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.cijena_mp | noComma }}</td>
           <td [ngStyle]="{'font-weight':artikal==selectedItem? 'bold' : 'normal' }">{{ artikal.dostupnost }}</td>
@@ -117,8 +117,14 @@
             <ng-container *ngFor="let vrsta of artikal.vrste;index as i">
               <p style="font-weight:bold">-{{vrsta}}</p>
             </ng-container>
+
+            Istorija cijena:
+            <ng-container *ngFor="let istorija of sortIstorija(artikal.istorija_cijena);index as i">
+              <p>{{istorija.vrijeme | date:'dd.MM.yyyy'  }} &nbsp;-&nbsp;{{istorija.cijena | noComma}}</p>
+            </ng-container>
+
             <button [disabled]="updateInProgress==true" (click)="toggleAktivan(artikal)" type="button" class="btn btn-info btn-sm">{{ artikal.aktivan==true?'Deaktiviraj':'Aktiviraj' }}</button>
-            <br/>
+            <br />
             Slike:<br />
             <ng-container *ngFor="let img of artikal.slike;index as i">
               <a *ngIf="sanitize(img)!=''" target="_blank" [href]="sanitize(img)">

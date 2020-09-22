@@ -12,6 +12,7 @@ import { Kategorija } from '../model/kategorija';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
 import { ToastrService } from 'ngx-toastr';
+import { istorija_cijena } from '../model/artikal - Copy';
 
 @Component({
   selector: 'app-korisnik',
@@ -158,9 +159,9 @@ export class ArtikalComponent implements AfterViewInit {
   }
   sort<T>(prop: (c: Artikal) => T, order: "ASC" | "DESC"): void {
     this.artikli.sort((a, b) => {
-      if (prop(a) < prop(b) || prop(a)==null)
+      if (prop(a) < prop(b) || prop(a) == null)
         return -1;
-      if (prop(a) > prop(b)|| prop(b)==null)
+      if (prop(a) > prop(b) || prop(b) == null)
         return 1;
       return 0;
     });
@@ -171,6 +172,16 @@ export class ArtikalComponent implements AfterViewInit {
     } else {
       this.sortOrder = false;
     }
+  }
+
+  sortIstorija(istorija: Array<istorija_cijena>): Array<istorija_cijena> {
+    istorija.sort((a, b) => {
+      if (a.vrijeme < b.vrijeme)
+        return 1;
+      else
+        return -1;
+    });
+    return istorija;
   }
 
   toggleAktivan(artikal: Artikal) {

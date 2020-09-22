@@ -55,7 +55,7 @@ namespace Delos.Services
                                         {
                                             if (reader.Name == "Table")
                                             {
-                                                artikal = new artikal() { dobavljac = this.Config.Description };
+                                                artikal = new artikal() { dobavljac = this.Config.Description, prioritet = this.Config.Priority };
                                                 artikli.Add(artikal);
                                             }
                                             if (reader.Name == "ProductCode")

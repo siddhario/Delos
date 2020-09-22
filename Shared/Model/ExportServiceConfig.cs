@@ -18,5 +18,6 @@ namespace Shared.Model
         public string FtpAddress { get; set; }
         public string FtpUsername { get; set; }
         public string FtpPassword { get; set; }
+        public int KeepFileDays { get; set; }
     }
 }

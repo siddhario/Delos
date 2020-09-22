@@ -21,5 +21,6 @@ namespace Shared.Model
         public string Username { get; set; }
         public string Password { get; set; }
         public bool CalculatePrice { get; set; }
+        public int? Priority { get; set; }
     }
 }

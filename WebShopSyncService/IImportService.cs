@@ -33,7 +33,7 @@ namespace Delos.Model
                 }
             }
         }
-        public bool UdpateDb(DelosDbContext dbContext, List<artikal> artikli)
+        public bool UdpateDb(DelosDbContext dbContext, List<artikal> artikli,string dobavljac)
         {
             decimal pdvStopa = 17;
             try
@@ -44,7 +44,7 @@ namespace Delos.Model
                     var kat = dbContext.kategorija.FirstOrDefault(k => k.naziv == a.kategorija);
                     a.kalkulacija = Config.CalculatePrice;
 
-                    if (a.kalkulacija == true && kat != null && kat.marza != null && (a.cijena_prodajna == null || a.cijena_prodajna == 0))
+                    if (a.kalkulacija == true && kat != null && kat.marza != null)
                     {
                         a.cijena_prodajna = a.cijena_sa_rabatom + Math.Round(a.cijena_sa_rabatom * kat.marza.Value / 100, 2);
                     }
@@ -56,13 +56,17 @@ namespace Delos.Model
                     if (art == null)
                     {
                         a.zadnje_ucitavanje = DateTime.Now;
+                        dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = a.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
                         dbContext.Add(a);
                     }
                     else
                     {
                         art.zadnje_ucitavanje = DateTime.Now;
-                        art.cijena_sa_rabatom = a.cijena_sa_rabatom;
-                        art.cijena_prodajna = a.cijena_prodajna;
+                        if (art.cijena_sa_rabatom != a.cijena_sa_rabatom||dbContext.istorija_cijena.Where(i=>i.artikal_sifra==art.sifra).Count()==0)
+                            dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = art.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
+                        
+                        art.cijena_sa_rabatom = a.cijena_sa_rabatom;                     
+                        art.cijena_prodajna = a.cijena_prodajna;                       
                         art.cijena_mp = a.cijena_mp;
                         art.kolicina = a.kolicina;
                         art.dostupnost = a.dostupnost;
@@ -74,9 +78,18 @@ namespace Delos.Model
                         art.garancija = a.garancija;
                         art.brend = a.brend;
                         art.opis = a.opis;
+                        art.prioritet = a.prioritet;
                     }
 
                 }
+
+                var inactive = dbContext.artikal.Where(a =>a.dobavljac==dobavljac && artikli.Select(aa => aa.sifra).Contains(a.sifra) == false).ToList();
+                foreach (var art in inactive)
+                {
+                    //art.aktivan = false;
+                    art.dostupnost = "0";
+                }
+                 
 
                 dbContext.SaveChanges();
                 return true;

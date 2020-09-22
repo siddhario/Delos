@@ -27,7 +27,8 @@ namespace Delos.Services
                            
                                 if (reader.Name == "PRICE")
                             {
-                                artikal = new artikal() { dobavljac = this.Config.Description };
+                                artikal = new artikal() { dobavljac = this.Config.Description, prioritet = this.Config.Priority };
+                                
                                 artikal.sifra = this.Config.Id.ToString().PadLeft(3,'0') + "_" + artikal.dobavljac_sifra;
                                 artikli.Add(artikal);
                             }

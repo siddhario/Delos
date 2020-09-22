@@ -1,5 +1,6 @@
 ﻿using Delos.Model;
 using Microsoft.EntityFrameworkCore;
+using Shared.Model;
 
 namespace Delos.Contexts
 {
@@ -13,7 +14,7 @@ namespace Delos.Contexts
         public DbSet<ponuda_dokument> ponuda_dokument { get; set; }
         public DbSet<prijava> prijava { get; set; }
         public DbSet<artikal> artikal { get; set; }
-
+        public DbSet<istorija_cijena> istorija_cijena { get; set; }
         public DbSet<kategorija> kategorija { get; set; }
         public DelosDbContext(DbContextOptions<DelosDbContext> options) : base(options) { }
         public DelosDbContext(string connectionString) : base()
@@ -33,6 +34,9 @@ namespace Delos.Contexts
            .HasKey(o => new { o.ponuda_broj, o.stavka_broj });
             modelBuilder.Entity<ponuda_dokument>()
        .HasKey(o => new { o.ponuda_broj, o.dokument_broj });
+
+            modelBuilder.Entity<istorija_cijena>()
+    .HasKey(o => new { o.artikal_sifra, o.vrijeme });
         }
     }
 }

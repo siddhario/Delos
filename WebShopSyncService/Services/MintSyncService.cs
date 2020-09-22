@@ -43,7 +43,7 @@ namespace Delos.Services
                                 {
                                     if (reader.Name == "Red")
                                     {
-                                        artikal = new artikal() { dobavljac = this.Config.Description };
+                                        artikal = new artikal() { dobavljac = this.Config.Description, prioritet = this.Config.Priority };
                                         artikli.Add(artikal);
                                     }
                                     if (reader.Name == "Id")

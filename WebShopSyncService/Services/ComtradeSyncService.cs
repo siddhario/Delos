@@ -20,7 +20,7 @@ namespace Delos.Services
             var result = await cl.GetCTProducts_WithAttributesAsync(Config.Username, Config.Password, null, null, null).ConfigureAwait(false);
             foreach (var res in result.Body.GetCTProducts_WithAttributesResult)
             {
-                artikal a = new artikal();
+                artikal a = new artikal() {prioritet = this.Config.Priority };
                 a.dobavljac_sifra = res.CODE;
                 a.dobavljac = this.Config.Description;
                 a.sifra = this.Config.Id.ToString().PadLeft(3, '0') + "_" + a.dobavljac_sifra;

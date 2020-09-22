@@ -26,7 +26,7 @@ namespace Delos.Services
                         {
                             if (reader.Name == "item")
                             {
-                                artikal = new artikal() { dobavljac = this.Config.Description };
+                                artikal = new artikal() { dobavljac = this.Config.Description, prioritet = this.Config.Priority };
                                 artikal.sifra = this.Config.Id.ToString().PadLeft(3, '0') + "_" + artikal.dobavljac_sifra;
                                 artikli.Add(artikal);
                             }
@@ -69,7 +69,7 @@ namespace Delos.Services
                                     slikaUrl = slikaUrl.Split("<![CDATA[")[1].Split("]]>")[0];
                                     if (artikal.slike == null)
                                         artikal.slike = new List<string>();
-                                    artikal.slike.Add(slikaUrl);
+                                    artikal.slike.Add(slikaUrl.Trim());
                                 }
                             }
 

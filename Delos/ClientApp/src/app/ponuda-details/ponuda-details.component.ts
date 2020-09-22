@@ -883,7 +883,9 @@ export class PonudaDetailsComponent implements OnInit {
   }
 
   save(stavka: PonudaStavka, continueAdd: boolean) {
-
+    if ((typeof stavka.artikal) == "string") {
+      stavka.artikal = null;
+    }
 
     this.convertProperties(stavka);
 

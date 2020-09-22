@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { AuthenticationService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { Korisnik } from '../model/korisnik';
@@ -9,7 +9,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   currentUser: Korisnik;
 
   constructor(
@@ -126,6 +126,9 @@ export class HomeComponent {
 
 
   }
+  ngOnInit(): void {
+    
+    }
 
   logout() {
     this.authenticationService.logout();

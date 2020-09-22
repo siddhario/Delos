@@ -8,6 +8,7 @@ using Delos.Contexts;
 using Delos.Helpers;
 using Delos.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared.Model;
@@ -158,7 +159,7 @@ namespace WebApplication3.Controllers
             }
 
 
-            return _dbContext.artikal.Where(it =>
+            var result = _dbContext.artikal.Include(a => a.istorija_cijena).Where(it =>
                 (
                     loadAll == "1" ||
                     Regex.IsMatch(it.naziv.ToLower(), exp)
@@ -175,7 +176,7 @@ namespace WebApplication3.Controllers
                 )
                      &&
                 (
-                    aktivan == "0" ||
+                    aktivan == "0" || aktivan==null||
                     (it.aktivan == true &&aktivan=="1") || (it.aktivan == false && aktivan == "2")
                 )
                 &&
@@ -189,6 +190,7 @@ namespace WebApplication3.Controllers
                     (it.dostupnost != null && it.dostupnost != "0")
                 )
             ).ToList().OrderBy(aa => aa.naziv);
+            return result;
 
             //var artikli = _dbContext.artikal.Where(p => p.naziv.ToLower().Contains(naziv.ToLower()) && p.dostupnost!=null && p.dostupnost!="0");
             //return artikli.ToList();

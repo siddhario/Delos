@@ -1,3 +1,5 @@
+import { istorija_cijena } from "./artikal - Copy";
+
 export class Artikal {
   sifra: string;
   naziv: string;
@@ -17,4 +19,5 @@ export class Artikal {
   garancija: string;
   brend: string;
   aktivan: boolean;
+  istorija_cijena: Array<istorija_cijena>;
 }

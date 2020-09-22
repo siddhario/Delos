@@ -21,6 +21,15 @@
             <a class="nav-link text-light" [routerLink]="['/']">Početna</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/artikli']" *ngIf="currentUser">Artikli</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/kategorije']" *ngIf="currentUser">Kategorije</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/prijave']" *ngIf="currentUser">Servisne prijave</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/korisnici']" *ngIf="currentUser">Korisnici</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
@@ -33,7 +42,7 @@
             <a class="nav-link text-light" [routerLink]="['/login']">Prijava</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="currentUser">
-            <a class="nav-link text-light" style="font-size: 16px !IMPORTANT;font-weight: bold;" >{{currentUser.ime}}&nbsp;{{currentUser.prezime}}</a>
+            <a class="nav-link text-light" style="font-size: 16px !IMPORTANT;font-weight: bold;">{{currentUser.ime}}&nbsp;{{currentUser.prezime}}</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="currentUser">
             <a class="nav-link text-light" (click)="logout()"><img class="white" src="/assets/img/logout.png" width="24" height="24" /></a>
