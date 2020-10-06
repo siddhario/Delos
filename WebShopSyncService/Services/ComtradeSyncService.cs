@@ -26,10 +26,10 @@ namespace Delos.Services
                 a.dobavljac = this.Config.Description;
                 a.sifra = this.Config.Id.ToString().PadLeft(3, '0') + "_" + a.dobavljac_sifra;
                 a.naziv = res.NAME;
-                if (a.sifra == "002_NV70K1340BB/OL")
-                {
-                    int tt = 0;
-                }
+                //if (a.sifra == "002_NV70K1340BB/OL")
+                //{
+                //    int tt = 0;
+                //}
                 decimal cijena;
                 decimal.TryParse(res.PRICE.Replace(",", "."), System.Globalization.NumberStyles.Any, new CultureInfo("en-US"), out cijena);
                 a.cijena_sa_rabatom = cijena;
