@@ -27,12 +27,14 @@ import { ExcelService } from '../services/export-excel-service';
 import { KategorijaComponent } from './kategorija/kategorija.component';
 import { PrijavaComponent } from './prijava/prijava.component';
 import { PrijavaDetailsComponent } from './prijava-details/prijava-details.component';
+import { korisnikDetailsComponent } from './korisnik-details/korisnik-details.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     KorisnikComponent,
+    korisnikDetailsComponent,
     PonudaComponent,
     PonudaDetailsComponent,
     PartnerComponent,
@@ -72,7 +74,7 @@ import { PrijavaDetailsComponent } from './prijava-details/prijava-details.compo
       { path: 'prijave', component: PrijavaComponent }
     ])
   ],
-  entryComponents: [PrijavaDetailsComponent,PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
+  entryComponents: [korisnikDetailsComponent, PrijavaDetailsComponent,PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
   providers: [ExcelService, { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
 
   bootstrap: [AppComponent]

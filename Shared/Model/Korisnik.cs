@@ -14,5 +14,7 @@ namespace Delos.Model
         public bool admin { get; set; }
         [NotMapped]
         public string token { get; set; }
+        [NotMapped]
+        public string lozinkaStara { get; set; }
     }
 }

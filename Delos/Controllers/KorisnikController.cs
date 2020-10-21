@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Delos.Contexts;
+using Delos.Helpers;
 using Delos.Model;
 using Delos.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -16,13 +19,13 @@ namespace WebApplication3.Controllers
         private IUserService _userService;
         private DelosDbContext _dbContext;
 
- 
+
         private readonly ILogger<KorisnikController> _logger;
 
-        public KorisnikController(DelosDbContext context, ILogger<KorisnikController> logger,IUserService userService)
+        public KorisnikController(DelosDbContext context, ILogger<KorisnikController> logger, IUserService userService)
         {
             _dbContext = context;
-            _userService=userService;
+            _userService = userService;
         }
 
 
@@ -33,7 +36,87 @@ namespace WebApplication3.Controllers
 
             var korisnici = _userService.GetAll();
             return korisnici;
-        
+
+        }
+        [HttpDelete]
+        public IActionResult DeleteKorisnik(string korisnickoIme)
+        {
+            var korisnik = _dbContext.korisnik.FirstOrDefault(p => p.korisnicko_ime == korisnickoIme);
+            if (korisnik != null)
+            {
+                _dbContext.korisnik.Remove(korisnik);
+                _dbContext.SaveChanges();
+                return Ok();
+            }
+            else
+                return NotFound();
+        }
+
+        [HttpPost]
+        public IActionResult InsertKorisnik(korisnik korisnik)
+        {
+            try
+            {
+                korisnik.lozinka = Helper.CreateMD5(korisnik.lozinka).ToLower();
+                _dbContext.korisnik.Add(korisnik);
+                _dbContext.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("izmjenaLozinke")]
+        public IActionResult IzmjenaLozinke(korisnik korisnik)
+        {
+            var pon = _dbContext.korisnik.FirstOrDefault(p => p.korisnicko_ime == korisnik.korisnicko_ime);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    var user = _userService.Authenticate(korisnik.korisnicko_ime, korisnik.lozinkaStara);
+
+                    if (user == null)
+                        return BadRequest(new { message = "Username or password is incorrect" });
+                    pon.lozinka = Helper.CreateMD5(korisnik.lozinka);
+
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+        }
+        [HttpPut]
+        public IActionResult UpdateKorisnik(korisnik korisnik)
+        {
+            var pon = _dbContext.korisnik.FirstOrDefault(p => p.korisnicko_ime == korisnik.korisnicko_ime);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    pon.ime = korisnik.ime;
+                    pon.prezime = korisnik.prezime;
+                    pon.email = korisnik.email;
+                    pon.admin = korisnik.admin;
+
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
         }
 
         [AllowAnonymous]

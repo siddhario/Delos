@@ -1,0 +1,44 @@
+<div style="width:100%;padding:10px;" class="color-primary-0">
+  <div style="text-align:left;border:1px solid;border-color:gainsboro;border-radius:.2rem;overflow:auto;" class="color-primary-1">
+    <div style="float:left">
+
+      <button type="button" [disabled]="false" class="btn btn-primary  btn-sm" style="margin:3px;">Korisnik</button>
+
+      <button  [disabled]="currentUser.admin==false" type="button"  class="btn btn-primary btn-sm" style="margin:3px;" (click)="startAdd()">+</button>
+    </div>
+
+
+    <div style="float:right">
+      <button *ngIf="currentUser.korisnicko_ime==selectedKorisnik.korisnicko_ime" type="button" class="btn btn-primary  btn-sm" style="margin:3px;" (click)="izmijeniLozinku()">Izmijeni lozinku</button>
+      <button [disabled]="currentUser.admin==false" type="button" class="btn btn-primary  btn-sm" style="margin:3px;" (click)="delete(selectedKorisnik.korisnicko_ime)">Obriši</button>
+
+      <button type="button" class="btn btn-outline-primary  btn-sm" style="margin:3px" (click)="this.activeModal.close()">X</button>
+    </div>
+  </div>
+  <div style="margin:10px">
+   
+    <div class="form-row form-group">
+      <div *ngIf="izmjenaLozinke==false" class="col-sm-12"><label>Ime</label><input [readonly]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.ime" type="text" /></div>
+      <div *ngIf="izmjenaLozinke==false" class="col-sm-12"><label>Prezime</label><input [readonly]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.prezime" type="text" /></div>
+      <div  *ngIf="izmjenaLozinke==false" class="col-sm-12"><label>Email</label><input [readonly]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.email" type="text" /></div>
+      <div  *ngIf="izmjenaLozinke==false" class="col-sm-12"><label>Korisničko ime</label><input [readonly]="itemAdd==false" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.korisnicko_ime" type="text" /></div>
+      <div *ngIf="izmjenaLozinke==true" class="col-sm-12"><label>Stara lozinka</label><input class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.lozinkaStara" type="password" /></div>
+      <div *ngIf="itemAdd==true||izmjenaLozinke==true" class="col-sm-12"><label>Lozinka</label><input [readonly]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.lozinka" type="password" /></div>
+      <div *ngIf="itemAdd==true||izmjenaLozinke==true" class="col-sm-12"><label>Ponovi lozinku</label><input [readonly]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.lozinkaPonovo" type="password" /></div>
+    </div>
+  
+
+    <div class="form-row form-group align-items-center">
+      <div class="col-sm-6"><div class="form-check"><input id="cbAdmin" *ngIf="izmjenaLozinke==false" [disabled]="currentUser.admin==false" [readonly]="currentUser.admin==false" class="form-check-input" [(ngModel)]="selectedKorisnik.admin" type="checkbox" /><label *ngIf="izmjenaLozinke==false" class="form-check-label" for="cbKupac">Admin</label></div></div>
+    
+    </div>
+
+
+
+  </div>
+
+  <div style="text-align:right;border:1px solid;border-color:gainsboro;border-radius:.2rem" class="color-primary-1">
+    <button [disabled]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime" type="button" class="btn btn-primary btn-sm" style="margin:3px;" (click)="saveKorisnik(selectedKorisnik)">Sačuvaj</button>
+    <button [disabled]="currentUser.admin==false&&currentUser.korisnicko_ime!=selectedKorisnik.korisnicko_ime"  type="button" class="btn btn-primary btn-sm" style="margin:3px;" (click)="cancel()">Odustani</button>
+  </div>
+</div>
