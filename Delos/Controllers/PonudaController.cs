@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Delos.Contexts;
@@ -38,8 +39,8 @@ namespace WebApplication3.Controllers
         [HttpGet]
         public IEnumerable<ponuda> Get()
         {
-
-            var ponude = _dbContext.ponuda.Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
+            var korisnik = _dbContext.korisnik.FirstOrDefault(k => k.korisnicko_ime == User.Identity.Name);
+            var ponude = _dbContext.ponuda.Where(p=>p.skrivena==null||p.skrivena==false||p.Korisnik.korisnicko_ime== korisnik.korisnicko_ime||korisnik.admin==true).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
             return ponude.OrderByDescending(p => p.datum.Year * 1000 + p.broj.Substring(p.broj.IndexOf("/") + 1));
         }
 
