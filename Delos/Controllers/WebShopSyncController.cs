@@ -162,7 +162,7 @@ namespace WebApplication3.Controllers
             var result = _dbContext.artikal.Include(a => a.istorija_cijena).Where(it =>
                 (
                     loadAll == "1" ||
-                    Regex.IsMatch(it.naziv.ToLower(), exp)
+                    (Regex.IsMatch(it.naziv.ToLower(), exp) || (it.sifra.Contains(naziv)))
                 )
                 &&
                 (
