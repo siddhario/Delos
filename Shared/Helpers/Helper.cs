@@ -1,7 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Delos.Contexts;
 using Delos.Model;
-using ServisDB.Klase;
 using Shared.Model;
 using System;
 using System.Collections.Generic;
@@ -14,30 +13,7 @@ namespace Delos.Helpers
 {
     public static class Helper
     {
-        public static string StampaRadnogNaloga(prijava prijava)
-        {
-
-            string dir = "C:\\temp";
-
-            if (Directory.Exists(dir) == false)
-            {
-                Directory.CreateDirectory(dir);
-            }
-         
-
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("BROJNALOGA", prijava.broj);
-            dict.Add("PREDMET", prijava.predmet);
-            dict.Add("KUPAC", prijava.kupac_ime + ", " + prijava.kupac_telefon + ", " + prijava.kupac_adresa);
-            dict.Add("SERVISER", prijava.serviser);
-            dict.Add("DATUM", prijava.datum.Value.ToString("dd.MM.yyyy"));
-            dict.Add("DATUMNALOGA", prijava.datum.Value.ToString("dd.MM.yyyy"));
-
-            string fileName = dir + "\\" + prijava.broj.Replace("/", "-") + ".docx";
-
-            WordDocumentBuilder.FillBookmarksUsingOpenXml("RadniNalog.docx", fileName, dict);
-            return fileName;
-        }
+   
 
         public static string StampaPrijave(prijava prijava)
         {
@@ -96,7 +72,7 @@ namespace Delos.Helpers
 
             return fileName;
         }
-            public static string CreateMD5(string input)
+        public static string CreateMD5(string input)
         {
             // Use input string to calculate MD5 hash
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
@@ -410,7 +386,60 @@ namespace Delos.Helpers
             return fileName;
         }
 
+        public static string StampaRadnogNalogaExcel(prijava prijava)
+        {
 
+            //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
+
+            string dir = "C:\\temp";
+
+            if (Directory.Exists(dir) == false)
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+
+            XLWorkbook doc = new XLWorkbook("RadniNalog.xlsx");
+            //doc.Worksheets.Add("PRIJAVA");
+
+            var sheet = doc.Worksheet(1);
+
+
+            sheet.Cells("C10").Value = prijava.broj_naloga;
+            sheet.Cells("C10").DataType = XLDataType.Text;
+            sheet.Cells("G10").Value = prijava.datum.Value.ToString("dd.MM.yyyy");
+            sheet.Cells("G10").DataType = XLDataType.DateTime;
+            sheet.Cells("C13").Value = prijava.kupac_ime;
+            sheet.Cells("C13").DataType = XLDataType.Text;
+            sheet.Cells("C14").Value = prijava.datum.Value.ToString("dd.MM.yyyy");
+            sheet.Cells("C14").DataType = XLDataType.DateTime;
+            sheet.Cells("A23").Value = prijava.predmet;
+            sheet.Cells("A23").DataType = XLDataType.Text;
+            sheet.Cells("D37").Value = prijava.serviser;
+            sheet.Cells("D37").DataType = XLDataType.Text;
+
+
+            string fileName = dir + "\\" + prijava.broj.Replace("/", "-") + ".xlsx";
+
+            if (File.Exists(fileName) == true)
+            {
+                try
+                {
+                    File.Delete(fileName);
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+                doc.SaveAs(fileName);
+            }
+            else
+            {
+                doc.SaveAs(fileName);
+            }
+
+            return fileName;
+        }
 
         public static void UpdateCijenaIKategorijaArtikala(DelosDbContext dbContext, kategorija kategorija)
         {

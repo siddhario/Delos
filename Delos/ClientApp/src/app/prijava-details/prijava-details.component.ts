@@ -65,7 +65,7 @@ export class PrijavaDetailsComponent {
 
     prijava.garantni_rok = this.convertToNumber(prijava.garantni_rok);
     if ((typeof prijava.partner) == "string") {
-      prijava.partner_naziv = prijava.partner;
+      prijava.kupac_ime = prijava.partner;
       prijava.partner = new partner();
       prijava.partner.naziv = prijava.partner_naziv;
     }
@@ -167,11 +167,11 @@ export class PrijavaDetailsComponent {
   radniNalog() {
     if (this.selectedPrijava != undefined) {
 
-      this.http.get(this.baseUrl + 'prijava/radniNalog?broj=' + this.selectedPrijava.broj
+      this.http.get(this.baseUrl + 'prijava/excelRadniNalog?broj=' + this.selectedPrijava.broj
         , {
           responseType: 'arraybuffer'
         }
-      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
     }
   }
   selectedItemDobavljac(item) {

@@ -6,7 +6,7 @@ export class Prijava {
   broj_naloga: string;
   datum?: Date;
   partner_dobavljac: partner;
-  partner?: partner;
+  partner: partner;
   korisnik?: Korisnik;
   kupac_sifra?: number;
   kupac_ime: string;
@@ -31,6 +31,7 @@ export class Prijava {
   instalacija_office: boolean;
   instalacija_ostalo: boolean;
   instalacija: string;
+  zavrseno?: Date;
 
   selected: boolean;
 }

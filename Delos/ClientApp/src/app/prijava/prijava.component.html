@@ -1,13 +1,13 @@
 <div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
-  <h2 id="tableLabel">Prijave</h2>
-
-  <div class="row">
+  <h2 id="tableLabel">Servisne prijave</h2>
+  <p *ngIf="!prijave&&currentUser"><em>Učitavanje...</em></p>
+  <p *ngIf="!currentUser"><em>Niste autorizovani za pristup ovoj stranici...</em></p>
+  <div style="overflow:auto" *ngIf="currentUser">
     <div style="float:left;margin: 4px;">
       <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
     </div>
-    <div *ngIf="currentUser" class="col-4">
-      Naziv:
-      <input class="form-control form-control-sm" #searchInput [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+    <div style="float:left;margin: 4px;">
+      <input class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
     </div>
   </div>
 
@@ -16,24 +16,24 @@
   <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="prijave">
     <thead>
       <tr>
-        <th>Broj</th>
-        <th>Datum</th>
-        <th>Kupac</th>
 
-        <th>Adresa</th>
-        <th>Telefon</th>
-        <th>Predmet</th>
+        <th><a (click)="sortProperty('broj')">Broj</a><ng-container *ngIf="sortColumn=='broj'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('datum')">Datum</a><ng-container *ngIf="sortColumn=='datum'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kupac_ime')">Partner</a><ng-container *ngIf="sortColumn=='kupac_ime'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kupac_adresa')">Adresa</a><ng-container *ngIf="sortColumn=='kupac_adresa'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kupac_telefon')">Telefon</a><ng-container *ngIf="sortColumn=='kupac_telefon'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('predmet')">Predmet</a><ng-container *ngIf="sortColumn=='predmet'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('model')">Model</a><ng-container *ngIf="sortColumn=='model'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('dobavljac_sifra')">Dobavljač</a><ng-container *ngIf="sortColumn=='dobavljac_sifra'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('poslat_mejl_dobavljacu')">Email dobavljaču</a><ng-container *ngIf="sortColumn=='poslat_mejl_dobavljacu'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('datum_vracanja')">Datum vraćanja</a><ng-container *ngIf="sortColumn=='datum_vracanja'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('zavrseno')">Završeno</a><ng-container *ngIf="sortColumn=='zavrseno'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
 
-        <th>Model</th>
-        <th>Dobavljač</th>
-        <th>Email dobavljaču</th>
 
-        <th>Datum vraćanja</th>
-        <th>Završeno</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let prijava of prijave"  (click)="selectItem(prijava)">
+      <tr *ngFor="let prijava of prijave| prijavaFilter : searchText" (click)="selectItem(prijava)">
         <td>{{ prijava.broj }}</td>
         <td>{{ prijava.datum|date:'dd.MM.yyyy' }}</td>
         <td>{{ prijava.kupac_ime }}</td>

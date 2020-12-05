@@ -61,6 +61,7 @@
     <None Remove="ClientApp\src\app\pipes\artikalFlterPipe.ts" />
     <None Remove="ClientApp\src\app\pipes\noCommaPipe.ts" />
     <None Remove="ClientApp\src\app\pipes\ponudaFilterPipe.ts" />
+    <None Remove="ClientApp\src\app\pipes\prijavaFilterPipe.ts" />
     <None Remove="Ponuda.xlsm" />
   </ItemGroup>
 
@@ -92,6 +93,9 @@
     <TypeScriptCompile Include="ClientApp\src\app\model\ponudaStavka.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\pipes\noCommaPipe.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\pipes\artikalFlterPipe.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\app\pipes\prijavaFilterPipe.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\pipes\ponudaFilterPipe.ts" />

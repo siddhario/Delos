@@ -128,7 +128,7 @@ namespace WebApplication3.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdatePartner(prijava prijava)
+        public IActionResult UpdatePrijava(prijava prijava)
         {
             prijava.Korisnik = null;
             var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == prijava.broj);
@@ -199,20 +199,38 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet]
-        [Route("radniNalog")]
-        public IActionResult radniNalog(string broj)
+        [Route("excelRadniNalog")]
+        public IActionResult ExcelRadniNalog(string broj)
         {
             var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
             {
-                string file = Helper.StampaRadnogNaloga(pon);
+                string file = Helper.StampaRadnogNalogaExcel(pon);
+                pon.broj_naloga = broj;
+                _dbContext.SaveChanges();
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
                 _logger.LogError(file);
-                return new FileStreamResult(fileStream, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                return new FileStreamResult(fileStream, "application/vnd.ms-excel");
             }
         }
+
+        //[HttpGet]
+        //[Route("radniNalog")]
+        //public IActionResult radniNalog(string broj)
+        //{
+        //    var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == broj);
+        //    if (pon == null)
+        //        return NotFound();
+        //    else
+        //    {
+        //        string file = Helper.StampaRadnogNaloga(pon);
+        //        var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+        //        _logger.LogError(file);
+        //        return new FileStreamResult(fileStream, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        //    }
+        //}
 
 
 

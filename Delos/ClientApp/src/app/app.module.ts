@@ -28,6 +28,7 @@ import { KategorijaComponent } from './kategorija/kategorija.component';
 import { PrijavaComponent } from './prijava/prijava.component';
 import { PrijavaDetailsComponent } from './prijava-details/prijava-details.component';
 import { korisnikDetailsComponent } from './korisnik-details/korisnik-details.component';
+import { PrijavaFilterPipe } from './pipes/prijavaFilterPipe';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { korisnikDetailsComponent } from './korisnik-details/korisnik-details.co
     KategorijaComponent,
     PrijavaComponent,
     PrijavaDetailsComponent,
+    PrijavaFilterPipe
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
