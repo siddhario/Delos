@@ -1,3 +1,7 @@
+import { Korisnik } from "./korisnik";
+import { partner } from "./partner";
+import { UgovorRata } from "./ugovorRata";
+
 export class Ugovor {
   broj?: string;
   datum?: Date;
@@ -20,4 +24,7 @@ export class Ugovor {
   napomena?: string;
   mk?: boolean;
   uplaceno_po_ratama?: number;
+  korisnik?: Korisnik;
+  partner?: partner;
+  rate?: UgovorRata[];
 }

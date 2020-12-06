@@ -66,66 +66,61 @@ namespace WebApplication3.Controllers
         [HttpPost]
         public IActionResult InsertUgovor(ugovor ugovor)
         {
-            return Ok();
-            //try
-            //{
-            //    var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).Where(p => p.datum.Value.Year == DateTime.Now.Year);
-            //    string maxPrijavaBroj = null;
-            //    int year = prijava.datum.Value.Year;
-            //    int? broj = null;
-            //    if (prijave != null && prijave.Count() > 0)
-            //    {
-            //        maxPrijavaBroj = prijave.Max(p => p.broj);
-            //        int dbroj = int.Parse(maxPrijavaBroj.Split("/")[0]);
-            //        broj = dbroj + 1;
-            //    }
-            //    else
-            //        broj = 1;
-            //    prijava.serviser_primio = User.Identity.Name;
-            //    prijava.broj = broj.Value.ToString("D5") + "/" + year.ToString();
+            try
+            {
+                var ugovori = _dbContext.ugovor.Include(p => p.partner).Include(p => p.Korisnik).Where(p => p.datum.Year == DateTime.Now.Year);
+                string maxBroj = null;
+                int year = ugovor.datum.Year;
+                int? broj = null;
+                if (ugovori != null && ugovori.Count() > 0)
+                {
+                    maxBroj = ugovori.Max(p => p.broj);
+                    int dbroj = int.Parse(maxBroj.Split("/")[0]);
+                    broj = dbroj + 1;
+                }
+                else
+                    broj = 1;
+                ugovor.radnik = User.Identity.Name;
+                ugovor.broj = broj.Value.ToString("D5") + "/" + year.ToString();
+                ugovor.uplaceno_po_ratama = 0;
 
-            //    partner partner;
-            //    if (prijava.partner.sifra == null)
-            //    {
-            //        partner = new partner();
+                partner partner;
+                if (ugovor.partner.sifra == null)
+                {
+                    partner = new partner();
 
-            //        partner.naziv = prijava.kupac_ime;
-            //        partner.adresa = prijava.kupac_adresa;
-            //        partner.telefon = prijava.kupac_telefon;
-            //        partner.email = prijava.kupac_email;
-            //        partner.tip = "P";
+                    partner.naziv = ugovor.kupac_naziv;
+                    partner.adresa = ugovor.kupac_adresa;
+                    partner.broj_lk = ugovor.kupac_broj_lk;
+                    partner.tip = "P";
 
-            //        prijava.partner = partner;
-            //    }
-            //    else
-            //    {
-            //        partner = _dbContext.partner.Where(p => p.sifra == prijava.kupac_sifra).FirstOrDefault();
+                    ugovor.partner = partner;
+                }
+                else
+                {
+                    partner = _dbContext.partner.Where(p => p.sifra == ugovor.kupac_sifra).FirstOrDefault();
 
-            //        partner.naziv = prijava.kupac_ime;
-            //        partner.adresa = prijava.kupac_adresa;
-            //        partner.telefon = prijava.kupac_telefon;
-            //        partner.email = prijava.kupac_email;
-            //        partner.tip = "P";
-            //        _dbContext.SaveChanges();
+                    partner.naziv = ugovor.kupac_naziv;
+                    partner.adresa = ugovor.kupac_adresa;
+                    partner.broj_lk = ugovor.kupac_broj_lk;
 
-            //        prijava.partner = partner;
-            //    }
-            //    if (prijava.dobavljac_partner != null)
-            //    {
-            //        partner = _dbContext.partner.Where(p => p.sifra == prijava.dobavljac_sifra).FirstOrDefault();
-            //        prijava.dobavljac_partner = partner;
-            //    }
+                    partner.tip = "P";
+                    _dbContext.SaveChanges();
 
-            //    _dbContext.prijava.Add(prijava);
-            //    _dbContext.SaveChanges();
+                    ugovor.partner = partner;
+                }
 
-            //    prijava.Korisnik = _dbContext.korisnik.FirstOrDefault(k => k.korisnicko_ime == prijava.serviser_primio);
-            //    return Ok(prijava);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return BadRequest(ex);
-            //}
+                ugovor.status = "E";
+                _dbContext.ugovor.Add(ugovor);
+                _dbContext.SaveChanges();
+
+                ugovor.Korisnik = _dbContext.korisnik.FirstOrDefault(k => k.korisnicko_ime == ugovor.radnik);
+                return Ok(ugovor);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPut]

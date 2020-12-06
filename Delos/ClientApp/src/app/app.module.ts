@@ -31,6 +31,7 @@ import { korisnikDetailsComponent } from './korisnik-details/korisnik-details.co
 import { PrijavaFilterPipe } from './pipes/prijavaFilterPipe';
 import { UgovorComponent } from './ugovor/ugovor.component';
 import { UgovorFilterPipe } from './pipes/ugovorFilterPipe';
+import { UgovorDetailsComponent } from './ugovor-details/ugovor-details.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { UgovorFilterPipe } from './pipes/ugovorFilterPipe';
     PrijavaDetailsComponent,
     PrijavaFilterPipe,
     UgovorComponent,
-    UgovorFilterPipe
+    UgovorFilterPipe,
+    UgovorDetailsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -81,7 +83,7 @@ import { UgovorFilterPipe } from './pipes/ugovorFilterPipe';
       { path: 'ugovori', component: UgovorComponent }
     ])
   ],
-  entryComponents: [korisnikDetailsComponent, PrijavaDetailsComponent,PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
+  entryComponents: [korisnikDetailsComponent, PrijavaDetailsComponent, PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent, UgovorDetailsComponent],
   providers: [ExcelService, { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
 
   bootstrap: [AppComponent]

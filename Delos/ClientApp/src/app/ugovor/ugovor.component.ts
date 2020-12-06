@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { fromEvent } from 'rxjs';
 import { map, filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { UgovorDetailsComponent } from '../ugovor-details/ugovor-details.component';
 
 @Component({
   selector: 'app-ugovor',
@@ -71,34 +72,34 @@ export class UgovorComponent {
       this.selectedItem = ugovor;
 
 
-    //let modalRef = this.modalService.open(PrijavaDetailsComponent
-    //  , {
-    //    size: "xl",
-    //    windowClass: 'modal-xl'
-    //  });
-    //modalRef.componentInstance.selectedPrijava = prijava;
-    //modalRef.result.then((data) => {
+    let modalRef = this.modalService.open(UgovorDetailsComponent
+      , {
+        size: "xl",
+        windowClass: 'modal-xl'
+      });
+    modalRef.componentInstance.selectedUgovor = ugovor;
+    modalRef.result.then((data) => {
 
-    //  this.load();
+      this.load();
 
-    //}, (reason) => {
-    //  this.load();
-    //});
+    }, (reason) => {
+      this.load();
+    });
   }
   add() {
-    //let modalRef = this.modalService.open(PrijavaDetailsComponent
-    //  , {
-    //    size: "xl",
-    //    windowClass: 'modal-xl',
-    //    backdrop: 'static'
-    //  }
-    //);
-    //modalRef.componentInstance.startAdd();
-    //modalRef.result.then((data) => {
-    //  this.load();
-    //}, (reason) => {
-    //  this.load();
-    //});
+    let modalRef = this.modalService.open(UgovorDetailsComponent
+      , {
+        size: "xl",
+        windowClass: 'modal-xl',
+        backdrop: 'static'
+      }
+    );
+    modalRef.componentInstance.startAdd();
+    modalRef.result.then((data) => {
+      this.load();
+    }, (reason) => {
+      this.load();
+    });
   }
   load() {
     this.http.get<Ugovor[]>(this.baseUrl + 'ugovor').subscribe(result => {

@@ -30,6 +30,9 @@
             <a class="nav-link text-light" [routerLink]="['/prijave']" *ngIf="currentUser">Servisne prijave</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-light" [routerLink]="['/ugovori']" *ngIf="currentUser">Ugovori o odl. plaćanju</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-light" [routerLink]="['/korisnici']" *ngIf="currentUser">Korisnici</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
