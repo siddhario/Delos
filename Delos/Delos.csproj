@@ -57,11 +57,14 @@
     <None Remove="ClientApp\src\app\model\ponudaDokument.ts" />
     <None Remove="ClientApp\src\app\model\ponudaStavka.ts" />
     <None Remove="ClientApp\src\app\model\prijava.ts" />
+    <None Remove="ClientApp\src\app\model\ugovor.ts" />
+    <None Remove="ClientApp\src\app\model\ugovorRata.ts" />
     <None Remove="ClientApp\src\app\model\webShopServis.ts" />
     <None Remove="ClientApp\src\app\pipes\artikalFlterPipe.ts" />
     <None Remove="ClientApp\src\app\pipes\noCommaPipe.ts" />
     <None Remove="ClientApp\src\app\pipes\ponudaFilterPipe.ts" />
     <None Remove="ClientApp\src\app\pipes\prijavaFilterPipe.ts" />
+    <None Remove="ClientApp\src\app\pipes\ugovorFilterPipe.ts" />
     <None Remove="Ponuda.xlsm" />
   </ItemGroup>
 
@@ -83,6 +86,10 @@
     <TypeScriptCompile Include="ClientApp\src\app\model\prijava.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\app\model\ugovorRata.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\app\model\ugovor.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\model\webShopServis.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -95,6 +102,9 @@
     <TypeScriptCompile Include="ClientApp\src\app\pipes\artikalFlterPipe.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\app\pipes\ugovorFilterPipe.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\pipes\prijavaFilterPipe.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -102,6 +112,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ClientApp\src\app\model\ugovorRata.js">
+      <DependentUpon>ugovorRata.ts</DependentUpon>
+    </None>
     <None Update="ClientApp\src\assets\img\logout.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

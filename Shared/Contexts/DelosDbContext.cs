@@ -16,6 +16,8 @@ namespace Delos.Contexts
         public DbSet<artikal> artikal { get; set; }
         public DbSet<istorija_cijena> istorija_cijena { get; set; }
         public DbSet<kategorija> kategorija { get; set; }
+        public DbSet<ugovor> ugovor { get; set; }
+        public DbSet<ugovor_rata> ugovor_rata { get; set; }
         public DelosDbContext(DbContextOptions<DelosDbContext> options) : base(options) { }
         public DelosDbContext(string connectionString) : base()
         {
@@ -30,6 +32,8 @@ namespace Delos.Contexts
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ugovor_rata>()
+        .HasKey(o => new { o.broj_rate, o.ugovorbroj });
             modelBuilder.Entity<ponuda_stavka>()
            .HasKey(o => new { o.ponuda_broj, o.stavka_broj });
             modelBuilder.Entity<ponuda_dokument>()

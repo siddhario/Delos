@@ -1,0 +1,55 @@
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+  <h2 id="tableLabel">Ugovori o odloženom plaćanju</h2>
+  <p *ngIf="!ugovori&&currentUser"><em>Učitavanje...</em></p>
+  <p *ngIf="!currentUser"><em>Niste autorizovani za pristup ovoj stranici...</em></p>
+  <div style="overflow:auto" *ngIf="currentUser">
+    <div style="float:left;margin: 4px;">
+      <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
+    </div>
+    <div style="float:left;margin: 4px;">
+      <input class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+    </div>
+  </div>
+
+ 
+  <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="ugovori">
+    <thead>
+      <tr>
+
+        <th><a (click)="sortProperty('broj')">Broj</a><ng-container *ngIf="sortColumn=='broj'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('datum')">Datum</a><ng-container *ngIf="sortColumn=='datum'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kupac_naziv')">Partner</a><ng-container *ngIf="sortColumn=='kupac_naziv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kupac_adresa')">Adresa</a><ng-container *ngIf="sortColumn=='kupac_adresa'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('kupac_telefon')">Telefon</a><ng-container *ngIf="sortColumn=='kupac_telefon'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('broj_racuna')">Broj računa</a><ng-container *ngIf="sortColumn=='broj_racuna'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('iznos_sa_pdv')">Iznos ugovora (sa PDV-om)</a><ng-container *ngIf="sortColumn=='iznos_sa_pdv'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('inicijalno_uplaceno')">Inicijalno uplaćeno</a><ng-container *ngIf="sortColumn=='inicijalno_uplaceno'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('uplaceno_po_ratama')">Uplaćeno po ratama</a><ng-container *ngIf="sortColumn=='uplaceno_po_ratama'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('suma_uplata')">Suma uplata</a><ng-container *ngIf="sortColumn=='suma_uplata'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('preostalo_za_uplatu')">Preostalo za uplatu</a><ng-container *ngIf="sortColumn=='preostalo_za_uplatu'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+        <th><a (click)="sortProperty('status')">Status</a><ng-container *ngIf="sortColumn=='status'">{{sortOrder==true?'&#8595;':'&#8593;'}}</ng-container></th>
+
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ugovor of ugovori| ugovorFilter : searchText" (click)="selectItem(ugovor)">
+        <td>{{ ugovor.broj }}</td>
+        <td>{{ ugovor.datum|date:'dd.MM.yyyy' }}</td>
+        <td>{{ ugovor.kupac_naziv }}</td>
+
+        <td>{{ ugovor.kupac_adresa }}</td>
+        <td>{{ ugovor.kupac_telefon }}</td>
+        <td>{{ ugovor.broj_racuna }}</td>
+
+        <td>{{ ugovor.iznos_sa_pdv }}</td>
+        <td>{{ ugovor.inicijalno_uplaceno }}</td>
+        <td>{{ ugovor.uplaceno_po_ratama }}</td>
+
+        <td>{{ ugovor.suma_uplata  }}</td>
+        <td>{{ ugovor.preostalo_za_uplatu }}</td>
+        <td>{{ ugovor.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

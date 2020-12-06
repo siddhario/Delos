@@ -29,6 +29,8 @@ import { PrijavaComponent } from './prijava/prijava.component';
 import { PrijavaDetailsComponent } from './prijava-details/prijava-details.component';
 import { korisnikDetailsComponent } from './korisnik-details/korisnik-details.component';
 import { PrijavaFilterPipe } from './pipes/prijavaFilterPipe';
+import { UgovorComponent } from './ugovor/ugovor.component';
+import { UgovorFilterPipe } from './pipes/ugovorFilterPipe';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { PrijavaFilterPipe } from './pipes/prijavaFilterPipe';
     KategorijaComponent,
     PrijavaComponent,
     PrijavaDetailsComponent,
-    PrijavaFilterPipe
+    PrijavaFilterPipe,
+    UgovorComponent,
+    UgovorFilterPipe
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -73,7 +77,8 @@ import { PrijavaFilterPipe } from './pipes/prijavaFilterPipe';
       { path: 'servisi', component: WebShopServisComponent },
       { path: 'artikli', component: ArtikalComponent },
       { path: 'kategorije', component: KategorijaComponent },
-      { path: 'prijave', component: PrijavaComponent }
+      { path: 'prijave', component: PrijavaComponent },
+      { path: 'ugovori', component: UgovorComponent }
     ])
   ],
   entryComponents: [korisnikDetailsComponent, PrijavaDetailsComponent,PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent],
