@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ClosedXML.Excel;
 using Delos.Contexts;
 using Delos.Helpers;
@@ -9,7 +10,10 @@ using Delos.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Npgsql;
+using Shared.Helpers;
 using Shared.Model;
 
 namespace WebApplication3.Controllers
@@ -21,11 +25,12 @@ namespace WebApplication3.Controllers
     {
 
         private DelosDbContext _dbContext;
-
+        public IConfiguration _con;
         private readonly ILogger<UgovorController> _logger;
-        public UgovorController(DelosDbContext context, ILogger<UgovorController> logger)
+        public UgovorController(DelosDbContext context, ILogger<UgovorController> logger, IConfiguration con)
         {
             _logger = logger;
+            _con = con;
             _dbContext = context;
         }
 
@@ -195,7 +200,7 @@ namespace WebApplication3.Controllers
         }
         [HttpGet]
         [Route("realizovan")]
-        public IActionResult UgovorRealizovan (string broj)
+        public IActionResult UgovorRealizovan(string broj)
         {
             var pon = _dbContext.ugovor.FirstOrDefault(p => p.broj == broj);
             if (pon == null)
@@ -276,7 +281,7 @@ namespace WebApplication3.Controllers
         [Route("excel")]
         public IActionResult Excel(string broj)
         {
-            var pon = _dbContext.ugovor.Include(u=>u.rate).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ugovor.Include(u => u.rate).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -290,19 +295,74 @@ namespace WebApplication3.Controllers
 
         [HttpGet]
         [Route("potvrda")]
-        public IActionResult Potvrda(string broj,int broj_rate)
+        public IActionResult Potvrda(string broj, int broj_rate)
         {
             var pon = _dbContext.ugovor.Include(u => u.rate).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
             {
-                string file = Helper.StampaPotvrdeOPlacanju(pon,broj_rate);
+                string file = Helper.StampaPotvrdeOPlacanju(pon, broj_rate);
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
                 _logger.LogError(file);
                 return new FileStreamResult(fileStream, "application/vnd.ms-excel");
             }
         }
 
+        [HttpGet]
+        [Route("pregledUplata")]
+        public async Task<IActionResult> PregledUplata(DateTime datumOd, DateTime datumDo)
+        {
+            List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+            List<string> sume = new List<string>();
+            string rpt = "";
+            string title = "";
+            string report = "Pregled uplata u periodu";
+            rpt = "rptPregledUplata";
+            parameters.Add(new NpgsqlParameter() { ParameterName = "datefrom", NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Date, Value = datumOd.Date });
+            parameters.Add(new NpgsqlParameter() { ParameterName = "dateto", NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Date, Value = datumDo.Date });
+            //}
+            title = report + " " + datumOd.ToString("dd.MM.yyyy") + "-" + datumDo.ToString("dd.MM.yyyy");
+            sume.Add("uplaćeno");
+            var ds = await ReportManager.ExecuteProcedureReport(rpt, parameters, _con.GetConnectionString("Delos"));
+
+            var reportFile = ReportBuilder.BuildReport(report, title, ds, sume);
+            if (reportFile != null)
+            {
+                var fileStream = new FileStream(reportFile, FileMode.Open, FileAccess.Read);
+                return new FileStreamResult(fileStream, "application/vnd.ms-excel");
+            }
+            else
+                return BadRequest();
+        }
+        [HttpGet]
+        [Route("pregledDugovanja")]
+        public async Task<IActionResult> PregledDugovanja(DateTime datumOd, DateTime datumDo)
+        {
+            List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+            List<string> sume = new List<string>();
+            string rpt = "";
+            string title = "";
+            rpt = "rptPregledDugovanja";
+            string report = "Pregled dugovanja u periodu";
+
+
+            parameters.Add(new NpgsqlParameter() { ParameterName = "datefrom", NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Date, Value = datumOd.Date });
+            parameters.Add(new NpgsqlParameter() { ParameterName = "dateto", NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Date, Value = datumDo.Date });
+
+            title = report + " " + datumOd.ToString("dd.MM.yyyy") + "-" + datumDo.ToString("dd.MM.yyyy");
+            sume.Add("dug");
+            var ds = await ReportManager.ExecuteProcedureReport(rpt, parameters, _con.GetConnectionString("Delos"));
+
+            var reportFile = ReportBuilder.BuildReport(report, title, ds, sume);
+            if (reportFile != null)
+            {
+                var fileStream = new FileStream(reportFile, FileMode.Open, FileAccess.Read);
+                return new FileStreamResult(fileStream, "application/vnd.ms-excel");
+            }
+            else
+                return BadRequest();
+        }
+       
     }
 }
