@@ -289,21 +289,20 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet]
-        [Route("excelRadniNalog")]
-        public IActionResult ExcelRadniNalog(string broj)
+        [Route("potvrda")]
+        public IActionResult Potvrda(string broj,int broj_rate)
         {
-            var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ugovor.Include(u => u.rate).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
             {
-                string file = Helper.StampaRadnogNalogaExcel(pon);
-                pon.broj_naloga = broj;
-                _dbContext.SaveChanges();
+                string file = Helper.StampaPotvrdeOPlacanju(pon,broj_rate);
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
                 _logger.LogError(file);
                 return new FileStreamResult(fileStream, "application/vnd.ms-excel");
             }
         }
+
     }
 }

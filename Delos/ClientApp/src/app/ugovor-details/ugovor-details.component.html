@@ -139,10 +139,10 @@
         <td>
           <div *ngIf="rata.formMode!=3">{{ rata.datum_placanja|date:'dd.MM.yyyy' }}</div>
           <div class="input-group" *ngIf="rata.formMode==3">
-            <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="rata.datum_placanja"
+            <input [disabled]="rata.formMode!=3" class="form-control form-control-sm" name="dp" [(ngModel)]="rata.datum_placanja"
                    value="rata.datum_placanja"
                    ngbDatepicker #d="ngbDatepicker">
-            <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+            <button [disabled]="rata.formMode!=3" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
           </div>
         </td>
         <td>
@@ -152,7 +152,7 @@
         </td>
         <td>
           <div *ngIf="rata.uplaceno!=0">
-            <button type="button" class="btn btn-info  btn-sm" style="width:180px;margin:3px;" (click)="potvrda()">Potvrda o plaćanju</button>
+            <button type="button" class="btn btn-info  btn-sm" style="width:180px;margin:3px;" (click)="potvrda(rata)">Potvrda o plaćanju</button>
           </div>
         </td>
       </tr>

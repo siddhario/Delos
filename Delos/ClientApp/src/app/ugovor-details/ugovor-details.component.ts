@@ -78,6 +78,14 @@ export class UgovorDetailsComponent {
     }
 
   }
+  potvrda(rata: UgovorRata) {
+    this.http.get(this.baseUrl + 'ugovor/potvrda?broj=' + rata.ugovorbroj + "&broj_rate=" + rata.broj_rate
+      , {
+        responseType: 'arraybuffer'
+      }
+    ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+  }
+
   saveUgovorRata(rata: UgovorRata) {
     rata.formMode = FormMode.View;
     rata.uplaceno = this.convertToNumber(rata.uplaceno);
@@ -88,7 +96,7 @@ export class UgovorDetailsComponent {
       let modalRef = this.modalService.open(NgbdModalConfirm);
       modalRef.result.then((data) => {
 
-        this.http.get(this.baseUrl + 'ugovor/potvrda?ugovorbroj=' + rata.ugovorbroj + "&broj_rate=" + rata.broj_rate
+        this.http.get(this.baseUrl + 'ugovor/potvrda?broj=' + rata.ugovorbroj + "&broj_rate=" + rata.broj_rate
           , {
             responseType: 'arraybuffer'
           }
@@ -172,6 +180,20 @@ export class UgovorDetailsComponent {
         this.http.get(this.baseUrl + 'ugovor/zakljuci?broj=' + this.selectedUgovor.broj).subscribe(result => {
           this.toastr.success("Ugovor je uspješno zaključen..");
           this.activeModal.close();
+
+
+          let modalRef = this.modalService.open(NgbdModalConfirm);
+          modalRef.result.then((data) => {
+            this.http.get(this.baseUrl + 'ugovor/excel?broj=' + this.selectedUgovor.broj
+              , {
+                responseType: 'arraybuffer'
+              }
+            ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+          }, (reason) => {
+          });
+
+          modalRef.componentInstance.confirmText = "Štampati ugovor " + this.selectedUgovor.broj + " ?";
+
         }, error => {
           this.toastr.error("Greška..");
           console.error(error)
@@ -263,16 +285,7 @@ export class UgovorDetailsComponent {
       ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
     }
   }
-  radniNalog() {
-    if (this.selectedUgovor != undefined) {
-
-      this.http.get(this.baseUrl + 'ugovor/excelRadniNalog?broj=' + this.selectedUgovor.broj
-        , {
-          responseType: 'arraybuffer'
-        }
-      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-    }
-  }
+ 
 
   cancel() {
     if (this.formMode == FormMode.Add || this.formMode == FormMode.Edit) {
