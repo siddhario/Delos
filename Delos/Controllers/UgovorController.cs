@@ -61,7 +61,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
         }
 
-    
+
 
         [HttpPost]
         public IActionResult InsertUgovor(ugovor ugovor)
@@ -91,7 +91,9 @@ namespace WebApplication3.Controllers
 
                     partner.naziv = ugovor.kupac_naziv;
                     partner.adresa = ugovor.kupac_adresa;
+                    partner.telefon = ugovor.kupac_telefon;
                     partner.broj_lk = ugovor.kupac_broj_lk;
+                    partner.maticni_broj = ugovor.kupac_maticni_broj;
                     partner.tip = "P";
 
                     ugovor.partner = partner;
@@ -102,7 +104,9 @@ namespace WebApplication3.Controllers
 
                     partner.naziv = ugovor.kupac_naziv;
                     partner.adresa = ugovor.kupac_adresa;
+                    partner.telefon = ugovor.kupac_telefon;
                     partner.broj_lk = ugovor.kupac_broj_lk;
+                    partner.maticni_broj = ugovor.kupac_maticni_broj;
 
                     partner.tip = "P";
                     _dbContext.SaveChanges();
@@ -122,52 +126,142 @@ namespace WebApplication3.Controllers
                 return BadRequest(ex);
             }
         }
-
+        [Route("updateRate")]
         [HttpPut]
-        public IActionResult UpdatePrijava(prijava prijava)
+        public IActionResult UpdateUgovorRata(ugovor_rata rata)
         {
-            prijava.Korisnik = null;
-            var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == prijava.broj);
+            var ugovorRata = _dbContext.ugovor_rata.FirstOrDefault(r => r.ugovorbroj == rata.ugovorbroj && r.broj_rate == rata.broj_rate);
+            if (ugovorRata == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    ugovorRata.uplaceno = rata.uplaceno;
+                    ugovorRata.datum_placanja = rata.datum_placanja;
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+        }
+
+        [HttpGet]
+        [Route("zakljuci")]
+        public IActionResult ZakljuciUgovor(string broj)
+        {
+            var pon = _dbContext.ugovor.FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
             {
                 try
                 {
-                    Helper.CopyPropertiesTo<prijava, prijava>(prijava, pon);
+                    pon.status = "Z";
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+        }
+
+
+        [HttpGet]
+        [Route("otkljucaj")]
+        public IActionResult OtkljucajUgovor(string broj)
+        {
+            var pon = _dbContext.ugovor.FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    pon.status = "E";
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+        }
+        [HttpGet]
+        [Route("realizovan")]
+        public IActionResult UgovorRealizovan (string broj)
+        {
+            var pon = _dbContext.ugovor.FirstOrDefault(p => p.broj == broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    pon.status = "R";
+                    _dbContext.SaveChanges();
+                    return Ok(pon);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+        }
+
+        [HttpPut]
+        public IActionResult UpdateUgovor(ugovor ugovor)
+        {
+            ugovor.Korisnik = null;
+            var pon = _dbContext.ugovor.Include(u => u.rate).FirstOrDefault(p => p.broj == ugovor.broj);
+            if (pon == null)
+                return NotFound();
+            else
+            {
+                try
+                {
+                    foreach (var r in pon.rate)
+                        _dbContext.Remove(r);
+
+                    _dbContext.SaveChanges();
+                    Helper.CopyPropertiesTo<ugovor, ugovor>(ugovor, pon);
 
                     partner partner;
-                    if (prijava.partner.sifra == null)
+                    if (ugovor.partner.sifra == null)
                     {
                         partner = new partner();
 
-                        partner.naziv = prijava.kupac_ime;
-                        partner.adresa = prijava.kupac_adresa;
-                        partner.telefon = prijava.kupac_telefon;
-                        partner.email = prijava.kupac_email;
-                        partner.tip = "P";
+                        partner.naziv = ugovor.kupac_naziv;
+                        partner.adresa = ugovor.kupac_adresa;
+                        partner.telefon = ugovor.kupac_telefon;
+                        partner.broj_lk = ugovor.kupac_broj_lk;
+                        partner.maticni_broj = ugovor.kupac_maticni_broj;
+                        partner.tip = "F";
                         pon.kupac_sifra = null;
                         pon.partner = partner;
                     }
                     else
                     {
-                        partner = _dbContext.partner.Where(p => p.sifra == prijava.kupac_sifra).FirstOrDefault();
+                        partner = _dbContext.partner.Where(p => p.sifra == ugovor.kupac_sifra).FirstOrDefault();
 
-                        partner.naziv = prijava.kupac_ime;
-                        partner.adresa = prijava.kupac_adresa;
-                        partner.telefon = prijava.kupac_telefon;
-                        partner.email = prijava.kupac_email;
-                        partner.tip = "P";
+                        partner.naziv = ugovor.kupac_naziv;
+                        partner.adresa = ugovor.kupac_adresa;
+                        partner.telefon = ugovor.kupac_telefon;
+                        partner.broj_lk = ugovor.kupac_broj_lk;
+                        partner.maticni_broj = ugovor.kupac_maticni_broj;
+                        partner.tip = "F";
                         _dbContext.SaveChanges();
 
                         pon.partner = partner;
 
                     }
-                    if (prijava.dobavljac_partner != null)
-                    {
-                        partner = _dbContext.partner.Where(p => p.sifra == prijava.dobavljac_sifra).FirstOrDefault();
-                        prijava.dobavljac_partner = partner;
-                    }
+
                     _dbContext.SaveChanges();
                     return Ok(pon);
                 }
@@ -182,12 +276,12 @@ namespace WebApplication3.Controllers
         [Route("excel")]
         public IActionResult Excel(string broj)
         {
-            var pon = _dbContext.prijava.FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ugovor.Include(u=>u.rate).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
             {
-                string file = Helper.StampaPrijave(pon);
+                string file = Helper.StampaUgovora(pon);
                 var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
                 _logger.LogError(file);
                 return new FileStreamResult(fileStream, "application/vnd.ms-excel");

@@ -14,7 +14,7 @@ namespace Shared.Model
         [Key]
         public string broj { get; set; }
         public DateTime datum { get; set; }
-        public int kupac_sifra { get; set; }
+        public int? kupac_sifra { get; set; }
         public string kupac_maticni_broj { get; set; }
         public string kupac_broj_lk { get; set; }
         public string kupac_naziv { get; set; }

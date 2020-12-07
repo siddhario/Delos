@@ -59,20 +59,49 @@ export class UgovorDetailsComponent {
     this.selectedUgovor = new Ugovor();
 
     this.selectedUgovor.status = "E";
+    this.selectedUgovor.inicijalno_placeno = 0;
     this.selectedUgovor.datum = (new Date());
     setTimeout(_ => {
       this.partnerElement.nativeElement.focus();
     }, 0);
   }
 
-  convertProperties(ugovor) {
+  convertProperties(ugovor: Ugovor) {
     ugovor.iznos_sa_pdv = this.convertToNumber(ugovor.iznos_sa_pdv);
     ugovor.broj_rata = this.convertToNumber(ugovor.broj_rata);
     ugovor.inicijalno_placeno = this.convertToNumber(ugovor.inicijalno_placeno);
     ugovor.preostalo_za_uplatu = this.convertToNumber(ugovor.preostalo_za_uplatu);
     ugovor.suma_uplata = this.convertToNumber(ugovor.suma_uplata);
     ugovor.uplaceno_po_ratama = this.convertToNumber(ugovor.uplaceno_po_ratama);
+    for (let i = 0; i < ugovor.rate.length; i++) {
+      ugovor.rate[i].uplaceno = this.convertToNumber(ugovor.rate[i].uplaceno);
+    }
 
+  }
+  saveUgovorRata(rata: UgovorRata) {
+    rata.formMode = FormMode.View;
+    rata.uplaceno = this.convertToNumber(rata.uplaceno);
+    this.http.put<UgovorRata>(this.baseUrl + 'ugovor/updateRate', rata).subscribe(result => {
+      console.log("OK");
+      this.toastr.success("Uspješno...");
+
+      let modalRef = this.modalService.open(NgbdModalConfirm);
+      modalRef.result.then((data) => {
+
+        this.http.get(this.baseUrl + 'ugovor/potvrda?ugovorbroj=' + rata.ugovorbroj + "&broj_rate=" + rata.broj_rate
+          , {
+            responseType: 'arraybuffer'
+          }
+        ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+      }, (reason) => {
+      });
+
+      modalRef.componentInstance.confirmText = "Štampati potvrdu ?";
+
+    }, error => {
+      this.toastr.error("Greška..");
+      console.error(error)
+    });
   }
 
   saveUgovor(ugovor) {
@@ -82,8 +111,9 @@ export class UgovorDetailsComponent {
       ugovor.partner = new partner();
       ugovor.partner.naziv = ugovor.partner_naziv;
     }
-    
-    ugovor.rate = this.rate;
+
+    if (this.rate != null)
+      ugovor.rate = this.rate;
     if (ugovor.broj == undefined) {
       let obj: object = ugovor.datum;
       this.http.post<Ugovor>(this.baseUrl + 'ugovor', ugovor).subscribe(result => {
@@ -109,6 +139,11 @@ export class UgovorDetailsComponent {
       });
     }
   }
+  preuzmiIznos(ugovorRata: UgovorRata) {
+    ugovorRata.formMode = 3;
+    ugovorRata.uplaceno = ugovorRata.iznos;
+    ugovorRata.datum_placanja = new Date();
+  }
   izmijeniUgovor() {
     this.formMode = FormMode.Edit;
     setTimeout(_ => {
@@ -117,15 +152,11 @@ export class UgovorDetailsComponent {
   }
   getStatus(status) {
     if (status == "E")
-      return "Evidentirana";
+      return "Evidentiran";
     else if (status == "Z")
-      return "Zaključena";
+      return "Zaključen";
     else if (status == "R")
-      return "Realizovana";
-    else if (status == "D")
-      return "Djelimično realizovana";
-    else if (status == "N")
-      return "Nerealizovana";
+      return "Realizovan";
   }
   collapse() {
     this.isExpanded = false;
@@ -134,7 +165,59 @@ export class UgovorDetailsComponent {
     this.isExpanded = !this.isExpanded;
   }
 
+  zakljuciUgovor() {
+    if (this.selectedUgovor != undefined) {
+      let modalRef = this.modalService.open(NgbdModalConfirm);
+      modalRef.result.then((data) => {
+        this.http.get(this.baseUrl + 'ugovor/zakljuci?broj=' + this.selectedUgovor.broj).subscribe(result => {
+          this.toastr.success("Ugovor je uspješno zaključen..");
+          this.activeModal.close();
+        }, error => {
+          this.toastr.error("Greška..");
+          console.error(error)
+        });
+      }, (reason) => {
+      });
 
+      modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zaključiti ugovor " + this.selectedUgovor.broj + " ?";
+    }
+  }
+
+  otkljucajUgovor() {
+    if (this.selectedUgovor != undefined) {
+      let modalRef = this.modalService.open(NgbdModalConfirm);
+      modalRef.result.then((data) => {
+        this.http.get(this.baseUrl + 'ugovor/otkljucaj?broj=' + this.selectedUgovor.broj).subscribe(result => {
+          this.toastr.success("Ugovor je uspješno otključan..");
+          this.activeModal.close();
+        }, error => {
+          this.toastr.error("Greška..");
+          console.error(error)
+        });
+      }, (reason) => {
+      });
+
+      modalRef.componentInstance.confirmText = "Da li ste sigurni da želite otključati ugovor " + this.selectedUgovor.broj + " ?";
+    }
+  }
+
+  ugovorRealizovan() {
+    if (this.selectedUgovor != undefined) {
+      let modalRef = this.modalService.open(NgbdModalConfirm);
+      modalRef.result.then((data) => {
+        this.http.get(this.baseUrl + 'ugovor/realizovan?broj=' + this.selectedUgovor.broj).subscribe(result => {
+          this.toastr.success("Ugovor je uspješno proglašen realizovanim..");
+          this.activeModal.close();
+        }, error => {
+          this.toastr.error("Greška..");
+          console.error(error)
+        });
+      }, (reason) => {
+      });
+
+      modalRef.componentInstance.confirmText = "Da li ste sigurni da želite proglasiti realizovanim ugovor " + this.selectedUgovor.broj + " ?";
+    }
+  }
 
   obrisiUgovor() {
     if (this.selectedUgovor != undefined) {
@@ -159,6 +242,8 @@ export class UgovorDetailsComponent {
     this.selectedUgovor.kupac_naziv = item["item"]["naziv"];
     this.selectedUgovor.kupac_adresa = item["item"]["adresa"];
     this.selectedUgovor.kupac_telefon = item["item"]["telefon"];
+    this.selectedUgovor.kupac_broj_lk = item["item"]["broj_lk"];
+    this.selectedUgovor.kupac_maticni_broj = item["item"]["maticni_broj"];
   }
   downLoadFile(data: any, type: string) {
     let blob = new Blob([data], { type: type });
@@ -282,7 +367,7 @@ export class UgovorDetailsComponent {
 
   convertToNumber(text: any) {
     if (text == undefined)
-     return text;
+      return text;
     let n = +(text.toString().replace(",", "."));
     if (!Number.isNaN(n))
       return n;

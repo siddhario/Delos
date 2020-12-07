@@ -13,7 +13,7 @@ namespace Delos.Helpers
 {
     public static class Helper
     {
-   
+
 
         public static string StampaPrijave(prijava prijava)
         {
@@ -385,7 +385,77 @@ namespace Delos.Helpers
 
             return fileName;
         }
+        public static string StampaUgovora(ugovor ugovor)
+        {
 
+            //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
+
+            string dir = "C:\\temp";
+
+            if (Directory.Exists(dir) == false)
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+
+            XLWorkbook doc = new XLWorkbook("Ugovor.xlsx");
+            //doc.Worksheets.Add("PRIJAVA");
+
+            var sheet = doc.Worksheet(1);
+
+
+            sheet.Cells("A5").Value = ugovor.kupac_naziv;
+            sheet.Cells("A5").DataType = XLDataType.Text;
+
+            sheet.Cells("A6").Value = ugovor.kupac_adresa;
+            sheet.Cells("A6").DataType = XLDataType.Text;
+
+
+            sheet.Cells("A7").Value = "LK:" + ugovor.kupac_broj_lk;
+            sheet.Cells("A7").DataType = XLDataType.Text;
+
+
+            sheet.Cells("A8").Value = "JMBG:" + ugovor.kupac_maticni_broj;
+            sheet.Cells("A8").DataType = XLDataType.Text;
+
+            sheet.Cells("A17").Value = sheet.Cell("A17").Value.ToString().Replace("$IZNOS$", ugovor.iznos_sa_pdv.ToString("N2"));
+            sheet.Cells("A17").DataType = XLDataType.Text;
+            decimal iznosRate = Math.Round((ugovor.iznos_sa_pdv - ugovor.inicijalno_placeno) / ugovor.broj_rata, 2, MidpointRounding.AwayFromZero);
+            sheet.Cells("A21").Value = sheet.Cell("A21").Value.ToString()
+                .Replace("$UPLACENO$", ugovor.inicijalno_placeno.ToString("N2"))
+                .Replace("$BROJ_RATA$", ugovor.broj_rata.ToString("N0"))
+                .Replace("$IZNOS_RATE$", iznosRate.ToString("N2"));
+
+            sheet.Cells("A21").DataType = XLDataType.Text;
+
+            var rate = ugovor.rate.ToList();
+            for (int i = 0; i < rate.Count; i++)
+            {
+                sheet.Cells("A" + (5 + i).ToString()).Value = (i + 1).ToString() + ". do " + rate[i].rok_placanja.ToString("dd.MM.yyyy") + " - iznos: " + rate[i].iznos.ToString("N2") + " KM";
+            }
+
+
+            string fileName = dir + "\\Ugovor_" + ugovor.broj.Replace("/", "-") + ".xlsx";
+
+            if (File.Exists(fileName) == true)
+            {
+                try
+                {
+                    File.Delete(fileName);
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+                doc.SaveAs(fileName);
+            }
+            else
+            {
+                doc.SaveAs(fileName);
+            }
+
+            return fileName;
+        }
         public static string StampaRadnogNalogaExcel(prijava prijava)
         {
 

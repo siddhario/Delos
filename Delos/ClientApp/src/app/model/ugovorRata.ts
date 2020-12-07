@@ -1,3 +1,6 @@
+import { jsonIgnore } from "json-ignore";
+import { FormMode } from "../enums/formMode";
+
 export class UgovorRata {
   ugovorbroj: string;
   broj_rate: number;
@@ -6,4 +9,6 @@ export class UgovorRata {
   iznos: number;
   uplaceno: number;
   napomena: string;
+  @jsonIgnore()
+  formMode: FormMode = FormMode.View;
 }
