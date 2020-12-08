@@ -8,6 +8,8 @@ import { fromEvent } from 'rxjs';
 import { map, filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UgovorDetailsComponent } from '../ugovor-details/ugovor-details.component';
+import { PregledUplataComponent } from '../pregledUplata/pregledUplata.component';
+import { PregledDugovanjaComponent } from '../pregledDugovanja/pregledDugovanja.component';
 
 @Component({
   selector: 'app-ugovor',
@@ -108,7 +110,13 @@ export class UgovorComponent {
     }, error => console.error(error));
 
   }
+  pregledUplata() {
+    let modalRef = this.modalService.open(PregledUplataComponent);
+  }
 
+  pregledDugovanja() {
+    let modalRef = this.modalService.open(PregledDugovanjaComponent);
+  }
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router, private modalService: NgbModal) {
     this.http = http;

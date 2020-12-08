@@ -6,12 +6,19 @@
     <div style="float:left;margin: 4px;">
       <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
     </div>
+
+    <button type="button" class="btn btn-danger  btn-sm" style="width:150px;margin:3px;"  (click)="pregledUplata()">Pregled uplata</button>
+
+
+    <button type="button" class="btn btn-danger  btn-sm" style="width:150px;margin:3px;"  (click)="pregledDugovanja()">Pregled dugovanja</button>
+
+
     <div style="float:left;margin: 4px;">
       <input class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
     </div>
   </div>
 
- 
+
   <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="ugovori">
     <thead>
       <tr>

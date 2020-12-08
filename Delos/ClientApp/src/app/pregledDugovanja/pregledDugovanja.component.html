@@ -1,0 +1,25 @@
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+  <div class="form-row form-group">
+
+    <label>Datum od:</label><div class="input-group">
+  <input type="date" id="start" name="trip-start" [(ngModel)]="datumOd"
+        
+        >
+
+ 
+</div>
+
+    <label>Datum do:</label><div class="input-group">
+  <input type="date" id="start" name="trip-start" [(ngModel)]="datumDo"
+        >
+  
+</div>
+  </div>
+  <div class="container" style="padding:0px">
+    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
+         [ngClass]="{ show: isExpanded }">
+      <button type="button" class="btn btn-warning btn-sm" style="width:80px;margin:3px;" (click)="cancel()">Odustani</button>
+      <button type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="ok()">Izvrši</button>
+    </div>
+  </div>
+</div>

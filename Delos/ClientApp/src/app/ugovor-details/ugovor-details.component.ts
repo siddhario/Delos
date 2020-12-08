@@ -20,6 +20,7 @@ import { UrlResolver } from '@angular/compiler';
 import { Artikal } from '../model/artikal';
 import { Ugovor } from '../model/ugovor';
 import { UgovorRata } from '../model/ugovorRata';
+import { PregledUplataComponent } from '../pregledUplata/pregledUplata.component';
 
 @Component({
   selector: 'app-ugovor-details',
@@ -85,36 +86,7 @@ export class UgovorDetailsComponent {
       }
     ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
   }
-  pregledUplata() {
-    let modalRef = this.modalService.open(NgbdModalConfirm);
-    modalRef.result.then((data) => {
-      let datumOd = "2020-01-01";
-      let datumDo = "2020-12-01";
-      this.http.get(this.baseUrl + 'ugovor/pregledUplata?datumOd=' + datumOd + "&datumDo=" + datumDo
-        , {
-          responseType: 'arraybuffer'
-        }
-      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-    }, (reason) => {
-    });
 
-    modalRef.componentInstance.confirmText = "?";
-  }
- pregledDugovanja() {
-    let modalRef = this.modalService.open(NgbdModalConfirm);
-    modalRef.result.then((data) => {
-      let datumOd = "2020-01-01";
-      let datumDo = "2021-12-01";
-      this.http.get(this.baseUrl + 'ugovor/pregledDugovanja?datumOd=' + datumOd + "&datumDo=" + datumDo
-        , {
-          responseType: 'arraybuffer'
-        }
-      ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-    }, (reason) => {
-    });
-
-    modalRef.componentInstance.confirmText = "?";
-  }
   saveUgovorRata(rata: UgovorRata) {
     rata.formMode = FormMode.View;
     rata.uplaceno = this.convertToNumber(rata.uplaceno);
