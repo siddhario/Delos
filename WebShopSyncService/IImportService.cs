@@ -36,8 +36,7 @@ namespace Delos.Model
         public bool UdpateDb(DelosDbContext dbContext, List<artikal> artikli,string dobavljac)
         {
             decimal pdvStopa = 17;
-            try
-            {
+        
                 foreach (var a in artikli)
                 {
                     this.SetKategorija(dbContext, a);
@@ -56,6 +55,7 @@ namespace Delos.Model
                     if (art == null)
                     {
                         a.zadnje_ucitavanje = DateTime.Now;
+                        a.aktivan = true;
                         dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = a.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
                         dbContext.Add(a);
                     }
@@ -93,11 +93,7 @@ namespace Delos.Model
 
                 dbContext.SaveChanges();
                 return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+           
         }
     }
 }

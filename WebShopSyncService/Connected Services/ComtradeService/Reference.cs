@@ -925,6 +925,8 @@ namespace ComtradeService
                 httpBindingElement.AllowCookies = true;
                 httpBindingElement.MaxBufferSize = int.MaxValue;
                 httpBindingElement.MaxReceivedMessageSize = int.MaxValue;
+                result.SendTimeout = new System.TimeSpan(0, 5, 0);
+                result.ReceiveTimeout = new System.TimeSpan(0, 5, 0);
                 result.Elements.Add(httpBindingElement);
                 return result;
             }
