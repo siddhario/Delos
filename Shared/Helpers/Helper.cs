@@ -666,6 +666,7 @@ namespace Delos.Helpers
                         {
                             if (art.vrste != null)
                             {
+                                
                                 string vrsta = art.vrsteString.Substring(0, art.vrsteString.Length - 1);
                                 //foreach (var vrsta in art.vrste)
                                 //{

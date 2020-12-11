@@ -23,13 +23,29 @@ namespace Delos.Model
                     {
                         if (a.vrste != null)
                         {
-                            foreach (var vrsta in a.vrste)
+                            string vrsta = a.vrsteString.Substring(0, a.vrsteString.Length - 1);
+                      
+                            if (("[" + a.dobavljac + "] " + vrsta).ToLower() == kd.ToLower())
                             {
-                                if (("[" + a.dobavljac + "] " + vrsta).ToLower() == kd.ToLower())
-                                    a.kategorija = kat.naziv;
+                                a.kategorija = kat.naziv;
                             }
+                            //    foreach (var vrsta in a.vrste)
+                            //{
+                            //    if (("[" + a.dobavljac + "] " + vrsta).ToLower() == kd.ToLower())
+                            //        a.kategorija = kat.naziv;
+                            //}
                         }
                     }
+                }
+            }
+            if (a.kategorija == null)
+            {
+                a.kategorija = "Razno";
+                var razno = dbContext.kategorija.FirstOrDefault(k => k.naziv == "Razno");
+                if(razno!=null)
+                {
+                    string vrsta = a.vrsteString.Substring(0, a.vrsteString.Length - 1);
+                    razno.kategorije_dobavljaca.Add("[" + a.dobavljac + "] " + vrsta);
                 }
             }
         }
