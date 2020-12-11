@@ -71,12 +71,13 @@ namespace Delos.Model
                     if (art == null)
                     {
                         a.zadnje_ucitavanje = DateTime.Now;
-                        a.aktivan = true;
+                        a.aktivan = kat.aktivna.Value;
                         dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = a.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
                         dbContext.Add(a);
                     }
                     else
                     {
+                        
                         art.zadnje_ucitavanje = DateTime.Now;
                         if (art.cijena_sa_rabatom != a.cijena_sa_rabatom||dbContext.istorija_cijena.Where(i=>i.artikal_sifra==art.sifra).Count()==0)
                             dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = art.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
