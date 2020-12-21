@@ -125,7 +125,7 @@ export class UgovorComponent {
     this.sortOrder = true;
     this.authenticationService.currentUser.subscribe(x => {
       this.currentUser = x;
-      if (this.currentUser == null)
+      if (this.currentUser == null || (this.currentUser.role.includes('ADMIN') == false && this.currentUser.role.includes("UGOVORI") == false))
         this.router.navigate(['/login']);
     });
 

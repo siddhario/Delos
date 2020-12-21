@@ -9,4 +9,5 @@ export class Korisnik {
   selected?: boolean;
   lozinkaStara?: string;
   lozinkaPonovo?: string;
+  role?:string[];
 }

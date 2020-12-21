@@ -30,6 +30,7 @@
     "jquery": "^3.5.0",
     "json-ignore": "^0.4.0",
     "ngb-modal": "^2.0.3",
+    "ngx-infinite-scroll": "^10.0.1",
     "ngx-toastr": "^11.1.2",
     "oidc-client": "^1.9.0",
     "pdfmake": "^0.1.62",

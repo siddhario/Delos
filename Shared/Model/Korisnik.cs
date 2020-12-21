@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Delos.Model
@@ -16,5 +17,7 @@ namespace Delos.Model
         public string token { get; set; }
         [NotMapped]
         public string lozinkaStara { get; set; }
+
+        public List<string> role { get; set; }
     }
 }

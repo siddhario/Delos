@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared.Model;
 
 namespace WebApplication3.Controllers
 {
@@ -37,18 +38,61 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ponuda> Get()
+        public QueryResult Get(int page, int pageSize, string searchText)
         {
+            int resultCount = 0;
             var korisnik = _dbContext.korisnik.FirstOrDefault(k => k.korisnicko_ime == User.Identity.Name);
-            var ponude = _dbContext.ponuda.Where(p=>p.skrivena==null||p.skrivena==false||p.Korisnik.korisnicko_ime== korisnik.korisnicko_ime||korisnik.admin==true).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
-            return ponude.OrderByDescending(p => p.datum.Year * 1000 + p.broj.Substring(p.broj.IndexOf("/") + 1));
+            if (page == 1)
+            {
+                resultCount = _dbContext.ponuda.Where(
+                         p => (p.skrivena == null ||
+                         p.skrivena == false ||
+                         p.Korisnik.korisnicko_ime == korisnik.korisnicko_ime
+                         || korisnik.admin == true)
+                         &&
+                         (
+                          searchText == null
+                          || p.broj.Contains(searchText)
+                          || p.partner_naziv.ToLower().Contains(searchText.ToLower())
+                           || p.stavke.Where(s => s.artikal_naziv.ToLower().Contains(searchText.ToLower()) || s.opis.ToLower().Contains(searchText.ToLower())).Count() > 0
+                         )
+                     ).Count();
+            }
+            var result = _dbContext.ponuda.
+                Where(
+                    p => (p.skrivena == null ||
+                    p.skrivena == false ||
+                    p.Korisnik.korisnicko_ime == korisnik.korisnicko_ime
+                    || korisnik.admin == true)
+                    &&
+                    (
+                     searchText == null
+                     || p.broj.Contains(searchText)
+                     || p.partner_naziv.ToLower().Contains(searchText.ToLower())
+                    || p.stavke.Where(s => s.artikal_naziv.ToLower().Contains(searchText.ToLower()) || s.opis.ToLower().Contains(searchText.ToLower())).Count() > 0
+                    )
+                )
+                .Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik)
+                .OrderByDescending(p => p.datum.Year).ThenByDescending(p => p.broj)
+                .Skip(pageSize * (page - 1)).Take(pageSize).ToList();
+
+            return new QueryResult() { data = result, pageCount = (resultCount / pageSize) + 1, resultCount = resultCount };
         }
+
+        //[HttpGet]
+        //public IEnumerable<ponuda> Get()
+        //{
+
+        //    var korisnik = _dbContext.korisnik.FirstOrDefault(k => k.korisnicko_ime == User.Identity.Name);
+        //    var ponude = _dbContext.ponuda.Where(p => p.skrivena == null || p.skrivena == false || p.Korisnik.korisnicko_ime == korisnik.korisnicko_ime || korisnik.admin == true).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).Include(p => p.partner).Include(p => p.Korisnik).OrderByDescending(p => p.broj).ToList();
+        //    return ponude.OrderByDescending(p => p.datum.Year * 1000 + p.broj.Substring(p.broj.IndexOf("/") + 1));
+        //}
 
         [HttpGet]
         [Route("getbybroj")]
         public ponuda GetByBroj(string broj)
         {
-            var ponuda = _dbContext.ponuda.Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
+            var ponuda = _dbContext.ponuda.Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).Include(p => p.Korisnik).Include(p => p.partner).FirstOrDefault(p => p.broj == broj);
             return ponuda;
         }
 
@@ -205,7 +249,7 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
                 if (pon == null)
                     return NotFound();
                 else
@@ -248,7 +292,7 @@ namespace WebApplication3.Controllers
         [Route("excel")]
         public IActionResult Excel(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -279,7 +323,7 @@ namespace WebApplication3.Controllers
         [Route("email")]
         public IActionResult Email(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -325,7 +369,7 @@ namespace WebApplication3.Controllers
         [Route("zakljuciPonudu")]
         public IActionResult ZakljuciPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -415,7 +459,7 @@ namespace WebApplication3.Controllers
         [Route("statusiraj")]
         public IActionResult Statusiraj(string broj, string status)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -437,7 +481,7 @@ namespace WebApplication3.Controllers
         [Route("otkljucajPonudu")]
         public IActionResult OtkljucajPonudu(string broj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == broj);
             if (pon == null)
                 return NotFound();
             else
@@ -515,7 +559,7 @@ namespace WebApplication3.Controllers
         [Route("/ponuda_dokument")]
         public IEnumerable<ponuda_dokument> GetDokument(string ponuda_broj, short? stavka_broj)
         {
-            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj && (sp.stavka_broj == stavka_broj || stavka_broj==null)).ToList();
+            var dokumenti = _dbContext.ponuda_dokument.Where(sp => sp.ponuda_broj == ponuda_broj && (sp.stavka_broj == stavka_broj || stavka_broj == null)).ToList();
             return dokumenti.ToList().WithoutDatas();
         }
         [HttpPost]
@@ -537,7 +581,7 @@ namespace WebApplication3.Controllers
         [Route("add_images")]
         public IActionResult AddImages([FromBody]string[] urls, string ponudabroj, short? stavkabroj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
             if (pon == null)
                 return NotFound();
             else
@@ -603,7 +647,7 @@ namespace WebApplication3.Controllers
                 filePath = Path.Combine(_configuration["ContentPath"],
                    blob.FileName.Split(".")[0] + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "." + blob.FileName.Split(".")[1]);
 
-                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s=>s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+                var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
                 if (pon == null)
                     return NotFound();
                 else

@@ -227,7 +227,7 @@ export class KategorijaComponent {
     this.selectedKategorijaWebShop = "--Sve--";
     this.authenticationService.currentUser.subscribe(x => {
       this.currentUser = x;
-      if (this.currentUser == null)
+      if (this.currentUser == null || (this.currentUser.role.includes('ADMIN') == false && this.currentUser.role.includes("WEBSHOP") == false && this.currentUser.role.includes("WEBSHOP_ADMIN") == false ))
         this.router.navigate(['/login']);
     });
 

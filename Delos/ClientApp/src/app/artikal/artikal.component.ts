@@ -13,6 +13,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
 import { ToastrService } from 'ngx-toastr';
 import { istorija_cijena } from '../model/artikal - Copy';
+import { QueryResult } from '../model/queryResult';
 
 @Component({
   selector: 'app-korisnik',
@@ -42,14 +43,24 @@ export class ArtikalComponent implements AfterViewInit {
   distinctBrendovi: Set<any>;
   brendovi: string[];
   selectedAktivan: string = "1";
-
-  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string, brend: string, aktivan: string) {
+  selectedKategorijeFilter = [];
+  page: number = 1;
+  pageCount: number;
+  pages: Array<number>=[];
+  getPageActiveClass(page) {
+    if (page == this.page) {
+      return "page-item active";
+    }
+    else
+      return "page-item";
+  }
+  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string, brend: string, aktivan: string,page:number) {
     this.selectedKategorijaWebShop = selectedKategorijaWebShop;
     this.loadAll = loadAll;
     this.selectedDostupnost = dostupnost;
     //this.selectedKategorija = kategorija;
     this.selectedDobavljac = dobavljac;
-
+    this.page = page;
     this.selectedBrend = brend;
     this.selectedAktivan = aktivan;
 
@@ -66,7 +77,7 @@ export class ArtikalComponent implements AfterViewInit {
       aktivan = null;
 
 
-    this.http.get<Artikal[]>(this.baseUrl + 'webShopSync/artikliSearch?'
+    this.http.get<QueryResult>(this.baseUrl + 'webShopSync/artikliSearch?'
       + (naziv ? 'naziv=' + naziv : '')
       + (selectedKategorijaWebShop ? '&kategorija=' + selectedKategorijaWebShop : '')
       + (dostupnost ? '&dostupnost=' + dostupnost : '')
@@ -74,10 +85,39 @@ export class ArtikalComponent implements AfterViewInit {
       + (loadAll ? '&loadAll=' + loadAll : '')
       + (brend ? '&brend=' + brend : '')
       + (aktivan ? '&aktivan=' + aktivan : '')
+      + ('&page=' + this.page)
+      + ('&pageSize=50')
     ).subscribe(result => {
-      this.artikli = result;
+
+      this.pages = [];
+    
+      for (let i = 0; i < result.pageCount; i++) {
+        this.pages.push(i+1);
+      }
+      this.artikli = result.data;
+      this.pageCount = result.pageCount;
 
       this.isSearching = false;
+
+      this.selectedKategorijeFilter = new Array<string>();
+      this.selectedKategorijeFilter.push("--Svi--");
+
+      this.artikli.forEach(a => {
+        this.selectedKategorijeFilter.push(a.kategorija);
+      });
+      let katgs = []
+      katgs = this.selectedKategorijeFilter.sort((a, b) => {
+        if (a < b)
+          return -1;
+        else if (a > b)
+          return 1;
+        else
+          return 0;
+      })
+
+      this.distinctKategorije = new Set(katgs);
+
+
       if (brend == null) {
         this.brendovi = new Array<string>();
         this.brendovi.push("--Svi--");
@@ -123,7 +163,7 @@ export class ArtikalComponent implements AfterViewInit {
       , distinctUntilChanged()
       // subscription for response
     ).subscribe((text: string) => {
-      this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan);
+      this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan, 1);
     });
 
 
@@ -200,6 +240,11 @@ export class ArtikalComponent implements AfterViewInit {
   exportAsXLSX(): void {
     this.excelService.exportAsExcelFile(this.artikli, 'Artikli');
   }
+
+  hasRole(rola: string) {
+    return this.currentUser.role.includes(rola);
+  }
+
   constructor(private modalService: NgbModal, private toastr: ToastrService, private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
     this.baseUrl = baseUrl;
     this.http = http;
@@ -209,7 +254,7 @@ export class ArtikalComponent implements AfterViewInit {
     this.selectedKategorijaWebShop = "--Sve--";
     this.authenticationService.currentUser.subscribe(x => {
       this.currentUser = x;
-      if (this.currentUser == null)
+      if (this.currentUser == null || (this.currentUser.role.includes('ADMIN')==false && this.currentUser.role.includes("WEBSHOP") == false && this.currentUser.role.includes("WEBSHOP_ADMIN") == false) )
         this.router.navigate(['/login']);
     });
 

@@ -29,9 +29,20 @@
   
 
     <div class="form-row form-group align-items-center">
-      <div class="col-sm-6"><div class="form-check"><input id="cbAdmin" *ngIf="izmjenaLozinke==false" [disabled]="currentUser.admin==false" [readonly]="currentUser.admin==false" class="form-check-input" [(ngModel)]="selectedKorisnik.admin" type="checkbox" /><label *ngIf="izmjenaLozinke==false" class="form-check-label" for="cbKupac">Admin</label></div></div>
-    
-    </div>
+    <!--  <div class="col-sm-6"><div class="form-check"><input id="cbAdmin" *ngIf="izmjenaLozinke==false" [disabled]="currentUser.admin==false" [readonly]="currentUser.admin==false" class="form-check-input" [(ngModel)]="selectedKorisnik.admin" type="checkbox" /><label *ngIf="izmjenaLozinke==false" class="form-check-label" for="cbKupac">Admin</label></div></div>-->
+      <div class="col-sm-6">
+
+        <label for="cars">Role:</label>
+        <select [disabled]="currentUser.role.includes('ADMIN')==false" style="height: 120px" class="form-control form-control-sm" [(ngModel)]="selectedKorisnik.role" name="cars" id="cars" multiple>
+          <option value="ADMIN">ADMIN</option>
+          <option value="WEBSHOP">WEBSHOP</option>
+          <option value="WEBSHOP_ADMIN">WEBSHOP_ADMIN</option>
+          <option value="UGOVORI">UGOVORI</option>
+          <option value="PONUDE">PONUDE</option>
+          <option value="SERVIS">SERVIS</option>
+        </select>
+      </div>
+      </div>
 
 
 

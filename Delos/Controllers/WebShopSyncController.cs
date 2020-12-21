@@ -141,11 +141,11 @@ namespace WebApplication3.Controllers
         }
         [HttpGet]
         [Route("artikliSearch")]
-        public IEnumerable<artikal> Search(string naziv, string kategorija, string dostupnost, string dobavljac, string loadAll,string brend,string aktivan)
+        public QueryResult Search(string naziv, string kategorija, string dostupnost, string dobavljac, string loadAll,string brend,string aktivan,int page, int pageSize)
         {
 
             if (loadAll == "0" && (naziv == null || naziv.Length < 3))
-                return null;
+                return new QueryResult() { pageCount = 0, resultCount = 0 };
             var exp = "";
             if (naziv != null)
             {
@@ -159,7 +159,7 @@ namespace WebApplication3.Controllers
             }
 
 
-            var result = _dbContext.artikal.Include(a => a.istorija_cijena).Where(it =>
+            List<artikal> result = _dbContext.artikal.Include(a => a.istorija_cijena).Where(it =>
                 (
                     loadAll == "1" ||
                     (Regex.IsMatch(it.naziv.ToLower(), exp) || (it.sifra.Contains(naziv)))
@@ -176,8 +176,8 @@ namespace WebApplication3.Controllers
                 )
                      &&
                 (
-                    aktivan == "0" || aktivan==null||
-                    (it.aktivan == true &&aktivan=="1") || (it.aktivan == false && aktivan == "2")
+                    aktivan == "0" || aktivan == null ||
+                    (it.aktivan == true && aktivan == "1") || (it.aktivan == false && aktivan == "2")
                 )
                 &&
                 (
@@ -189,8 +189,9 @@ namespace WebApplication3.Controllers
                     dostupnost == null || dostupnost == "0" ||
                     (it.dostupnost != null && it.dostupnost != "0")
                 )
-            ).ToList().OrderBy(aa => aa.naziv);
-            return result;
+            ).ToList();
+
+            return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (result.Count / pageSize)+1, resultCount = result.Count };
 
             //var artikli = _dbContext.artikal.Where(p => p.naziv.ToLower().Contains(naziv.ToLower()) && p.dostupnost!=null && p.dostupnost!="0");
             //return artikli.ToList();

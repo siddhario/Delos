@@ -58,6 +58,7 @@ namespace WebApplication3.Controllers
             try
             {
                 korisnik.lozinka = Helper.CreateMD5(korisnik.lozinka).ToLower();
+                //korisnik.role = new List<string>();
                 _dbContext.korisnik.Add(korisnik);
                 _dbContext.SaveChanges();
                 return Ok();
@@ -108,7 +109,7 @@ namespace WebApplication3.Controllers
                     pon.prezime = korisnik.prezime;
                     pon.email = korisnik.email;
                     pon.admin = korisnik.admin;
-
+                    pon.role = korisnik.role;
                     _dbContext.SaveChanges();
                     return Ok();
                 }

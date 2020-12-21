@@ -23,10 +23,11 @@ export class korisnikDetailsComponent {
   izmijeniLozinku() {
     this.izmjenaLozinke = true;
   }
+  selectedRoles: any;
   saveKorisnik(korisnik: Korisnik) {
 
-    if (korisnik.korisnicko_ime.length < 6) {
-      this.toastr.error("Korisničko ime mora sadržavati minimum 6 karaktera!");
+    if (korisnik.korisnicko_ime.length < 4) {
+      this.toastr.error("Korisničko ime mora sadržavati minimum 4 karaktera!");
       return;
     }
 

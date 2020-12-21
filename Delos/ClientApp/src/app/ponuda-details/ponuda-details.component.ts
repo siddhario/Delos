@@ -39,6 +39,7 @@ export class PonudaDetailsComponent implements OnInit {
   isExpanded = false;
   public selectedPonuda: Ponuda;
   dokumentForm: FormGroup;
+  reload: number = 0;
 
   @ViewChild("dokumenti", { static: false }) dokumenti: PonudaDokumentComponent;
   @ViewChildren("dokumentiStavke") dokumenti_stavke: QueryList<PonudaDokumentComponent>;
@@ -103,6 +104,7 @@ export class PonudaDetailsComponent implements OnInit {
       this.http.post<Ponuda>(this.baseUrl + 'ponuda', ponuda).subscribe(result => {
         console.log("OK");
         this.toastr.success("Ponuda je uspješno dodata..");
+        this.reload = 2;
         this.formMode = FormMode.View;
         ponuda = result;
         this.selectedPonuda = ponuda;
@@ -499,6 +501,8 @@ export class PonudaDetailsComponent implements OnInit {
         this.http.put<Ponuda>(this.baseUrl + 'ponuda/zakljuciPonudu?broj=' + this.selectedPonuda.broj, null).subscribe(result => {
           this.toastr.success("Ponuda je uspješno zaključena..");
           this.selectedPonuda = result;
+          if (this.reload == 0)
+            this.reload = 1;
           if (this.selectedPonuda.stavke != null)
             this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
           if (this.selectedPonuda.dokumenti != null)
@@ -541,6 +545,8 @@ export class PonudaDetailsComponent implements OnInit {
         this.http.put<Ponuda>(this.baseUrl + 'ponuda/statusiraj?broj=' + this.selectedPonuda.broj + "&status=" + status, null).subscribe(result => {
           this.toastr.success("Status ponude je uspješno postavljen..");
           this.selectedPonuda = result;
+          if (this.reload == 0)
+            this.reload = 1;
           if (this.selectedPonuda.stavke != null)
             this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
           if (this.selectedPonuda.dokumenti != null)
@@ -563,6 +569,8 @@ export class PonudaDetailsComponent implements OnInit {
         this.http.put<Ponuda>(this.baseUrl + 'ponuda/otkljucajPonudu?broj=' + this.selectedPonuda.broj, null).subscribe(result => {
           this.toastr.success("Ponuda je uspješno otključana..");
           this.selectedPonuda = result;
+          if (this.reload == 0)
+            this.reload = 1;
           if (this.selectedPonuda.stavke != null)
             this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
           if (this.selectedPonuda.dokumenti != null)
@@ -583,7 +591,7 @@ export class PonudaDetailsComponent implements OnInit {
       modalRef.result.then((data) => {
         this.http.delete(this.baseUrl + 'ponuda/obrisiPonudu?broj=' + this.selectedPonuda.broj).subscribe(result => {
           this.toastr.success("Ponuda je uspješno obrisana..");
-          this.activeModal.close();
+          this.activeModal.close(2);
         }, error => {
           this.toastr.error("Greška..");
           console.error(error)
@@ -601,6 +609,7 @@ export class PonudaDetailsComponent implements OnInit {
         this.http.put<Ponuda>(this.baseUrl + 'ponuda/kopirajPonudu?broj=' + this.selectedPonuda.broj, null).subscribe(result => {
           this.toastr.success("Ponuda je uspješno kopirana..");
           this.selectedPonuda = result;
+          this.reload = 2;
           if (this.selectedPonuda.stavke != null)
             this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
           if (this.selectedPonuda.dokumenti != null)
@@ -628,13 +637,13 @@ export class PonudaDetailsComponent implements OnInit {
     if (this.formMode == FormMode.Add || this.formMode == FormMode.Edit) {
       let modalRef = this.modalService.open(NgbdModalConfirm);
       modalRef.result.then((data) => {
-        this.activeModal.close();
+        this.activeModal.close(this.reload);
       }, (reason) => {
       });
       modalRef.componentInstance.confirmText = "Da li ste sigurni da želite zatvoriti prikaz? Sve nesačuvane izmjene će biti poništene.";
     }
     else
-      this.activeModal.close();
+      this.activeModal.close(this.reload);
   }
   search = (text$: Observable<string>) => {
     return text$.pipe(
@@ -723,6 +732,8 @@ export class PonudaDetailsComponent implements OnInit {
 
   reloadItem(continueAdd: boolean) {
     this.http.get<Ponuda>(this.baseUrl + 'ponuda/getbybroj?broj=' + this.selectedPonuda.broj).subscribe(result => {
+      if (this.reload == 0)
+        this.reload = 1;
       this.selectedPonuda = result;
       if (this.selectedPonuda.stavke != null)
         this.selectedPonuda.stavke.forEach(s => s.mode = FormMode.View);
@@ -895,6 +906,7 @@ export class PonudaDetailsComponent implements OnInit {
         this.toastr.success("Stavka ponude je uspješno dodata..");
         //this.addImages(this.selectedArtikal.slike, result, this.selectedPonuda);
         this.reloadItem(continueAdd);
+
 
         stavka.mode = FormMode.View;
       }, error => {

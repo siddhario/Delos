@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -57,6 +57,7 @@
     <None Remove="ClientApp\src\app\model\ponudaDokument.ts" />
     <None Remove="ClientApp\src\app\model\ponudaStavka.ts" />
     <None Remove="ClientApp\src\app\model\prijava.ts" />
+    <None Remove="ClientApp\src\app\model\queryResult.ts" />
     <None Remove="ClientApp\src\app\model\ugovor.ts" />
     <None Remove="ClientApp\src\app\model\ugovorRata.ts" />
     <None Remove="ClientApp\src\app\model\webShopServis.ts" />
@@ -81,6 +82,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\model\artikal.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\app\model\queryResult.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="ClientApp\src\app\model\prijava.ts">
