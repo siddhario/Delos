@@ -17,60 +17,72 @@ namespace Delos.Helpers
 
         public static string StampaPrijave(prijava prijava)
         {
-            //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
-
-            string dir = "C:\\temp";
-
-            if (Directory.Exists(dir) == false)
+            try
             {
-                Directory.CreateDirectory(dir);
-            }
+                //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
 
+                string dir = "C:\\temp";
 
-            XLWorkbook doc = new XLWorkbook("PRIJEMNICA NA SERVIS.xlsx");
-            //doc.Worksheets.Add("PRIJAVA");
-
-            var sheet = doc.Worksheet(1);
-
-
-            sheet.Cells("C17").Value = prijava.broj;
-            sheet.Cells("C17").DataType = XLDataType.Text;
-            sheet.Cells("C15").Value = prijava.broj;
-            sheet.Cells("C15").Style.Font.FontName = "Free 3 of 9 Extended";
-            sheet.Cells("C15").Style.Font.FontSize = 28;
-            sheet.Cells("C18").Value = prijava.broj_garantnog_lista;
-            sheet.Cells("C21").Value = prijava.datum;
-            sheet.Cells("C24").Value = prijava.kupac_ime;
-            sheet.Cells("C25").DataType = XLDataType.Text;
-            sheet.Cells("C25").Style.NumberFormat.Format = "@";
-            sheet.Cells("C25").Value = prijava.kupac_telefon;
-            sheet.Cells("C28").Value = prijava.model;
-            sheet.Cells("C29").Value = prijava.serijski_broj;
-            sheet.Cells("C31").Value = prijava.dodatna_oprema;
-            sheet.Cells("C32").Value = prijava.predmet;
-
-            sheet.Cells("G48").Value = prijava.serviser_primio;
-
-            string fileName = dir + "\\" + prijava.broj.Replace("/", "-") + ".xlsx";
-
-            if (File.Exists(fileName) == true)
-            {
-                try
+                if (Directory.Exists(dir) == false)
                 {
-                    File.Delete(fileName);
+                    Directory.CreateDirectory(dir);
                 }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-                doc.SaveAs(fileName);
-            }
-            else
-            {
-                doc.SaveAs(fileName);
-            }
 
-            return fileName;
+
+                XLWorkbook doc = new XLWorkbook("PRIJEMNICA NA SERVIS.xlsx");
+                //doc.Worksheets.Add("PRIJAVA");
+
+                var sheet = doc.Worksheet(1);
+
+
+                sheet.Cells("C17").Value = prijava.broj;
+                sheet.Cells("C17").DataType = XLDataType.Text;
+                sheet.Cells("C15").Value = prijava.broj;
+                sheet.Cells("C15").Style.Font.FontName = "Free 3 of 9 Extended";
+                sheet.Cells("C15").Style.Font.FontSize = 28;
+                sheet.Cells("C18").Value = prijava.broj_garantnog_lista;
+
+                sheet.Cells("C21").DataType = XLDataType.Text;
+                //sheet.Cells("C21").Style.DateFormat.Format = "dd.MM.yyyy.";
+                sheet.Cells("C21").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
+
+                sheet.Cells("C24").Value = prijava.kupac_ime;
+                sheet.Cells("C25").DataType = XLDataType.Text;
+                sheet.Cells("C25").Style.NumberFormat.Format = "@";
+                sheet.Cells("C25").Value = prijava.kupac_telefon;
+                sheet.Cells("C28").Value = prijava.model;
+                sheet.Cells("C29").Value = prijava.serijski_broj;
+                sheet.Cells("C31").Value = prijava.dodatna_oprema;
+                sheet.Cells("C32").Value = prijava.predmet;
+
+                sheet.Cells("G48").Value = prijava.serviser_primio;
+
+                string fileName = dir + "\\" + prijava.broj.Replace("/", "-") + ".xlsx";
+
+                if (File.Exists(fileName) == true)
+                {
+                    try
+                    {
+                        File.Delete(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
+                    doc.SaveAs(fileName);
+                }
+                else
+                {
+                    doc.SaveAs(fileName);
+                }
+
+                return fileName;
+            }
+            catch (Exception exx)
+            {
+                Helper.LogException(exx);
+                return null;
+            }
         }
         public static string CreateMD5(string input)
         {
@@ -137,9 +149,9 @@ namespace Delos.Helpers
             sheet.Cells("A3").Value = "PONUDA BROJ: " + rednibroj;
             sheet.Cells("A3").DataType = XLDataType.Text;
 
-            sheet.Cells("G2").Value = datum;
+            sheet.Cells("G2").Value = datum.ToString("dd.MM.yyyy");
             sheet.Cells("G2").DataType = XLDataType.DateTime;
-            sheet.Cells("G2").Style.NumberFormat.Format = "dd.MM.yyyy";
+            sheet.Cells("G2").Style.DateFormat.Format = "dd.MM.yyyy";
 
             sheet.Cells("B7").Value = partner_naziv;
             sheet.Cells("B7").DataType = XLDataType.Text;
@@ -457,7 +469,7 @@ namespace Delos.Helpers
             return fileName;
         }
 
-        public static string StampaPotvrdeOPlacanju(ugovor ugovor,int brojRate)
+        public static string StampaPotvrdeOPlacanju(ugovor ugovor, int brojRate)
         {
 
             //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
@@ -518,14 +530,14 @@ namespace Delos.Helpers
             int i = 0;
             foreach (var r in rate.Where(rr => rr.uplaceno != 0))
             {
-                sheet.Cells("A" + (57 + i).ToString()).Value = r.broj_rate.ToString() + ". rata - uplaćeno ("+r.datum_placanja.Value.ToString("dd.MM.yyyy")+"): " + r.uplaceno.Value.ToString("N2")+ " KM";
+                sheet.Cells("A" + (57 + i).ToString()).Value = r.broj_rate.ToString() + ". rata - uplaćeno (" + r.datum_placanja.Value.ToString("dd.MM.yyyy") + "): " + r.uplaceno.Value.ToString("N2") + " KM";
                 i++;
             }
 
             i = 0;
             foreach (var r in rate.Where(rr => rr.uplaceno == 0))
             {
-                sheet.Cells("E" + (57 + i).ToString()).Value = r.broj_rate.ToString() + ". rata - iznos: " + r.iznos.ToString("N2")+" KM";
+                sheet.Cells("E" + (57 + i).ToString()).Value = r.broj_rate.ToString() + ". rata - iznos: " + r.iznos.ToString("N2") + " KM";
                 i++;
             }
 
@@ -554,57 +566,66 @@ namespace Delos.Helpers
 
         public static string StampaRadnogNalogaExcel(prijava prijava)
         {
-
-            //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
-
-            string dir = "C:\\temp";
-
-            if (Directory.Exists(dir) == false)
+            try
             {
-                Directory.CreateDirectory(dir);
-            }
+                //string dir = Environment.SpecialFolder.MyDocuments + "\\ServisDB\\";
 
+                string dir = "C:\\temp";
 
-            XLWorkbook doc = new XLWorkbook("RadniNalog.xlsx");
-            //doc.Worksheets.Add("PRIJAVA");
-
-            var sheet = doc.Worksheet(1);
-
-
-            sheet.Cells("C10").Value = prijava.broj_naloga;
-            sheet.Cells("C10").DataType = XLDataType.Text;
-            sheet.Cells("G10").Value = prijava.datum.Value.ToString("dd.MM.yyyy");
-            sheet.Cells("G10").DataType = XLDataType.DateTime;
-            sheet.Cells("C13").Value = prijava.kupac_ime;
-            sheet.Cells("C13").DataType = XLDataType.Text;
-            sheet.Cells("C14").Value = prijava.datum.Value.ToString("dd.MM.yyyy");
-            sheet.Cells("C14").DataType = XLDataType.DateTime;
-            sheet.Cells("A23").Value = prijava.predmet;
-            sheet.Cells("A23").DataType = XLDataType.Text;
-            sheet.Cells("D37").Value = prijava.serviser;
-            sheet.Cells("D37").DataType = XLDataType.Text;
-
-
-            string fileName = dir + "\\" + prijava.broj.Replace("/", "-") + ".xlsx";
-
-            if (File.Exists(fileName) == true)
-            {
-                try
+                if (Directory.Exists(dir) == false)
                 {
-                    File.Delete(fileName);
+                    Directory.CreateDirectory(dir);
                 }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-                doc.SaveAs(fileName);
-            }
-            else
-            {
-                doc.SaveAs(fileName);
-            }
 
-            return fileName;
+
+                XLWorkbook doc = new XLWorkbook("RadniNalog.xlsx");
+                //doc.Worksheets.Add("PRIJAVA");
+
+                var sheet = doc.Worksheet(1);
+
+
+                sheet.Cells("C10").Value = prijava.broj_naloga;
+                sheet.Cells("C10").DataType = XLDataType.Text;
+                sheet.Cells("G10").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
+                sheet.Cells("G10").DataType = XLDataType.Text;
+                //sheet.Cells("G10").Style.DateFormat.Format = "dd.MM.yyyy.";
+                sheet.Cells("C13").Value = prijava.kupac_ime;
+                sheet.Cells("C13").DataType = XLDataType.Text;
+                sheet.Cells("C14").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
+                sheet.Cells("C14").DataType = XLDataType.Text;
+                //sheet.Cells("C14").Style.DateFormat.Format = "dd.MM.yyyy.";
+                sheet.Cells("A23").Value = prijava.predmet;
+                sheet.Cells("A23").DataType = XLDataType.Text;
+                sheet.Cells("D37").Value = prijava.serviser;
+                sheet.Cells("D37").DataType = XLDataType.Text;
+
+
+                string fileName = dir + "\\" + prijava.broj.Replace("/", "-") + ".xlsx";
+
+                if (File.Exists(fileName) == true)
+                {
+                    try
+                    {
+                        File.Delete(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
+                    doc.SaveAs(fileName);
+                }
+                else
+                {
+                    doc.SaveAs(fileName);
+                }
+
+                return fileName;
+            }
+            catch (Exception exx)
+            {
+                Helper.LogException(exx);
+                return null;
+            }
         }
 
         public static void UpdateCijenaIKategorijaArtikala(DelosDbContext dbContext, kategorija kategorija)
@@ -666,7 +687,7 @@ namespace Delos.Helpers
                         {
                             if (art.vrste != null)
                             {
-                                
+
                                 string vrsta = art.vrsteString.Substring(0, art.vrsteString.Length - 1);
                                 //foreach (var vrsta in art.vrste)
                                 //{

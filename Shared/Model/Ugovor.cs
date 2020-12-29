@@ -32,6 +32,8 @@ namespace Shared.Model
         public string status { get; set; }
         public string napomena { get; set; }
         public bool mk { get; set; }
+
+        public string odobrio { get; set; }
         public IEnumerable<ugovor_rata> rate { get; set; }
 
         public decimal? uplaceno_po_ratama { get; set; }

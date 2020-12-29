@@ -19,8 +19,8 @@ import { QueryResult } from '../model/queryResult';
   selector: 'app-korisnik',
   templateUrl: './artikal.component.html'
 })
-export class ArtikalComponent implements AfterViewInit {
-  public artikli: Artikal[];
+export class ArtikalComponent {
+  public artikli: Artikal[] = [];
   sortOrder: boolean;
   sortColumn: string;
   searchText: string;
@@ -45,16 +45,17 @@ export class ArtikalComponent implements AfterViewInit {
   selectedAktivan: string = "1";
   selectedKategorijeFilter = [];
   page: number = 1;
-  pageCount: number;
-  pages: Array<number>=[];
-  getPageActiveClass(page) {
-    if (page == this.page) {
-      return "page-item active";
-    }
-    else
-      return "page-item";
-  }
-  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string, brend: string, aktivan: string,page:number) {
+  pageCount: number = 1;
+  loading: boolean;
+  //pages: Array<number>=[];
+  //getPageActiveClass(page) {
+  //  if (page == this.page) {
+  //    return "page-item active";
+  //  }
+  //  else
+  //    return "page-item";
+  //}
+  startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string, brend: string, aktivan: string, page: number) {
     this.selectedKategorijaWebShop = selectedKategorijaWebShop;
     this.loadAll = loadAll;
     this.selectedDostupnost = dostupnost;
@@ -75,7 +76,7 @@ export class ArtikalComponent implements AfterViewInit {
       brend = null;
     if (aktivan == "--Svi--")
       aktivan = null;
-
+    this.loading = true;
 
     this.http.get<QueryResult>(this.baseUrl + 'webShopSync/artikliSearch?'
       + (naziv ? 'naziv=' + naziv : '')
@@ -88,13 +89,14 @@ export class ArtikalComponent implements AfterViewInit {
       + ('&page=' + this.page)
       + ('&pageSize=50')
     ).subscribe(result => {
+      this.loading = false;
+      // this.pages = [];
 
-      this.pages = [];
-    
-      for (let i = 0; i < result.pageCount; i++) {
-        this.pages.push(i+1);
-      }
-      this.artikli = result.data;
+      //for (let i = 0; i < result.pageCount; i++) {
+      //  this.pages.push(i+1);
+      //}
+      if (result.data != null)
+        this.artikli = this.artikli.concat(result.data);
       this.pageCount = result.pageCount;
 
       this.isSearching = false;
@@ -137,7 +139,7 @@ export class ArtikalComponent implements AfterViewInit {
 
         this.distinctBrendovi = new Set(brnds);
       }
-    }, error => console.error(error));
+    }, error => { console.error(error); this.loading = false; });
   }
   selectedItem: Artikal;
   selectItem(artikal: Artikal) {
@@ -149,25 +151,25 @@ export class ArtikalComponent implements AfterViewInit {
   sanitize(url: string) {
     return this.sanitizer.bypassSecurityTrustUrl(url);
   }
-  ngAfterViewInit() {
-    fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
-      // get value
-      map((event: any) => {
-        return event.target.value;
-      })
-      // if character length greater then 2
-      , filter(res => res.length > 2 || res == "")
-      // Time in milliseconds between key events
-      , debounceTime(1000)
-      // If previous query is diffent from current   
-      , distinctUntilChanged()
-      // subscription for response
-    ).subscribe((text: string) => {
-      this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan, 1);
-    });
+  //ngAfterViewInit() {
+  //  fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
+  //    // get value
+  //    map((event: any) => {
+  //      return event.target.value;
+  //    })
+  //    // if character length greater then 2
+  //    , filter(res => res.length > 2 || res == "")
+  //    // Time in milliseconds between key events
+  //    , debounceTime(1000)
+  //    // If previous query is diffent from current   
+  //    , distinctUntilChanged()
+  //    // subscription for response
+  //  ).subscribe((text: string) => {
+  //    this.startSearch(text, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan, 1);
+  //  });
 
 
-  }
+  //}
   selectedDobavljac: string;
 
 
@@ -244,7 +246,19 @@ export class ArtikalComponent implements AfterViewInit {
   hasRole(rola: string) {
     return this.currentUser.role.includes(rola);
   }
+  search() {
+    this.page = 1;
+    this.artikli = [];
+    console.log(this.searchText);
+    this.startSearch(this.searchText, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan, 1);
+  }
+  onScroll() {
+    if (this.page < this.pageCount) {
+      this.page = this.page + 1;
+      this.startSearch(this.searchText, this.selectedKategorijaWebShop, this.selectedDostupnost, this.selectedDobavljac, this.loadAll, this.selectedBrend, this.selectedAktivan, 1);
 
+    }
+  }
   constructor(private modalService: NgbModal, private toastr: ToastrService, private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
     this.baseUrl = baseUrl;
     this.http = http;
@@ -254,7 +268,7 @@ export class ArtikalComponent implements AfterViewInit {
     this.selectedKategorijaWebShop = "--Sve--";
     this.authenticationService.currentUser.subscribe(x => {
       this.currentUser = x;
-      if (this.currentUser == null || (this.currentUser.role.includes('ADMIN')==false && this.currentUser.role.includes("WEBSHOP") == false && this.currentUser.role.includes("WEBSHOP_ADMIN") == false) )
+      if (this.currentUser == null || (this.currentUser.role.includes('ADMIN') == false && this.currentUser.role.includes("WEBSHOP") == false && this.currentUser.role.includes("WEBSHOP_ADMIN") == false))
         this.router.navigate(['/login']);
     });
 

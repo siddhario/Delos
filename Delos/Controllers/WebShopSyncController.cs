@@ -157,41 +157,73 @@ namespace WebApplication3.Controllers
                 }
                 exp += ".+";
             }
-
-
-            List<artikal> result = _dbContext.artikal.Include(a => a.istorija_cijena).Where(it =>
-                (
-                    loadAll == "1" ||
-                    (Regex.IsMatch(it.naziv.ToLower(), exp) || (it.sifra.Contains(naziv)))
-                )
-                &&
-                (
-                    kategorija == null ||
-                    it.kategorija == kategorija || (kategorija == "NULL" && it.kategorija == null)
-                )
-                   &&
-                (
-                    brend == null ||
-                    it.brend == brend || (brend == "NULL" && it.brend == null)
-                )
-                     &&
-                (
-                    aktivan == "0" || aktivan == null ||
-                    (it.aktivan == true && aktivan == "1") || (it.aktivan == false && aktivan == "2")
-                )
-                &&
-                (
-                    dobavljac == null ||
-                    dobavljac == it.dobavljac
-                )
-                &&
-                (
-                    dostupnost == null || dostupnost == "0" ||
-                    (it.dostupnost != null && it.dostupnost != "0")
-                )
-            ).ToList();
-
-            return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (result.Count / pageSize)+1, resultCount = result.Count };
+            int resultCount = 0;
+            if (page == 1)
+            {
+                resultCount = _dbContext.artikal.Where(it =>
+                    (
+                        loadAll == "1" ||
+                        (Regex.IsMatch(it.naziv.ToLower(), exp) || (it.sifra.Contains(naziv)))
+                    )
+                    &&
+                    (
+                        kategorija == null ||
+                        it.kategorija == kategorija || (kategorija == "NULL" && it.kategorija == null)
+                    )
+                       &&
+                    (
+                        brend == null ||
+                        it.brend == brend || (brend == "NULL" && it.brend == null)
+                    )
+                         &&
+                    (
+                        aktivan == "0" || aktivan == null ||
+                        (it.aktivan == true && aktivan == "1") || (it.aktivan == false && aktivan == "2")
+                    )
+                    &&
+                    (
+                        dobavljac == null ||
+                        dobavljac == it.dobavljac
+                    )
+                    &&
+                    (
+                        dostupnost == null || dostupnost == "0" ||
+                        (it.dostupnost != null && it.dostupnost != "0")
+                    )
+                ).Count();
+            }
+            var result = _dbContext.artikal.Include(a => a.istorija_cijena).Where(it =>
+                      (
+                          loadAll == "1" ||
+                          (Regex.IsMatch(it.naziv.ToLower(), exp) || (it.sifra.Contains(naziv)))
+                      )
+                      &&
+                      (
+                          kategorija == null ||
+                          it.kategorija == kategorija || (kategorija == "NULL" && it.kategorija == null)
+                      )
+                         &&
+                      (
+                          brend == null ||
+                          it.brend == brend || (brend == "NULL" && it.brend == null)
+                      )
+                           &&
+                      (
+                          aktivan == "0" || aktivan == null ||
+                          (it.aktivan == true && aktivan == "1") || (it.aktivan == false && aktivan == "2")
+                      )
+                      &&
+                      (
+                          dobavljac == null ||
+                          dobavljac == it.dobavljac
+                      )
+                      &&
+                      (
+                          dostupnost == null || dostupnost == "0" ||
+                          (it.dostupnost != null && it.dostupnost != "0")
+                      )
+                ); 
+            return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (resultCount / pageSize)+1, resultCount = resultCount };
 
             //var artikli = _dbContext.artikal.Where(p => p.naziv.ToLower().Contains(naziv.ToLower()) && p.dostupnost!=null && p.dostupnost!="0");
             //return artikli.ToList();

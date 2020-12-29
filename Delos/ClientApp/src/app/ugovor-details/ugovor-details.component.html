@@ -45,7 +45,7 @@
               <button type="button" class="btn btn-danger  btn-sm" style="width:80px;margin:3px;" *ngIf="formMode==1" (click)="obrisiUgovor()">Obriši</button>
 
             </li>
-          
+
             <li class="nav-item" [routerLinkActive]="['link-active']">
               <button type="button" class="btn btn-light  btn-sm" style="margin:3px" (click)="cancel()">X</button>
             </li>
@@ -61,11 +61,10 @@
       <div *ngIf="formMode!=2" class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedUgovor.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedUgovor.datum"
-                 value="selectedUgovor.datum"
-                 ngbDatepicker #d="ngbDatepicker">
-          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-        </div>
+  <input class="form-control form-control-sm" [disabled]="formMode==1" type="date" [ngModel]="selectedUgovor.datum | date:'yyyy-MM-dd'"
+         (ngModelChange)="selectedUgovor.datum  = $event" [value]="selectedUgovor.datum  | date:'yyyy-MM-dd'">
+
+</div>
       </div>
       <div *ngIf="formMode!=2" class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [value]="selectedUgovor.korisnik.ime+' '+selectedUgovor.korisnik.prezime" type="text" /></div>
       <div *ngIf="formMode!=2" class="col-sm-4"><label>Status</label><input class="form-control form-control-sm" disabled [value]="getStatus(selectedUgovor.status)" type="text" /></div>
@@ -99,6 +98,9 @@
 
     <div class="form-row form-group">
       <div class="col-sm-2"><label>Br.računa</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedUgovor.broj_racuna" type="text" /></div>
+      <div class="col-sm-4">
+        <label>Odobrio</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedUgovor.odobrio" type="text" />
+      </div>
     </div>
     <div class="form-row form-group">
       <div class="col-sm-2"><label>Iznos ugovora</label><input [disabled]="formMode==1 || selectedUgovor.status!='E'" class="form-control form-control-sm" [(ngModel)]="selectedUgovor.iznos_sa_pdv" (ngModelChange)="KreirajRateUgovora()" type="text" /></div>
@@ -110,65 +112,69 @@
       <!-- <div class="col-sm-6"><div class="form-check"><input id="cbMK" class="form-check-input" [(ngModel)]="selectedUgovor.mk" type="checkbox" /><label class="form-check-label" for="cbMK">MK</label></div></div>-->
 
     </div>
-  </div>
-
-  <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="selectedUgovor.rate" >
-    <thead>
-      <tr>
-        <th>Br.rate</th>
-        <th>Iznos</th>
-        <th>Rok plaćanja</th>
-        <th></th>
-        <th>Uplaćeno</th>
-        <th>Datum plaćanja</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let rata of selectedUgovor.rate">
-        <td>{{ rata.broj_rate }}</td>
-        <td>{{ rata.iznos }}</td>
-        <td>{{ rata.rok_placanja|date:'dd.MM.yyyy' }}</td>
-        <td><button [disabled]="selectedUgovor.status=='E'" type="button" class="btn btn-info  btn-sm" style="width:30px;margin:3px;" (click)="preuzmiIznos(rata)">=></button></td>
-
-        <td>
-          <div class="input-group col-8">
-            <input [disabled]="rata.formMode!=3" class="form-control form-control-sm" style="text-align:right" [(ngModel)]="rata.uplaceno" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
-          </div>
-        </td>
-        <td>
-          <div *ngIf="rata.formMode!=3">{{ rata.datum_placanja|date:'dd.MM.yyyy' }}</div>
-          <div class="input-group" *ngIf="rata.formMode==3">
-            <input [disabled]="rata.formMode!=3" class="form-control form-control-sm" name="dp" [(ngModel)]="rata.datum_placanja"
-                   value="rata.datum_placanja"
-                   ngbDatepicker #d="ngbDatepicker">
-            <button [disabled]="rata.formMode!=3" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-          </div>
-        </td>
-        <td>
-          <div *ngIf="rata.formMode==3">
-            <button type="button" class="btn btn-info  btn-sm" style="width:80px;margin:3px;" (click)="saveUgovorRata(rata)">Sačuvaj</button>
-          </div>
-        </td>
-        <td>
-          <div *ngIf="rata.uplaceno!=0">
-            <button type="button" class="btn btn-info  btn-sm" style="width:180px;margin:3px;" (click)="potvrda(rata)">Potvrda o plaćanju</button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
-      <div class="container" style="padding:0px">
-        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
-             [ngClass]="{ show: isExpanded }">
-          <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-warning btn-sm" style="width:80px;margin:3px;" (click)="cancel()">Odustani</button>
-          <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="saveUgovor(selectedUgovor)">Sačuvaj</button>
-        </div>
+ 
+    <div class="form-row form-group">
+      <div class="col-sm-12">
+        <label>Napomena</label><input class="form-control form-control-sm" [disabled]="formMode==1" [(ngModel)]="selectedUgovor.napomena" type="text" />
       </div>
-    </nav>
-  </header>
-</div>
+    </div>
+    <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="selectedUgovor.rate">
+      <thead>
+        <tr>
+          <th>Br.rate</th>
+          <th>Iznos</th>
+          <th>Rok plaćanja</th>
+          <th></th>
+          <th>Uplaćeno</th>
+          <th>Datum plaćanja</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rata of selectedUgovor.rate">
+          <td>{{ rata.broj_rate }}</td>
+          <td>{{ rata.iznos }}</td>
+          <td>{{ rata.rok_placanja|date:'dd.MM.yyyy' }}</td>
+          <td><button [disabled]="selectedUgovor.status=='E'" type="button" class="btn btn-info  btn-sm" style="width:30px;margin:3px;" (click)="preuzmiIznos(rata)">=></button></td>
+
+          <td>
+            <div class="input-group col-8">
+              <input [disabled]="rata.formMode!=3" class="form-control form-control-sm" style="text-align:right" [(ngModel)]="rata.uplaceno" type="text" pattern="[0-9]+([,\.][0-9]+)?" />
+            </div>
+          </td>
+          <td>
+            <div *ngIf="rata.formMode!=3">{{ rata.datum_placanja|date:'dd.MM.yyyy' }}</div>
+            <div class="input-group" *ngIf="rata.formMode==3">
+              <input [disabled]="rata.formMode!=3" class="form-control form-control-sm" name="dp" [(ngModel)]="rata.datum_placanja"
+                     value="rata.datum_placanja"
+                     ngbDatepicker #d="ngbDatepicker">
+              <button [disabled]="rata.formMode!=3" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="rata.formMode==3">
+              <button type="button" class="btn btn-info  btn-sm" style="width:80px;margin:3px;" (click)="saveUgovorRata(rata)">Sačuvaj</button>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="rata.uplaceno!=0">
+              <button type="button" class="btn btn-info  btn-sm" style="width:180px;margin:3px;" (click)="potvrda(rata)">Potvrda o plaćanju</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <header>
+      <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3" style="padding:0px;border-radius:.2rem">
+        <div class="container" style="padding:0px">
+          <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
+               [ngClass]="{ show: isExpanded }">
+            <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-warning btn-sm" style="width:80px;margin:3px;" (click)="cancel()">Odustani</button>
+            <button *ngIf="formMode==2||formMode==3" type="button" class="btn btn-success btn-sm" style="width:80px;margin:3px;" (click)="saveUgovor(selectedUgovor)">Sačuvaj</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+  </div>

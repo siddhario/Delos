@@ -51,19 +51,15 @@
       <div *ngIf="formMode!=2" class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPrijava.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.datum"
-                 value="selectedPrijava.datum"
-                 ngbDatepicker #d="ngbDatepicker">
-          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-        </div>
+  <input class="form-control form-control-sm" [disabled]="formMode==1" type="date" [ngModel]="selectedPrijava.datum | date:'yyyy-MM-dd'"
+         (ngModelChange)="selectedPrijava.datum  = $event" [value]="selectedPrijava.datum  | date:'yyyy-MM-dd'">
+</div>
       </div>
       <div *ngIf="formMode!=2" class="col-sm-4"><label>Izradio</label><input class="form-control form-control-sm" disabled [value]="selectedPrijava.korisnik.ime+' '+selectedPrijava.korisnik.prezime" type="text" /></div>
       <div class="col-sm-2">
         <label>Završeno</label><div class="input-group">
-          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.zavrseno"
-                 value="selectedPrijava.zavrseno"
-                 ngbDatepicker #d="ngbDatepicker">
-          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+          <input class="form-control form-control-sm" [disabled]="formMode==1" type="date" [(ngModel)]="selectedPrijava.zavrseno">
+
         </div>
       </div>
 
@@ -131,25 +127,20 @@
                [inputFormatter]="inputFormatPartnerListValue"
                #instance="ngbTypeahead" />
       </div>
-      <div class="col-sm-2"><label>Br.računa</label><input  [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.broj_racuna" type="text" /></div>
+      <div class="col-sm-2"><label>Br.računa</label><input [disabled]="formMode==1" class="form-control form-control-sm" [(ngModel)]="selectedPrijava.broj_racuna" type="text" /></div>
 
-    
+
     </div>
     <div class="form-row form-group">
       <div class="col-sm-2" *ngIf="selectedPrijava.dobavljac_sifra">
         <label>Datum vraćanja</label><div class="input-group">
-          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.datum_vracanja"
-                 value="selectedPrijava.datum_vracanja"
-                 ngbDatepicker #d="ngbDatepicker">
-          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+          <input class="form-control form-control-sm" [disabled]="formMode==1" type="date" [(ngModel)]="selectedPrijava.datum_vracanja">
+
         </div>
       </div>
       <div class="col-sm-2" *ngIf="selectedPrijava.dobavljac_sifra">
         <label>Mejl dobavljaču</label><div class="input-group">
-          <input [disabled]="formMode==1" class="form-control form-control-sm" name="dp" [(ngModel)]="selectedPrijava.mejl_dobavljacu"
-                 value="selectedPrijava.mejl_dobavljacu"
-                 ngbDatepicker #d="ngbDatepicker">
-          <button [disabled]="formMode==1" class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+          <input class="form-control form-control-sm" [disabled]="formMode==1" type="date" [(ngModel)]="selectedPrijava.poslat_mejl_dobavljacu">
         </div>
       </div>
     </div>

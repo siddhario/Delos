@@ -35,21 +35,28 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<ugovor> Get()
+        public QueryResult Get(int page, int pageSize, string searchText)
         {
-            var ugovori = _dbContext.ugovor.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.rate).ToList().OrderByDescending(p => p.broj);
-            return ugovori;
+            int resultCount = 0;
+            if (page == 1)
+            {
+                resultCount = _dbContext.ugovor.Where(p => searchText == null || p.broj.Contains(searchText) || p.kupac_naziv.ToLower().Contains(searchText.ToLower())).Count();
+            }
+            var result = _dbContext.ugovor.Where(p => searchText == null || p.broj.Contains(searchText) || p.kupac_naziv.ToLower().Contains(searchText.ToLower())).Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.rate)
+               .OrderByDescending(p => p.datum.Year).ThenByDescending(p => p.broj)
+                .Skip(pageSize * (page - 1)).Take(pageSize).ToList();
 
+            return new QueryResult() { data = result, pageCount = (resultCount / pageSize) + 1, resultCount = resultCount };
         }
 
-        [HttpGet]
-        [Route("search")]
-        public IEnumerable<ugovor> Search(string naziv)
-        {
-            var ugovori = _dbContext.ugovor.Include(p => p.partner).Include(p => p.Korisnik).Where(p => naziv == null || p.kupac_naziv.ToLower().Contains(naziv.ToLower()));
-            return ugovori;
+        //[HttpGet]
+        //[Route("search")]
+        //public IEnumerable<ugovor> Search(string naziv)
+        //{
+        //    var ugovori = _dbContext.ugovor.Include(p => p.partner).Include(p => p.Korisnik).Where(p => naziv == null || p.kupac_naziv.ToLower().Contains(naziv.ToLower()));
+        //    return ugovori;
 
-        }
+        //}
 
         [HttpDelete]
         [Route("obrisiUgovor")]
@@ -88,7 +95,7 @@ namespace WebApplication3.Controllers
                 ugovor.radnik = User.Identity.Name;
                 ugovor.broj = broj.Value.ToString("D5") + "/" + year.ToString();
                 ugovor.uplaceno_po_ratama = 0;
-
+                ugovor.preostalo_za_uplatu = ugovor.iznos_sa_pdv - ugovor.inicijalno_placeno;
                 partner partner;
                 if (ugovor.partner.sifra == null)
                 {
@@ -363,6 +370,6 @@ namespace WebApplication3.Controllers
             else
                 return BadRequest();
         }
-       
+
     }
 }

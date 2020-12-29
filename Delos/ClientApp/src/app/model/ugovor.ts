@@ -27,4 +27,5 @@ export class Ugovor {
   korisnik?: Korisnik;
   partner?: partner;
   rate?: UgovorRata[];
+  odobrio?: string;
 }

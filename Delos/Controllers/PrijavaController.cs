@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Model;
 
 namespace WebApplication3.Controllers
 {
@@ -29,22 +30,30 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<prijava> Get()
+        public QueryResult Get(int page, int pageSize, string searchText)
         {
+           int resultCount = 0; 
+            if (page == 1)
+            {
+                resultCount = _dbContext.prijava
+                .Where(p => searchText == null || p.broj.Contains(searchText) || p.kupac_ime.ToLower().Contains(searchText.ToLower()) || p.predmet.ToLower().Contains(searchText.ToLower())
+                     ).Count();
+            }
+            var result = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).ToList()
+                .Where(p => searchText == null || p.broj.Contains(searchText) || p.kupac_ime.ToLower().Contains(searchText.ToLower()) || p.predmet.ToLower().Contains(searchText.ToLower())).OrderByDescending(p => p.datum.Value.Year).ThenByDescending(p => p.broj)
+                .Skip(pageSize * (page - 1)).Take(pageSize).ToList();
 
-            var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).ToList().OrderByDescending(p => p.broj);
-            return prijave;
-
+            return new QueryResult() { data = result, pageCount = (resultCount / pageSize) + 1, resultCount = resultCount };
         }
 
-        [HttpGet]
-        [Route("search")]
-        public IEnumerable<prijava> Search(string naziv)
-        {
-            var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).Where(p => naziv == null || p.kupac_ime.ToLower().Contains(naziv.ToLower()) || p.predmet.ToLower().Contains(naziv.ToLower())); ;
-            return prijave;
+        //[HttpGet]
+        //[Route("search")]
+        //public IEnumerable<prijava> Search(string naziv)
+        //{
+        //    var prijave = _dbContext.prijava.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.dobavljac_partner).Where(p => naziv == null || p.kupac_ime.ToLower().Contains(naziv.ToLower()) || p.predmet.ToLower().Contains(naziv.ToLower())).OrderByDescending(p => p.datum.Value.Year).ThenByDescending(p => p.broj);
+        //    return prijave;
 
-        }
+        //}
 
         [HttpDelete]
         [Route("obrisiPrijavu")]
@@ -61,7 +70,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
         }
 
-    
+
 
         [HttpPost]
         public IActionResult InsertPrijava(prijava prijava)

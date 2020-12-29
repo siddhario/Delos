@@ -1,21 +1,25 @@
-<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive"
+     infiniteScroll
+     [infiniteScrollDistance]="2"
+     [infiniteScrollThrottle]="50"
+     (scrolled)="onScroll()">
   <h2 id="tableLabel">Ugovori o odloženom plaćanju</h2>
-  <p *ngIf="!ugovori&&currentUser"><em>Učitavanje...</em></p>
   <p *ngIf="!currentUser"><em>Niste autorizovani za pristup ovoj stranici...</em></p>
   <div style="overflow:auto" *ngIf="currentUser">
     <div style="float:left;margin: 4px;">
       <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
     </div>
 
-    <button type="button" class="btn btn-danger  btn-sm" style="width:150px;margin:3px;"  (click)="pregledUplata()">Pregled uplata</button>
+    <button type="button" class="btn btn-danger  btn-sm" style="width:150px;margin:3px;" (click)="pregledUplata()">Pregled uplata</button>
 
 
-    <button type="button" class="btn btn-danger  btn-sm" style="width:150px;margin:3px;"  (click)="pregledDugovanja()">Pregled dugovanja</button>
+    <button type="button" class="btn btn-danger  btn-sm" style="width:150px;margin:3px;" (click)="pregledDugovanja()">Pregled dugovanja</button>
 
 
     <div style="float:left;margin: 4px;">
-      <input class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+      <input (keyup.enter)="search()" class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
     </div>
+    <button type="button" style="width:100px;float:left;margin: 4px;" class="btn btn-info  btn-sm" (click)="search()">Pretraži</button>
   </div>
 
 
@@ -40,7 +44,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let ugovor of ugovori| ugovorFilter : searchText" (click)="selectItem(ugovor)">
+      <tr *ngFor="let ugovor of ugovori" (click)="selectItem(ugovor)">
         <td>{{ ugovor.broj }}</td>
         <td>{{ ugovor.datum|date:'dd.MM.yyyy' }}</td>
         <td>{{ ugovor.kupac_naziv }}</td>
@@ -59,4 +63,7 @@
       </tr>
     </tbody>
   </table>
+
+  <p *ngIf="loading==true"><em>Učitavanje...</em></p>
+
 </div>

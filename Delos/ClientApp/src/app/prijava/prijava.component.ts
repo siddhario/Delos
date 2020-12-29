@@ -4,17 +4,16 @@ import { Prijava } from '../model/prijava';
 import { AuthenticationService } from '../auth/auth.service';
 import { Korisnik } from '../model/korisnik';
 import { Router } from '@angular/router';
-import { fromEvent } from 'rxjs';
-import { map, filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PrijavaDetailsComponent } from '../prijava-details/prijava-details.component';
+import { QueryResult } from '../model/queryResult';
 
 @Component({
   selector: 'app-prijava',
   templateUrl: './prijava.component.html'
 })
 export class PrijavaComponent {
-  public prijave: Prijava[];
+  public prijave: Prijava[] = [];
 
   searchText: string;
   currentUser: Korisnik;
@@ -23,6 +22,9 @@ export class PrijavaComponent {
   baseUrl: string;
   sortOrder: boolean;
   sortColumn: string;
+  page: number = 1;
+  loading: boolean;
+  pageCount: number;
   sortProperty(property) {
     this.sortColumn = property;
     if (property == "broj")
@@ -64,38 +66,9 @@ export class PrijavaComponent {
       this.sortOrder = false;
     }
   }
-  //ngAfterViewInit() {
-  //  fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
-  //    // get value
-  //    map((event: any) => {
-  //      return event.target.value;
-  //    })
-  //    // if character length greater then 2
-  //    , filter(res => res.length > 2 || res == "")
-  //    // Time in milliseconds between key events
-  //    , debounceTime(1000)
-  //    // If previous query is diffent from current   
-  //    , distinctUntilChanged()
-  //    // subscription for response
-  //  ).subscribe((text: string) => {
-  //    this.startSearch(text);
-  //  });
 
-
-  //}
-
-
-  startSearch(naziv: string) {
-    this.http.get<Prijava[]>(this.baseUrl + 'prijava/search?'
-      + (naziv ? 'naziv=' + naziv : '')
-    ).subscribe(result => {
-      this.prijave = result;
-
-    }, error => console.error(error));
-  }
   selectedItem: Prijava;
   selectItem(prijava: Prijava) {
-    //this.prijave.filter(dd => dd.broj != prijava.broj).forEach((value) => { value.selected = false });
     if (this.selectedItem == prijava)
       this.selectedItem = null;
     else
@@ -110,10 +83,10 @@ export class PrijavaComponent {
     modalRef.componentInstance.selectedPrijava = prijava;
     modalRef.result.then((data) => {
 
-      this.load();
+      this.search();
 
     }, (reason) => {
-      this.load();
+        this.search();
     });
   }
   add() {
@@ -126,19 +99,37 @@ export class PrijavaComponent {
     );
     modalRef.componentInstance.startAdd();
     modalRef.result.then((data) => {
-      this.load();
+      this.search();
     }, (reason) => {
-      this.load();
+      this.search();
     });
   }
   load() {
-    this.http.get<Prijava[]>(this.baseUrl + 'prijava').subscribe(result => {
-      this.prijave = result;
-    }, error => console.error(error));
+    this.loading = true;
+    this.http.get<QueryResult>(this.baseUrl + 'prijava?'
+      + ('page=' + this.page)
+      + ('&pageSize=50')
+      + (this.searchText ? '&searchText=' + this.searchText : '')).subscribe(result => {
+        this.loading = false;
+        if (result.data != null)
+          this.prijave = this.prijave.concat(result.data);
+        if (this.page == 1)
+          this.pageCount = result.pageCount;
+      }, error => { console.error(error); this.loading = false; });
 
   }
-
-
+  search() {
+    this.page = 1;
+    this.prijave = [];
+    console.log(this.searchText);
+    this.load();
+  }
+  onScroll() {
+    if (this.page < this.pageCount) {
+      this.page = this.page + 1;
+      this.load();
+    }
+  }
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router, private modalService: NgbModal) {
     this.http = http;
     this.baseUrl = baseUrl;

@@ -114,11 +114,29 @@ export class UgovorDetailsComponent {
   }
 
   saveUgovor(ugovor) {
+    if (ugovor.datum == "")
+      ugovor.datum = null;
+    if (ugovor.odobrio == undefined) {
+      this.toastr.error("Polje 'Odobrio' je obavezno za unos!");
+      return;
+    }
+    if (ugovor.iznos_sa_pdv == undefined) {
+      this.toastr.error("Polje 'Iznos' je obavezno za unos!");
+      return;
+    }
+    if (ugovor.broj_rata == undefined) {
+      this.toastr.error("Polje 'Broj rata' je obavezno za unos!");
+      return;
+    }
+    if (ugovor.inicijalno_placeno == undefined) {
+      this.toastr.error("Polje 'Inicijalno uplaćeno' je obavezno za unos!");
+      return;
+    }
     this.convertProperties(ugovor);
     if ((typeof ugovor.partner) == "string") {
-      ugovor.kupac_ime = ugovor.partner;
+      ugovor.kupac_naziv = ugovor.partner;
       ugovor.partner = new partner();
-      ugovor.partner.naziv = ugovor.partner_naziv;
+      ugovor.partner.naziv = ugovor.kupac_naziv;
     }
 
     if (this.rate != null)

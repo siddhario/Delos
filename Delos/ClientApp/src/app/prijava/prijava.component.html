@@ -1,17 +1,21 @@
-<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive">
+<div style="width:100%;background-color:#fff;padding:15px;margin-left:auto;margin-right:auto;width:auto" class=" table-responsive"
+     infiniteScroll
+     [infiniteScrollDistance]="2"
+     [infiniteScrollThrottle]="50"
+     (scrolled)="onScroll()">
   <h2 id="tableLabel">Servisne prijave</h2>
-  <p *ngIf="!prijave&&currentUser"><em>Učitavanje...</em></p>
   <p *ngIf="!currentUser"><em>Niste autorizovani za pristup ovoj stranici...</em></p>
   <div style="overflow:auto" *ngIf="currentUser">
     <div style="float:left;margin: 4px;">
       <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="add()">+</button>
     </div>
     <div style="float:left;margin: 4px;">
-      <input class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
+      <input (keyup.enter)="search()" class="form-control form-control-sm" style="width:300px" [(ngModel)]="searchText" placeholder="Unesite pojam za pretraživanje">
     </div>
+    <button type="button" style="width:100px;float:left;margin: 4px;" class="btn btn-info  btn-sm" (click)="search()">Pretraži</button>
   </div>
 
- 
+
   <table class='table table-striped table-sm table-hover' aria-labelledby="tableLabel" *ngIf="prijave">
     <thead>
       <tr>
@@ -32,7 +36,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let prijava of prijave| prijavaFilter : searchText" (click)="selectItem(prijava)">
+      <tr *ngFor="let prijava of prijave" (click)="selectItem(prijava)">
         <td>{{ prijava.broj }}</td>
         <td>{{ prijava.datum|date:'dd.MM.yyyy' }}</td>
         <td>{{ prijava.kupac_ime }}</td>
@@ -50,4 +54,6 @@
       </tr>
     </tbody>
   </table>
+
+  <p *ngIf="loading==true"><em>Učitavanje...</em></p>
 </div>

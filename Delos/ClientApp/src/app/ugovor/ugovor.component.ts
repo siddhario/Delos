@@ -10,13 +10,14 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UgovorDetailsComponent } from '../ugovor-details/ugovor-details.component';
 import { PregledUplataComponent } from '../pregledUplata/pregledUplata.component';
 import { PregledDugovanjaComponent } from '../pregledDugovanja/pregledDugovanja.component';
+import { QueryResult } from '../model/queryResult';
 
 @Component({
   selector: 'app-ugovor',
   templateUrl: './ugovor.component.html'
 })
 export class UgovorComponent {
-  public ugovori: Ugovor[];
+  public ugovori: Ugovor[]=[];
 
   searchText: string;
   currentUser: Korisnik;
@@ -25,6 +26,9 @@ export class UgovorComponent {
   baseUrl: string;
   sortOrder: boolean;
   sortColumn: string;
+    loading: boolean;
+    pageCount: number;
+    page: number=1;
   sortProperty(property) {
     this.sortColumn = property;
     if (property == "broj")
@@ -82,10 +86,10 @@ export class UgovorComponent {
     modalRef.componentInstance.selectedUgovor = ugovor;
     modalRef.result.then((data) => {
 
-      this.load();
+      this.search();
 
     }, (reason) => {
-      this.load();
+      this.search();
     });
   }
   add() {
@@ -98,18 +102,18 @@ export class UgovorComponent {
     );
     modalRef.componentInstance.startAdd();
     modalRef.result.then((data) => {
-      this.load();
+      this.search();
     }, (reason) => {
-      this.load();
+        this.search();
     });
   }
-  load() {
-    this.http.get<Ugovor[]>(this.baseUrl + 'ugovor').subscribe(result => {
-      this.ugovori = result;
-      let s;
-    }, error => console.error(error));
+  //load() {
+  //  this.http.get<Ugovor[]>(this.baseUrl + 'ugovor').subscribe(result => {
+  //    this.ugovori = result;
+  //    let s;
+  //  }, error => console.error(error));
 
-  }
+  //}
   pregledUplata() {
     let modalRef = this.modalService.open(PregledUplataComponent);
   }
@@ -117,7 +121,32 @@ export class UgovorComponent {
   pregledDugovanja() {
     let modalRef = this.modalService.open(PregledDugovanjaComponent);
   }
+  load() {
+    this.loading = true;
+    this.http.get<QueryResult>(this.baseUrl + 'ugovor?'
+      + ('page=' + this.page)
+      + ('&pageSize=50')
+      + (this.searchText ? '&searchText=' + this.searchText : '')).subscribe(result => {
+        this.loading = false;
+        if (result.data != null)
+        this.ugovori = this.ugovori.concat(result.data);
+        if (this.page == 1)
+          this.pageCount = result.pageCount;
+      }, error => { console.error(error); this.loading = false; });
 
+  }
+  search() {
+    this.page = 1;
+    this.ugovori = [];
+    console.log(this.searchText);
+    this.load();
+  }
+  onScroll() {
+    if (this.page < this.pageCount) {
+      this.page = this.page + 1;
+      this.load();
+    }
+  }
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router, private modalService: NgbModal) {
     this.http = http;
     this.baseUrl = baseUrl;

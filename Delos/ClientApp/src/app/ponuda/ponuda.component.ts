@@ -131,14 +131,6 @@ export class PonudaComponent {
   }
   page: number = 1;
   pageCount: number;
-  pages: Array<number> = [];
-  getPageActiveClass(page) {
-    if (page == this.page) {
-      return "page-item active";
-    }
-    else
-      return "page-item";
-  }
   load() {
     this.loading = true;
     this.http.get<QueryResult>(this.baseUrl + 'ponuda?'
@@ -148,14 +140,14 @@ export class PonudaComponent {
         //this.http.get<Ponuda[]>(this.baseUrl + 'ponuda').subscribe(result => {
         //this.ponude = result;
         this.loading = false;
-
-        this.ponude = this.ponude.concat(result.data);
+        if (result.data != null)
+          this.ponude = this.ponude.concat(result.data);
         if (this.page == 1)
           this.pageCount = result.pageCount;
-        this.pages = [];
-        for (let i = 0; i < result.pageCount; i++) {
-          this.pages.push(i + 1);
-        }
+        //this.pages = [];
+        //for (let i = 0; i < result.pageCount; i++) {
+        //  this.pages.push(i + 1);
+        //}
       }, error => { console.error(error); this.loading = false; });
   }
 }

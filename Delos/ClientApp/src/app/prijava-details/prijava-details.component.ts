@@ -62,7 +62,14 @@ export class PrijavaDetailsComponent {
     }, 0);
   }
   savePrijava(prijava) {
-
+    if (prijava.zavrseno == "")
+      prijava.zavrseno = null;
+    if (prijava.datum == "")
+      prijava.datum = null;
+    if (prijava.datum_vracanja == "")
+      prijava.datum_vracanja = null;
+    if (prijava.poslat_mejl_dobavljacu == "")
+      prijava.poslat_mejl_dobavljacu = null;
     prijava.garantni_rok = this.convertToNumber(prijava.garantni_rok);
     if ((typeof prijava.partner) == "string") {
       prijava.kupac_ime = prijava.partner;

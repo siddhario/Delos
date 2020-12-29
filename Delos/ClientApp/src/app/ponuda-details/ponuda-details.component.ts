@@ -100,7 +100,8 @@ export class PonudaDetailsComponent implements OnInit {
       ponuda.partner.naziv = ponuda.partner_naziv;
     }
     if (ponuda.broj == undefined) {
-      let obj: object = ponuda.datum;
+      if (ponuda.datum == "")
+        ponuda.datum = null;
       this.http.post<Ponuda>(this.baseUrl + 'ponuda', ponuda).subscribe(result => {
         console.log("OK");
         this.toastr.success("Ponuda je uspješno dodata..");
