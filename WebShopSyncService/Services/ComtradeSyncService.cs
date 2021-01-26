@@ -1,11 +1,11 @@
-﻿using ComtradeService;
+﻿using ServiceReference1;
 using Delos.Model;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using static ComtradeService.CTProductsInStockSoapClient;
+using static ServiceReference1.CTProductsInStockSoapClient;
 
 namespace Delos.Services
 {
@@ -15,7 +15,7 @@ namespace Delos.Services
         {
             List<artikal> artikli = new List<artikal>();
 
-            CTProductsInStockSoapClient cl = new CTProductsInStockSoapClient(EndpointConfiguration.CTProductsInStockSoap12);
+            CTProductsInStockSoapClient cl = new CTProductsInStockSoapClient(EndpointConfiguration.CTProductsInStockSoap);
 
             var result = await cl.GetCTProducts_WithAttributesAsync(Config.Username, Config.Password, null, null, null).ConfigureAwait(false);
             foreach (var res in result.Body.GetCTProducts_WithAttributesResult)
