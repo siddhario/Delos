@@ -260,11 +260,15 @@ export class PonudaDetailsComponent implements OnInit {
             { text: 'Naziv artikla' + '\n', bold: true },
             { text: 'Opis', fontSize: 10 }]
         },
-        { width: 50, text: 'Količina', style: 'tableHeader', alignment: 'center' },
-        { width: 40, text: 'JM', style: 'tableHeader', alignment: 'center' },
-        { width: 90, text: 'Cijena bez PDV-a', style: 'tableHeader', alignment: 'center' },
+        {
+          width: 50, text: [
+            {
+              text: 'Količina' + '\n', bold: true },
+            { text: 'JM', fontSize: 10 }] },
+        { width: 70, text: 'Cijena bez PDV-a', style: 'tableHeader', alignment: 'center' },
         { width: 50, text: 'Rabat', style: 'tableHeader', alignment: 'center' },
-        { width: 90, text: 'Iznos bez PDV-a', style: 'tableHeader', alignment: 'center' }]
+        { width: 70, text: 'Cijena sa rabatom', style: 'tableHeader', alignment: 'center' },
+        { width: 70, text: 'Iznos bez PDV-a', style: 'tableHeader', alignment: 'center' }]
     }]);
 
     this.selectedPonuda.stavke.sort((a, b) => {
@@ -285,11 +289,14 @@ export class PonudaDetailsComponent implements OnInit {
               { text: s.artikal_naziv + '\n', bold: true },
               { text: s.opis, fontSize: 10 }]
           },
-          { width: 50, text: s.kolicina, alignment: 'center' },
-          { width: 40, text: s.jedinica_mjere, alignment: 'center' },
-          { width: 90, text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
+          {
+            width: 50, text: [
+              { text: s.kolicina + '\n' },
+              { text: s.jedinica_mjere, fontSize: 10 }] },
+          { width: 70, text: s.cijena_bez_pdv.toFixed(2), alignment: 'right' },
           { width: 50, text: s.rabat_procenat.toFixed(2) + "%", alignment: 'right' },
-          { width: 90, text: s.iznos_bez_pdv.toFixed(2), alignment: 'right' }]
+          { width: 70, text: s.cijena_bez_pdv_sa_rabatom.toFixed(2), alignment: 'right' },
+          { width: 70, text: s.iznos_bez_pdv_sa_rabatom.toFixed(2), alignment: 'right' }]
       }],
       );
     });
@@ -301,9 +308,9 @@ export class PonudaDetailsComponent implements OnInit {
       unbreakable: true,
       stack: [
         { columns: [{ text: "Ukupan iznos bez rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_bez_rabata.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
-        { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2), width: 100, alignment: 'right' }] },
+        { columns: [{ text: "Iznos rabata:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.rabat.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
         { columns: [{ text: "Ukupan iznos bez PDV-a:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_rabatom.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
-        { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2), width: 100, alignment: 'right' }] },
+        { columns: [{ text: "PDV:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] },
         { columns: [{ text: "Ukupan iznos sa PDV-om:", width: 420, alignment: 'right', bold: true }, { text: this.selectedPonuda.iznos_sa_pdv.toFixed(2) + " KM", width: 100, alignment: 'right' }] }
       ]
     }
@@ -704,7 +711,7 @@ export class PonudaDetailsComponent implements OnInit {
     return this.http.get(this.baseUrl + 'webShopSync/artikliSearch?naziv=' + term)
       .pipe(
         map((response) => {
-          return response;
+          return response["data"];
         })
       );
   }

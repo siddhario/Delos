@@ -20,27 +20,29 @@
               [routerLinkActiveOptions]="{ exact: true }">
             <a class="nav-link text-light" [routerLink]="['/']">Početna</a>
           </li>
-          <li *ngIf="this.currentUser.role.includes('WEBSHOP')|| this.currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/artikli']" *ngIf="currentUser">Artikli</a>
-          </li>
-          <li *ngIf="this.currentUser.role.includes('WEBSHOP')|| this.currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/kategorije']" *ngIf="currentUser">Kategorije</a>
-          </li>
-          <li *ngIf="currentUser.role.includes('SERVIS')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/prijave']" *ngIf="currentUser">Servisne prijave</a>
-          </li>
-          <li *ngIf="currentUser.role.includes('UGOVORI')||currentUser.role.includes('ADMIN')"  class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/ugovori']" *ngIf="currentUser">Ugovori o odl. plaćanju</a>
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/korisnici']" *ngIf="currentUser">Korisnici</a>
-          </li>
-          <li  class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/partneri']" *ngIf="currentUser">Partneri</a>
-          </li>
-          <li *ngIf="currentUser.role.includes('PONUDE')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/ponude']" *ngIf="currentUser">Ponude</a>
-          </li>
+          <ng-container *ngIf="this.currentUser">
+            <li *ngIf="this.currentUser.role.includes('WEBSHOP')|| this.currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/artikli']" *ngIf="currentUser">Artikli</a>
+            </li>
+            <li *ngIf="this.currentUser.role.includes('WEBSHOP')|| this.currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/kategorije']" *ngIf="currentUser">Kategorije</a>
+            </li>
+            <li *ngIf="currentUser.role.includes('SERVIS')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/prijave']" *ngIf="currentUser">Servisne prijave</a>
+            </li>
+            <li *ngIf="currentUser.role.includes('UGOVORI')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/ugovori']" *ngIf="currentUser">Ugovori o odl. plaćanju</a>
+            </li>
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/korisnici']" *ngIf="currentUser">Korisnici</a>
+            </li>
+            <li class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/partneri']" *ngIf="currentUser">Partneri</a>
+            </li>
+            <li *ngIf="currentUser.role.includes('PONUDE')||currentUser.role.includes('ADMIN')" class="nav-item" [routerLinkActive]="['link-active']">
+              <a class="nav-link text-light" [routerLink]="['/ponude']" *ngIf="currentUser">Ponude</a>
+            </li>
+          </ng-container>
           <li class="nav-item" [routerLinkActive]="['link-active']" *ngIf="!currentUser">
             <a class="nav-link text-light" [routerLink]="['/login']">Prijava</a>
           </li>

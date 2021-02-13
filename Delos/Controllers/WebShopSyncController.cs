@@ -223,7 +223,10 @@ namespace WebApplication3.Controllers
                           (it.dostupnost != null && it.dostupnost != "0")
                       )
                 ); 
-            return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (resultCount / pageSize)+1, resultCount = resultCount };
+            if(pageSize==0)
+                return new QueryResult() { data = result.OrderBy(aa => aa.naziv), pageCount=1, resultCount = resultCount };
+            else
+                return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (resultCount / pageSize)+1, resultCount = resultCount };
 
             //var artikli = _dbContext.artikal.Where(p => p.naziv.ToLower().Contains(naziv.ToLower()) && p.dostupnost!=null && p.dostupnost!="0");
             //return artikli.ToList();

@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from './auth.service';
+import { tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Injectable()
 export class TokenInterceptorService implements HttpInterceptor {
-    constructor(private authenticationService: AuthenticationService) { }
+    constructor(private authenticationService: AuthenticationService,private router:Router) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // add authorization header with jwt token if available
@@ -19,6 +21,15 @@ export class TokenInterceptorService implements HttpInterceptor {
             });
         }
 
-        return next.handle(request);
+
+      return next.handle(request).pipe(tap(() => { },
+        (err: any) => {
+          if (err instanceof HttpErrorResponse) {
+            if (err.status !== 401) {
+              return;
+            }
+            this.router.navigate(['login']);
+          }
+        }));
     }
 }

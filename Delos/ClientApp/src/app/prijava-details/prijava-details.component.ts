@@ -62,6 +62,11 @@ export class PrijavaDetailsComponent {
     }, 0);
   }
   savePrijava(prijava) {
+
+    if (prijava.predmet == undefined) {
+      this.toastr.error("Polje 'Predmet' je obavezno za unos!");
+      return;
+    }
     if (prijava.zavrseno == "")
       prijava.zavrseno = null;
     if (prijava.datum == "")

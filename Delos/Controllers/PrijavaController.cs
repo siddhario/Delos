@@ -14,7 +14,7 @@ using Shared.Model;
 
 namespace WebApplication3.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PrijavaController : ControllerBase

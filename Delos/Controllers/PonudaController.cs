@@ -581,7 +581,7 @@ namespace WebApplication3.Controllers
         [Route("add_images")]
         public IActionResult AddImages([FromBody]string[] urls, string ponudabroj, short? stavkabroj)
         {
-            var pon = _dbContext.ponuda.Include(p => p.partner).Include(p => p.Korisnik).Include(p => p.stavke).ThenInclude(s => s.artikal).Include(p => p.dokumenti).FirstOrDefault(p => p.broj == ponudabroj);
+            var pon = _dbContext.ponuda.FirstOrDefault(p => p.broj == ponudabroj);
             if (pon == null)
                 return NotFound();
             else

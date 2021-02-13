@@ -43,7 +43,7 @@ namespace Delos.Helpers
                 sheet.Cells("C18").Value = prijava.broj_garantnog_lista;
 
                 sheet.Cells("C21").DataType = XLDataType.Text;
-                //sheet.Cells("C21").Style.DateFormat.Format = "dd.MM.yyyy.";
+                sheet.Cells("C21").Style.DateFormat.Format = "dd.MM.yyyy.";
                 sheet.Cells("C21").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
 
                 sheet.Cells("C24").Value = prijava.kupac_ime;
@@ -422,31 +422,94 @@ namespace Delos.Helpers
             sheet.Cells("A6").Value = ugovor.kupac_adresa;
             sheet.Cells("A6").DataType = XLDataType.Text;
 
-
-            sheet.Cells("A7").Value = "LK:" + ugovor.kupac_broj_lk;
+            sheet.Cells("A7").Value = ugovor.kupac_telefon;
             sheet.Cells("A7").DataType = XLDataType.Text;
 
-
-            sheet.Cells("A8").Value = "JMBG:" + ugovor.kupac_maticni_broj;
+            sheet.Cells("A8").Value = "LK:" + ugovor.kupac_broj_lk;
             sheet.Cells("A8").DataType = XLDataType.Text;
 
-            sheet.Cells("A17").Value = sheet.Cell("A17").Value.ToString().Replace("$IZNOS$", ugovor.iznos_sa_pdv.ToString("N2"));
-            sheet.Cells("A17").DataType = XLDataType.Text;
+            sheet.Cells("A47").Value = sheet.Cell("A47").Value.ToString().Replace("$DATUM$", ugovor.datum.ToString("dd.MM.yyyy"));
+            sheet.Cells("A47").DataType = XLDataType.Text;
+
+            sheet.Cells("A9").Value = "JMBG:" + ugovor.kupac_maticni_broj;
+            sheet.Cells("A9").DataType = XLDataType.Text;
+
+            sheet.Cells("A16").Value = sheet.Cell("A16").Value.ToString().Replace("$IZNOS$", ugovor.iznos_sa_pdv.ToString("N2")).Replace("$NAZIV_ARTIKLA$",ugovor.napomena);
+            sheet.Cells("A16").DataType = XLDataType.Text;
+            sheet.Row(16).AdjustToContents();
+            sheet.Row(16).Height = 30;
             decimal iznosRate = Math.Round((ugovor.iznos_sa_pdv - ugovor.inicijalno_placeno) / ugovor.broj_rata, 2, MidpointRounding.AwayFromZero);
-            sheet.Cells("A21").Value = sheet.Cell("A21").Value.ToString()
+            sheet.Cells("A18").Value = sheet.Cell("A18").Value.ToString()
                 .Replace("$UPLACENO$", ugovor.inicijalno_placeno.ToString("N2"))
                 .Replace("$BROJ_RATA$", ugovor.broj_rata.ToString("N0"))
                 .Replace("$IZNOS_RATE$", iznosRate.ToString("N2"));
 
-            sheet.Cells("A21").DataType = XLDataType.Text;
+            sheet.Cells("A18").DataType = XLDataType.Text;
 
             var rate = ugovor.rate.ToList();
             for (int i = 0; i < rate.Count; i++)
             {
-                sheet.Cells("A" + (55 + i).ToString()).Value = (i + 1).ToString() + ". do " + rate[i].rok_placanja.ToString("dd.MM.yyyy") + " - iznos: " + rate[i].iznos.ToString("N2") + " KM";
+                sheet.Cells("A" + (21 + i).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                sheet.Cells("A" + (21 + i).ToString()).Value = (i + 1).ToString() + ". do " + rate[i].rok_placanja.ToString("dd.MM.yyyy") + " - iznos: " + rate[i].iznos.ToString("N2") + " KM";
             }
 
+            sheet.Cells("A" + (21 + rate.Count+1).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 1).ToString()).Value = "Član 3.";
+            sheet.Cells("A" + (21 + rate.Count + 1).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            sheet.Range("A" + (21 + rate.Count + 1).ToString() + ":" + "H" + (21 + rate.Count+ 1).ToString()).Row(1).Merge();
 
+            sheet.Cells("A" + (21 + rate.Count + 2).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 2).ToString()).Value = "Kupac može uvijek isplatiti odjednom ostatak dužne cijene, a prodavac je dužan primiti ovu isplatu prije dospijeća. Kupac ima pravo da isplati jednokratno ostatak dugovanja prije datuma dospijeća a prodavac je dužan primiti ovu isplatu bez naknade.";
+            sheet.Range("A" + (21 + rate.Count + 2).ToString() + ":" + "H" + (21 + rate.Count + 2).ToString()).Row(1).Merge();
+            sheet.Cells("A" + (21 + rate.Count + 2).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            sheet.Row(21 + rate.Count + 2).Height = 40;
+
+            sheet.Cells("A" + (21 + rate.Count + 2).ToString()).Style.Alignment.WrapText = true;
+
+            sheet.Cells("A" + (21 + rate.Count + 4).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 4).ToString()).Value = "Član 4.";
+            sheet.Cells("A" + (21 + rate.Count + 4).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            sheet.Range("A" + (21 + rate.Count + 4).ToString() + ":" + "H" + (21 + rate.Count + 4).ToString()).Row(1).Merge();
+
+            sheet.Cells("A" + (21 + rate.Count + 5).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 5).ToString()).Value = "U slučaju spora nadležan je sud u Banja Luci.";
+            sheet.Range("A" + (21 + rate.Count + 5).ToString() + ":" + "H" + (21 + rate.Count + 5).ToString()).Row(1).Merge();
+            sheet.Cells("A" + (21 + rate.Count + 5).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            sheet.Cells("A" + (21 + rate.Count + 7).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 7).ToString()).Value = "Član 5.";
+            sheet.Cells("A" + (21 + rate.Count + 7).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            sheet.Range("A" + (21 + rate.Count + 7).ToString() + ":" + "H" + (21 + rate.Count + 7).ToString()).Row(1).Merge();
+
+            sheet.Cells("A" + (21 + rate.Count + 8).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 8).ToString()).Value = "Ovaj ugovor je sačinjen u dva primjerka od kojih svaka strana zadržava po jedan.";
+            sheet.Range("A" + (21 + rate.Count + 8).ToString() + ":" + "H" + (21 + rate.Count + 8).ToString()).Row(1).Merge();
+            sheet.Cells("A" + (21 + rate.Count + 8).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            sheet.Cells("A" + (21 + rate.Count + 10).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("A" + (21 + rate.Count + 10).ToString()).Value = "Banja Luka, "+ugovor.datum.ToString("dd.MM.yyyy");
+            sheet.Range("A" + (21 + rate.Count + 10).ToString() + ":" + "H" + (21 + rate.Count + 10).ToString()).Row(1).Merge();
+            sheet.Cells("A" + (21 + rate.Count + 10).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+            sheet.Cells("B" + (21 + rate.Count + 12).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("B" + (21 + rate.Count + 12).ToString()).Value = "________________________";
+            sheet.Range("B" + (21 + rate.Count + 12).ToString() + ":" + "C" + (21 + rate.Count + 12).ToString()).Row(1).Merge();
+            sheet.Cells("B" + (21 + rate.Count + 12).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            sheet.Cells("F" + (21 + rate.Count + 12).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("F" + (21 + rate.Count + 12).ToString()).Value = "________________________";
+            sheet.Range("F" + (21 + rate.Count + 12).ToString() + ":" + "G" + (24 + rate.Count + 12).ToString()).Row(1).Merge();
+            sheet.Cells("F" + (21 + rate.Count + 12).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            sheet.Cells("B" + (21 + rate.Count + 13).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("B" + (21 + rate.Count + 13).ToString()).Value = "MINT ICT.";
+            sheet.Range("B" + (21 + rate.Count + 13).ToString() + ":" + "C" + (21 + rate.Count + 12).ToString()).Row(1).Merge();
+            sheet.Cells("B" + (21 + rate.Count + 13).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            sheet.Cells("F" + (21 + rate.Count + 13).ToString()).DataType = XLDataType.Text;
+            sheet.Cells("F" + (21 + rate.Count + 13).ToString()).Value = "KUPAC";
+            sheet.Range("F" + (21 + rate.Count + 13).ToString() + ":" + "G" + (24 + rate.Count + 12).ToString()).Row(1).Merge();
+            sheet.Cells("F" + (21 + rate.Count + 13).ToString()).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             string fileName = dir + "\\Ugovor_" + ugovor.broj.Replace("/", "-") + ".xlsx";
 
             if (File.Exists(fileName) == true)
