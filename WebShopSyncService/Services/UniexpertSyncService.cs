@@ -45,7 +45,7 @@ namespace Delos.Services
                                 artikal.barkod = artikal.barkod.Replace("EAN code:", "");
                                 artikal.barkod = artikal.barkod.Trim() == "" ? null : artikal.barkod.Trim();
                             }
-                            if (reader.Name == "Nabavna-cijena")
+                            if (reader.Name == "Nabavna-cijena-bezPDV")
                             {
                                 string c = reader.ReadInnerXml().Trim();
                                 c = c.Replace(",", ".");
