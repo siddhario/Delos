@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { KorisnikComponent } from './korisnik/korisnik.component';
-import { NgbModule, NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbDateNativeAdapter, NgbDateAdapter, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PartnerComponent, FilterPartnerPipe } from './partner/partner.component';
@@ -35,6 +35,9 @@ import { UgovorFilterPipe } from './pipes/ugovorFilterPipe';
 import { UgovorDetailsComponent } from './ugovor-details/ugovor-details.component';
 import { PregledUplataComponent } from './pregledUplata/pregledUplata.component';
 import { PregledDugovanjaComponent } from './pregledDugovanja/pregledDugovanja.component';
+import srBr from '@angular/common/locales/sr';
+import { registerLocaleData } from '@angular/common';
+registerLocaleData(srBr)
 
 @NgModule({
   declarations: [
@@ -87,8 +90,8 @@ import { PregledDugovanjaComponent } from './pregledDugovanja/pregledDugovanja.c
       { path: 'ugovori', component: UgovorComponent }
     ])
   ],
-  entryComponents: [PregledUplataComponent, PregledDugovanjaComponent, korisnikDetailsComponent, PrijavaDetailsComponent, PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent, UgovorDetailsComponent],
-  providers: [ExcelService, { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }],
+  entryComponents: [PregledUplataComponent, PregledDugovanjaComponent, korisnikDetailsComponent, PrijavaDetailsComponent, PonudaDetailsComponent, PartnerDetailsComponent, NgbdModalConfirm, NavMenuComponent, PonudaDokumentComponent, UgovorDetailsComponent, ArtikalComponent],
+  providers: [NgbActiveModal,ExcelService, { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }, { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true }, { provide: LOCALE_ID, useValue: 'sr' }],
 
   bootstrap: [AppComponent]
 })

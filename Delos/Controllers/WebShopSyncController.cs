@@ -38,6 +38,61 @@ namespace WebApplication3.Controllers
             return _dbContext.artikal.ToList();
         }
 
+        [HttpDelete]
+        [Route("delete")]
+        public IActionResult Delete(string sifra)
+        {
+            var art = _dbContext.artikal.FirstOrDefault(a => a.sifra == sifra);
+            if(art!=null)
+            {
+                _dbContext.artikal.Remove(art);
+                _dbContext.SaveChanges();
+                return Ok();
+            }    
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        [Route("artikliImport")]
+        public IActionResult artikliImport(List<artikal> artikli)
+        {
+            foreach(var art in artikli)
+            {
+                art.sifra = art.dobavljac.Substring(1,3) + "_" + art.dobavljac_sifra;
+
+                var artikal =_dbContext.artikal.FirstOrDefault(a => a.sifra == art.sifra);
+                if (artikal == null)
+                {
+                    art.dobavljac = art.dobavljac.Substring(5);
+                    art.aktivan = true;
+                    art.dostupnost = art.kolicina.ToString();
+                    art.kalkulacija = true;
+                    art.zadnje_ucitavanje = DateTime.Now;
+                    _dbContext.artikal.Add(art);
+                }
+                else
+                {
+                    artikal.barkod = art.barkod;
+                    artikal.brend = art.brend;
+                    artikal.cijena_mp = art.cijena_mp;
+                    artikal.cijena_prodajna = art.cijena_prodajna;
+                    artikal.cijena_sa_rabatom = art.cijena_sa_rabatom;
+                    artikal.dostupnost = art.dostupnost;
+                    artikal.kategorija = art.kategorija;
+                    artikal.kolicina = art.kolicina;
+                    artikal.dostupnost = art.kolicina.ToString();
+                    artikal.naziv = art.naziv;
+                    artikal.opis = art.opis;
+                    artikal.zadnje_ucitavanje = DateTime.Now;
+                }
+            }
+            _dbContext.SaveChanges();
+            return Ok();
+        }
+
 
         [HttpDelete]
         [Route("deleteKategorija")]

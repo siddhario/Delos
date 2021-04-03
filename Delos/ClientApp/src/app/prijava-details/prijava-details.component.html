@@ -51,7 +51,7 @@
       <div *ngIf="formMode!=2" class="col-sm-2"><label>Broj</label><input class="form-control form-control-sm" disabled [(ngModel)]="selectedPrijava.broj" type="text" /></div>
       <div class="col-sm-2">
         <label>Datum</label><div class="input-group">
-  <input class="form-control form-control-sm" [disabled]="formMode==1" type="date" [ngModel]="selectedPrijava.datum | date:'yyyy-MM-dd'"
+  <input placeholder="dd-mm-yyyy" class="form-control form-control-sm" [disabled]="formMode==1" type="date" [ngModel]="selectedPrijava.datum | date:'yyyy-MM-dd'"
          (ngModelChange)="selectedPrijava.datum  = $event" [value]="selectedPrijava.datum  | date:'yyyy-MM-dd'">
 </div>
       </div>

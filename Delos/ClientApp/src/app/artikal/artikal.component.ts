@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Artikal } from '../model/artikal';
 import { Korisnik } from '../model/korisnik';
 import { AuthenticationService } from '../auth/auth.service';
@@ -9,12 +9,12 @@ import { debounceTime, distinctUntilChanged, tap, switchMap, catchError, map, fi
 import { DomSanitizer } from '@angular/platform-browser';
 import { ExcelService } from '../../services/export-excel-service';
 import { Kategorija } from '../model/kategorija';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbdModalConfirm } from '../modal-focus/modal-focus.component';
 import { ToastrService } from 'ngx-toastr';
 import { istorija_cijena } from '../model/artikal - Copy';
 import { QueryResult } from '../model/queryResult';
-
+import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-korisnik',
   templateUrl: './artikal.component.html'
@@ -55,6 +55,98 @@ export class ArtikalComponent {
   //  else
   //    return "page-item";
   //}
+  file: File;
+  arrayBuffer: any;
+  filelist: any;
+  importFromXLSX(event) {
+    this.file = event.target.files[0];
+    let fileReader = new FileReader();
+    fileReader.readAsArrayBuffer(this.file);
+    fileReader.onload = (e) => {
+      this.arrayBuffer = fileReader.result;
+      var data = new Uint8Array(this.arrayBuffer);
+      var arr = new Array();
+      for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+      var bstr = arr.join("");
+      var workbook = XLSX.read(bstr, { type: "binary" });
+      var first_sheet_name = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[first_sheet_name];
+      console.log(XLSX.utils.sheet_to_json(worksheet, { raw: true }));
+      var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+      //this.filelist = [];
+      //console.log(this.filelist)
+      let artikliImport = new Array<Artikal>();
+      for (let i = 0; i < arraylist.length; i++) {
+        let row = arraylist[i];
+        let artikal = new Artikal();
+        artikal.dobavljac_sifra = row["SIFRA"].toString();
+        artikal.dobavljac = row["DOBAVLJAC"].toString();
+        artikal.cijena_mp = row["MPC"];
+        artikal.cijena_prodajna = row["VPC"];
+        artikal.naziv = row["NAZIV"].toString();
+        artikal.opis = row["OPIS"].toString();
+        artikal.cijena_sa_rabatom = row["NABAVNA_CIJENA_BEZ_PDV"];
+        artikal.kategorija = row["KATEGORIJA"].toString();
+        artikal.barkod = row["BARKOD"].toString();
+        artikal.brend = row["BREND"].toString();
+        let photos: string = row["URL_PHOTO"];
+        if (photos != undefined)
+          artikal.slike = photos.split('\n');
+        artikal.kategorija = row["KATEGORIJA"].toString();
+        artikal.kolicina = row["KOLICINA"];
+
+        artikliImport.push(artikal);
+
+      }
+      if (artikliImport.length > 0) {
+        let h = new HttpHeaders();
+        h.append('Content-Type', 'application/json');
+        this.http.post<Array<Artikal>>(this.baseUrl + 'webShopSync/artikliImport', artikliImport, { headers: h }).subscribe(result => {
+
+          this.toastr.success("Import uspješan!");
+          //this.dokumenti.load();
+        }, error => {
+          this.toastr.error("Greška..");
+          console.error(error)
+        })
+      }
+      else {
+        this.toastr.info("Nema podataka za import!");
+      }
+    }
+  }
+
+  delete(artikal: Artikal) {
+    let modalRef = this.modalService.open(NgbdModalConfirm);
+    modalRef.result.then((data) => {
+      this.http.delete(this.baseUrl + 'webShopSync/delete?sifra=' + artikal.sifra).subscribe(result => {
+        console.log("OK");
+        this.toastr.success("Artikal je uspješno obrisan..");
+        this.search();
+        this.activeModal.close("DELETE");
+      }, error => {
+        this.toastr.error("Greška..");
+        console.error(error)
+      });
+    }, (reason) => {
+    });
+
+    modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati artikal \"" + artikal.sifra + "\"?";
+  }
+  //public importFromFile(bstr: string): XLSX.AOA2SheetOpts {
+  //  /* read workbook */
+  //  const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+
+  //  /* grab first sheet */
+  //  const wsname: string = wb.SheetNames[0];
+  //  const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+  //  /* save data */
+  //  const data = <XLSX.AOA2SheetOpts>(XLSX.utils.sheet_to_json(ws, { header: 1 }));
+
+  //  return data;
+  //}
+
   startSearch(naziv: string, selectedKategorijaWebShop: string, dostupnost: string, dobavljac: string, loadAll: string, brend: string, aktivan: string, page: number) {
     this.selectedKategorijaWebShop = selectedKategorijaWebShop;
     this.loadAll = loadAll;
@@ -259,7 +351,7 @@ export class ArtikalComponent {
 
     }
   }
-  constructor(private modalService: NgbModal, private toastr: ToastrService, private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router) {
+  constructor(private modalService: NgbModal, private toastr: ToastrService, private excelService: ExcelService, private sanitizer: DomSanitizer, http: HttpClient, @Inject('BASE_URL') baseUrl: string, private authenticationService: AuthenticationService, private router: Router, public activeModal: NgbActiveModal) {
     this.baseUrl = baseUrl;
     this.http = http;
     this.sortColumn = 'naziv';

@@ -31,6 +31,11 @@
     <div class="col-3" style="align-self: flex-end;">
       <button type="button" style="width:100px;float:left;margin: 4px;" class="btn btn-info  btn-sm" (click)="search()">Pretraži</button>
       <button type="button" style="width:100px;float:left;margin: 4px;" class="btn btn-info  btn-sm" (click)="exportAsXLSX()">Eksport</button>
+      <label class="btn btn-info  btn-sm" style="width:100px;float:left;margin: 4px;">
+        Import
+        <input type="file" hidden (change)="importFromXLSX($event)" />
+      </label>
+     
     </div>
   </div>
   <div class="row">
@@ -138,6 +143,8 @@
             </ng-container>
 
             <button [disabled]="updateInProgress==true" (click)="toggleAktivan(artikal)" type="button" class="btn btn-info btn-sm">{{ artikal.aktivan==true?'Deaktiviraj':'Aktiviraj' }}</button>
+            <button [disabled]="!(currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN'))" type="button" class="btn btn-danger  btn-sm" style="width:100px;float:left;margin: 4px;" (click)="delete(artikal)">Obriši</button>
+
             <br />
             Slike:<br />
             <ng-container *ngFor="let img of artikal.slike;index as i">
@@ -151,7 +158,7 @@
       </ng-container>
     </tbody>
   </table>
- <p><em *ngIf="loading==true">Učitavanje...</em></p>
+  <p><em *ngIf="loading==true">Učitavanje...</em></p>
 </div>
 
 
