@@ -81,21 +81,20 @@ export class ArtikalComponent {
       for (let i = 0; i < arraylist.length; i++) {
         let row = arraylist[i];
         let artikal = new Artikal();
-        artikal.dobavljac_sifra = row["SIFRA"].toString();
-        artikal.dobavljac = row["DOBAVLJAC"].toString();
-        artikal.cijena_mp = row["MPC"];
-        artikal.cijena_prodajna = row["VPC"];
-        artikal.naziv = row["NAZIV"].toString();
-        artikal.opis = row["OPIS"].toString();
-        artikal.cijena_sa_rabatom = row["NC"];
-        artikal.kategorija = row["KATEGORIJA"].toString();
-        artikal.barkod = row["BARKOD"].toString();
-        artikal.brend = row["BREND"].toString();
-        let photos: string = row["URL_PHOTO"];
-        if (photos != undefined)
+        artikal.dobavljac_sifra = row["SIFRA"] != undefined ? row["SIFRA"].toString() : null;
+        artikal.dobavljac = row["DOBAVLJAC"] != undefined ? row["DOBAVLJAC"].toString() : null;
+        artikal.cijena_mp = row["MPC"] != undefined ? row["MPC"] : null;
+        artikal.cijena_prodajna = row["VPC"] != undefined ? row["VPC"] : null;
+        artikal.naziv = row["NAZIV"] != undefined ? row["NAZIV"].toString() : null;
+        artikal.opis = row["OPIS"] != undefined ? row["OPIS"].toString() : null;
+        artikal.cijena_sa_rabatom = row["NC"] != undefined ? row["NC"] : null;
+        artikal.kategorija = row["KATEGORIJA"] != undefined ? row["KATEGORIJA"].toString() : null;
+        artikal.barkod = row["BARKOD"]!=undefined? row["BARKOD"].toString():null;
+        artikal.brend = row["BREND"] != undefined ? row["BREND"].toString() : null;
+        let photos: string = row["URL_PHOTO"] != undefined ? row["URL_PHOTO"].toString() : null;
+        if (photos != null)
           artikal.slike = photos.split('\n');
-        artikal.kategorija = row["KATEGORIJA"].toString();
-        artikal.kolicina = row["KOLICINA"];
+        artikal.kolicina = row["KOLICINA"] != undefined ? row["KOLICINA"] : null;
 
         artikliImport.push(artikal);
 
