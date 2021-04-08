@@ -15,6 +15,8 @@ import { ToastrService } from 'ngx-toastr';
 import { istorija_cijena } from '../model/artikal - Copy';
 import { QueryResult } from '../model/queryResult';
 import * as XLSX from 'xlsx';
+import isImageURL from 'is-image-url';
+
 @Component({
   selector: 'app-korisnik',
   templateUrl: './artikal.component.html'
@@ -85,7 +87,7 @@ export class ArtikalComponent {
         artikal.cijena_prodajna = row["VPC"];
         artikal.naziv = row["NAZIV"].toString();
         artikal.opis = row["OPIS"].toString();
-        artikal.cijena_sa_rabatom = row["NABAVNA_CIJENA_BEZ_PDV"];
+        artikal.cijena_sa_rabatom = row["NC"];
         artikal.kategorija = row["KATEGORIJA"].toString();
         artikal.barkod = row["BARKOD"].toString();
         artikal.brend = row["BREND"].toString();
@@ -114,6 +116,49 @@ export class ArtikalComponent {
         this.toastr.info("Nema podataka za import!");
       }
     }
+  }
+  url: string;
+  addUrl(artikal: Artikal) {
+    let isurl = isImageURL(this.url);
+
+    if (isurl == true) {
+      this.http.post(this.baseUrl + 'webShopSync/addPhotoURL?sifraArtikla=' + artikal.sifra + '&url=' + this.url, null).subscribe(result => {
+        console.log("OK");
+        if (artikal.slike == null)
+          artikal.slike = [];
+        artikal.slike.push(this.url);
+
+        this.url = null;
+        this.toastr.success("URL je uspješno dodat..");
+        this.activeModal.close("OK");
+      }, error => {
+        this.toastr.error("Greška..");
+        console.error(error)
+      });
+    }
+    else {
+      this.toastr.error("URL nije prepoznat kao validan url slike!");
+    }
+
+
+  }
+
+  deletePhotoURL(artikal: Artikal, url: string) {
+    let modalRef = this.modalService.open(NgbdModalConfirm);
+    modalRef.result.then((data) => {
+      this.http.delete(this.baseUrl + 'webShopSync/deletePhotoURL?sifraArtikla=' + artikal.sifra + '&url=' + url).subscribe(result => {
+        console.log("OK");
+        this.toastr.success("Slika artikla je uspješno obrisana..");
+        this.search();
+        this.activeModal.close("DELETE");
+      }, error => {
+        this.toastr.error("Greška..");
+        console.error(error)
+      });
+    }, (reason) => {
+    });
+
+    modalRef.componentInstance.confirmText = "Da li ste sigurni da želite obrisati sliku \"" + url + "\"?";
   }
 
   delete(artikal: Artikal) {

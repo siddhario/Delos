@@ -43,12 +43,12 @@ namespace WebApplication3.Controllers
         public IActionResult Delete(string sifra)
         {
             var art = _dbContext.artikal.FirstOrDefault(a => a.sifra == sifra);
-            if(art!=null)
+            if (art != null)
             {
                 _dbContext.artikal.Remove(art);
                 _dbContext.SaveChanges();
                 return Ok();
-            }    
+            }
             else
             {
                 return NotFound();
@@ -59,11 +59,11 @@ namespace WebApplication3.Controllers
         [Route("artikliImport")]
         public IActionResult artikliImport(List<artikal> artikli)
         {
-            foreach(var art in artikli)
+            foreach (var art in artikli)
             {
-                art.sifra = art.dobavljac.Substring(1,3) + "_" + art.dobavljac_sifra;
+                art.sifra = art.dobavljac.Substring(1, 3) + "_" + art.dobavljac_sifra;
 
-                var artikal =_dbContext.artikal.FirstOrDefault(a => a.sifra == art.sifra);
+                var artikal = _dbContext.artikal.FirstOrDefault(a => a.sifra == art.sifra);
                 if (artikal == null)
                 {
                     art.dobavljac = art.dobavljac.Substring(5);
@@ -170,9 +170,9 @@ namespace WebApplication3.Controllers
                 kat.marza = kategorija.marza;
                 kat.aktivna = kategorija.aktivna;
                 kat.kategorije_dobavljaca = kategorija.kategorije_dobavljaca;
-                    Helper.UpdateCijenaIKategorijaArtikala(_dbContext, kategorija);
+                Helper.UpdateCijenaIKategorijaArtikala(_dbContext, kategorija);
 
-                
+
 
                 _dbContext.SaveChanges();
             }
@@ -196,7 +196,7 @@ namespace WebApplication3.Controllers
         }
         [HttpGet]
         [Route("artikliSearch")]
-        public QueryResult Search(string naziv, string kategorija, string dostupnost, string dobavljac, string loadAll,string brend,string aktivan,int page, int pageSize)
+        public QueryResult Search(string naziv, string kategorija, string dostupnost, string dobavljac, string loadAll, string brend, string aktivan, int page, int pageSize)
         {
 
             if (loadAll == "0" && (naziv == null || naziv.Length < 3))
@@ -277,11 +277,11 @@ namespace WebApplication3.Controllers
                           dostupnost == null || dostupnost == "0" ||
                           (it.dostupnost != null && it.dostupnost != "0")
                       )
-                ); 
-            if(pageSize==0)
-                return new QueryResult() { data = result.OrderBy(aa => aa.naziv), pageCount=1, resultCount = resultCount };
+                );
+            if (pageSize == 0)
+                return new QueryResult() { data = result.OrderBy(aa => aa.naziv), pageCount = 1, resultCount = resultCount };
             else
-                return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (resultCount / pageSize)+1, resultCount = resultCount };
+                return new QueryResult() { data = result.OrderBy(aa => aa.naziv).Skip(pageSize * (page - 1)).Take(pageSize), pageCount = (resultCount / pageSize) + 1, resultCount = resultCount };
 
             //var artikli = _dbContext.artikal.Where(p => p.naziv.ToLower().Contains(naziv.ToLower()) && p.dostupnost!=null && p.dostupnost!="0");
             //return artikli.ToList();
@@ -367,6 +367,53 @@ namespace WebApplication3.Controllers
                 }
             }
             return Ok();
+        }
+
+        [HttpDelete]
+        [Route("deletePhotoURL")]
+        public IActionResult DeletePhotoURL(string sifraArtikla, string url)
+        {
+            var art = _dbContext.artikal.FirstOrDefault(a => a.sifra == sifraArtikla);
+            if (art != null)
+            {
+                var existing = art.slike != null ? art.slike.FirstOrDefault(s => s == url) : null;
+                if (existing == null)
+                    return BadRequest();
+                else
+                {
+                    art.slike.Remove(existing);
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        [HttpPost]
+        [Route("addPhotoURL")]
+        public IActionResult AddPhotoURL(string sifraArtikla, string url)
+        {
+            var art = _dbContext.artikal.FirstOrDefault(a => a.sifra == sifraArtikla);
+            if (art != null)
+            {
+                var existing = art.slike!=null?art.slike.FirstOrDefault(s => s == url):null;
+                if (existing != null)
+                    return BadRequest();
+                else
+                {
+                    if (art.slike == null)
+                        art.slike = new List<string>();
+                    art.slike.Add(url);
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         //[HttpGet]

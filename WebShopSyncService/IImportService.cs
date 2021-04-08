@@ -13,7 +13,7 @@ namespace Delos.Model
         public ImportServiceConfig Config { get; set; }
         public abstract Task<List<artikal>> SyncAsync();
 
-        private void SetKategorija(DelosDbContext dbContext,artikal a)
+        private void SetKategorija(DelosDbContext dbContext, artikal a)
         {
             foreach (var kat in dbContext.kategorija)
             {
@@ -24,7 +24,7 @@ namespace Delos.Model
                         if (a.vrste != null)
                         {
                             string vrsta = a.vrsteString.Substring(0, a.vrsteString.Length - 1);
-                      
+
                             if (("[" + a.dobavljac + "] " + vrsta).ToLower() == kd.ToLower())
                             {
                                 a.kategorija = kat.naziv;
@@ -42,75 +42,76 @@ namespace Delos.Model
             {
                 a.kategorija = "Razno";
                 var razno = dbContext.kategorija.FirstOrDefault(k => k.naziv == "Razno");
-                if(razno!=null)
+                if (razno != null)
                 {
                     string vrsta = a.vrsteString.Substring(0, a.vrsteString.Length - 1);
                     razno.kategorije_dobavljaca.Add("[" + a.dobavljac + "] " + vrsta);
                 }
             }
         }
-        public bool UdpateDb(DelosDbContext dbContext, List<artikal> artikli,string dobavljac)
+        public bool UdpateDb(DelosDbContext dbContext, List<artikal> artikli, string dobavljac)
         {
             decimal pdvStopa = 17;
-        
-                foreach (var a in artikli)
+
+            foreach (var a in artikli)
+            {
+                this.SetKategorija(dbContext, a);
+                var kat = dbContext.kategorija.FirstOrDefault(k => k.naziv == a.kategorija);
+                a.kalkulacija = Config.CalculatePrice;
+
+                if (a.kalkulacija == true && kat != null && kat.marza != null)
                 {
-                    this.SetKategorija(dbContext, a);
-                    var kat = dbContext.kategorija.FirstOrDefault(k => k.naziv == a.kategorija);
-                    a.kalkulacija = Config.CalculatePrice;
+                    a.cijena_prodajna = a.cijena_sa_rabatom + Math.Round(a.cijena_sa_rabatom * kat.marza.Value / 100, 2);
+                }
 
-                    if (a.kalkulacija == true && kat != null && kat.marza != null)
-                    {
-                        a.cijena_prodajna = a.cijena_sa_rabatom + Math.Round(a.cijena_sa_rabatom * kat.marza.Value / 100, 2);
-                    }
+                a.cijena_mp = a.cijena_prodajna * (1 + pdvStopa / 100);
 
-                    a.cijena_mp = a.cijena_prodajna * (1 + pdvStopa / 100);
+                var art = dbContext.artikal.FirstOrDefault(ar => a.dobavljac_sifra == ar.dobavljac_sifra && a.dobavljac == ar.dobavljac);
 
-                    var art = dbContext.artikal.FirstOrDefault(ar => a.dobavljac_sifra == ar.dobavljac_sifra && a.dobavljac == ar.dobavljac);
+                if (art == null)
+                {
+                    a.zadnje_ucitavanje = DateTime.Now;
+                    a.aktivan = kat.aktivna.Value;
+                    dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = a.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
+                    dbContext.Add(a);
+                }
+                else
+                {
 
-                    if (art == null)
-                    {
-                        a.zadnje_ucitavanje = DateTime.Now;
-                        a.aktivan = kat.aktivna.Value;
-                        dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = a.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
-                        dbContext.Add(a);
-                    }
-                    else
-                    {
-                        
-                        art.zadnje_ucitavanje = DateTime.Now;
-                        if (art.cijena_sa_rabatom != a.cijena_sa_rabatom||dbContext.istorija_cijena.Where(i=>i.artikal_sifra==art.sifra).Count()==0)
-                            dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = art.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
-                        
-                        art.cijena_sa_rabatom = a.cijena_sa_rabatom;                     
-                        art.cijena_prodajna = a.cijena_prodajna;                       
-                        art.cijena_mp = a.cijena_mp;
-                        art.kolicina = a.kolicina;
-                        art.dostupnost = a.dostupnost;
-                        art.naziv = a.naziv;
+                    art.zadnje_ucitavanje = DateTime.Now;
+                    if (art.cijena_sa_rabatom != a.cijena_sa_rabatom || dbContext.istorija_cijena.Where(i => i.artikal_sifra == art.sifra).Count() == 0)
+                        dbContext.istorija_cijena.Add(new istorija_cijena() { artikal_sifra = art.sifra, vrijeme = DateTime.Now, cijena = a.cijena_sa_rabatom });
+
+                    art.cijena_sa_rabatom = a.cijena_sa_rabatom;
+                    art.cijena_prodajna = a.cijena_prodajna;
+                    art.cijena_mp = a.cijena_mp;
+                    art.kolicina = a.kolicina;
+                    art.dostupnost = a.dostupnost;
+                    art.naziv = a.naziv;
+                    if (a.slike != null)
                         art.slike = a.slike;
-                        art.vrste = a.vrste;
-                        art.sifra = a.sifra;
-                        art.barkod = a.barkod;
-                        art.garancija = a.garancija;
-                        art.brend = a.brend;
-                        art.opis = a.opis;
-                        art.prioritet = a.prioritet;
-                    }
-
+                    art.vrste = a.vrste;
+                    art.sifra = a.sifra;
+                    art.barkod = a.barkod;
+                    art.garancija = a.garancija;
+                    art.brend = a.brend;
+                    art.opis = a.opis;
+                    art.prioritet = a.prioritet;
                 }
 
-                var inactive = dbContext.artikal.Where(a =>a.dobavljac==dobavljac && artikli.Select(aa => aa.sifra).Contains(a.sifra) == false).ToList();
-                foreach (var art in inactive)
-                {
-                    //art.aktivan = false;
-                    art.dostupnost = "0";
-                }
-                 
+            }
 
-                dbContext.SaveChanges();
-                return true;
-           
+            var inactive = dbContext.artikal.Where(a => a.dobavljac == dobavljac && artikli.Select(aa => aa.sifra).Contains(a.sifra) == false).ToList();
+            foreach (var art in inactive)
+            {
+                //art.aktivan = false;
+                art.dostupnost = "0";
+            }
+
+
+            dbContext.SaveChanges();
+            return true;
+
         }
     }
 }

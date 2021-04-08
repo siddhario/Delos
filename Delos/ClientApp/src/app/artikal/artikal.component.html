@@ -35,7 +35,7 @@
         Import
         <input type="file" hidden (change)="importFromXLSX($event)" />
       </label>
-     
+
     </div>
   </div>
   <div class="row">
@@ -122,38 +122,53 @@
         </tr>
         <tr *ngIf="artikal&&artikal.sifra==selectedItem?.sifra">
           <td colspan="11">
-            Opis:
-            <p style="font-weight:bold;max-width:1000px">{{artikal.opis}}</p>
-            Barkod:
-            <p style="font-weight:bold">{{artikal.barkod}}</p>
-            Garancija:
-            <p style="font-weight:bold">{{artikal.garancija}}</p>
-            Brend:
-            <p style="font-weight:bold">{{artikal.brend}}</p>
-            Zadnje učitavanje:
-            <p style="font-weight:bold">{{artikal.zadnje_ucitavanje|date:'dd.MM.yyyy HH:mm:ss'}}</p>
-            Kategorije:
-            <ng-container *ngFor="let vrsta of artikal.vrste;index as i">
-              <p style="font-weight:bold">-{{vrsta}}</p>
-            </ng-container>
+            <div>
+              Opis:
+              <p style="font-weight:bold;max-width:1000px">{{artikal.opis}}</p>
+              Barkod:
+              <p style="font-weight:bold">{{artikal.barkod}}</p>
+              Garancija:
+              <p style="font-weight:bold">{{artikal.garancija}}</p>
+              Brend:
+              <p style="font-weight:bold">{{artikal.brend}}</p>
+              Zadnje učitavanje:
+              <p style="font-weight:bold">{{artikal.zadnje_ucitavanje|date:'dd.MM.yyyy HH:mm:ss'}}</p>
+              Kategorije:
+              <ng-container *ngFor="let vrsta of artikal.vrste;index as i">
+                <p style="font-weight:bold">-{{vrsta}}</p>
+              </ng-container>
 
-            Istorija cijena:
-            <ng-container *ngFor="let istorija of sortIstorija(artikal.istorija_cijena);index as i">
-              <p>{{istorija.vrijeme | date:'dd.MM.yyyy'  }} &nbsp;-&nbsp;{{istorija.cijena | noComma}}</p>
-            </ng-container>
+              Istorija cijena:
+              <ng-container *ngFor="let istorija of sortIstorija(artikal.istorija_cijena);index as i">
+                <p>{{istorija.vrijeme | date:'dd.MM.yyyy'  }} &nbsp;-&nbsp;{{istorija.cijena | noComma}}</p>
+              </ng-container>
 
-            <button [disabled]="updateInProgress==true" (click)="toggleAktivan(artikal)" type="button" class="btn btn-info btn-sm">{{ artikal.aktivan==true?'Deaktiviraj':'Aktiviraj' }}</button>
-            <button [disabled]="!(currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN'))" type="button" class="btn btn-danger  btn-sm" style="width:100px;float:left;margin: 4px;" (click)="delete(artikal)">Obriši</button>
+              <button [disabled]="updateInProgress==true" (click)="toggleAktivan(artikal)" type="button" class="btn btn-info btn-sm" style="width:100px;margin: 4px;">{{ artikal.aktivan==true?'Deaktiviraj':'Aktiviraj' }}</button>
+              <button [disabled]="!(currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN'))" type="button" class="btn btn-danger  btn-sm" style="width:100px;margin: 4px;" (click)="delete(artikal)">Obriši</button>
+            </div>
+            <div>
+              <h6>Slike:</h6>
+              <div style="overflow:auto" >
+                <div style="float:left;margin: 4px;">
+                  <button type="button" style="width:100px" class="btn btn-info  btn-sm" (click)="addUrl(artikal)">Dodaj URL</button>
+                </div>
+                <div style="float:left;margin: 4px;">
+                  <input  class="form-control form-control-sm" style="width:400px" [(ngModel)]="url" placeholder="Photo URL">
+                </div>
+              </div>
 
-            <br />
-            Slike:<br />
-            <ng-container *ngFor="let img of artikal.slike;index as i">
-              <a *ngIf="sanitize(img)!=''" target="_blank" [href]="sanitize(img)">
-                {{img}}<br />
-                <img [src]="sanitize(img)" style="max-width:1000px" />
-              </a><br />
-            </ng-container>
+              <ng-container *ngFor="let img of artikal.slike;index as i">
+                <button [disabled]="!(currentUser.role.includes('WEBSHOP_ADMIN')||currentUser.role.includes('ADMIN'))" type="button" class="btn btn-danger  btn-sm" style="width:20px;margin: 4px;" (click)="deletePhotoURL(artikal,img)">X</button>
+
+                <a *ngIf="sanitize(img)!=''" target="_blank" [href]="sanitize(img)">
+                  {{img}}<br />
+
+                  <img [src]="sanitize(img)" style="max-width:1000px" />
+                </a><br />
+              </ng-container>
+            </div>
           </td>
+
         </tr>
       </ng-container>
     </tbody>

@@ -42,9 +42,9 @@ namespace Delos.Helpers
                 sheet.Cells("C15").Style.Font.FontSize = 28;
                 sheet.Cells("C18").Value = prijava.broj_garantnog_lista;
 
-                sheet.Cells("C21").DataType = XLDataType.Text;
-                sheet.Cells("C21").Style.DateFormat.Format = "dd.MM.yyyy.";
-                sheet.Cells("C21").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
+                sheet.Cells("C21").DataType = XLDataType.DateTime;
+                sheet.Cells("C21").Style.NumberFormat.Format = "dd.MM.yyyy";
+                sheet.Cells("C21").Value = prijava.datum.Value;
 
                 sheet.Cells("C24").Value = prijava.kupac_ime;
                 sheet.Cells("C25").DataType = XLDataType.Text;
@@ -149,9 +149,9 @@ namespace Delos.Helpers
             sheet.Cells("A3").Value = "PONUDA BROJ: " + rednibroj;
             sheet.Cells("A3").DataType = XLDataType.Text;
 
-            sheet.Cells("G2").Value = datum.ToString("dd.MM.yyyy");
+            sheet.Cells("G2").Value = datum;
             sheet.Cells("G2").DataType = XLDataType.DateTime;
-            sheet.Cells("G2").Style.DateFormat.Format = "dd.MM.yyyy";
+            sheet.Cells("G2").Style.NumberFormat.Format = "dd.MM.yyyy";
 
             sheet.Cells("B7").Value = partner_naziv;
             sheet.Cells("B7").DataType = XLDataType.Text;
@@ -649,14 +649,14 @@ namespace Delos.Helpers
 
                 sheet.Cells("C10").Value = prijava.broj_naloga;
                 sheet.Cells("C10").DataType = XLDataType.Text;
-                sheet.Cells("G10").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
-                sheet.Cells("G10").DataType = XLDataType.Text;
-                //sheet.Cells("G10").Style.DateFormat.Format = "dd.MM.yyyy.";
+                sheet.Cells("G10").Value = prijava.datum.Value;
+                sheet.Cells("G10").DataType = XLDataType.DateTime;
+                sheet.Cells("G10").Style.NumberFormat.Format = "dd.MM.yyyy";
                 sheet.Cells("C13").Value = prijava.kupac_ime;
                 sheet.Cells("C13").DataType = XLDataType.Text;
-                sheet.Cells("C14").Value = prijava.datum.Value.ToString("dd.MM.yyyy.");
-                sheet.Cells("C14").DataType = XLDataType.Text;
-                //sheet.Cells("C14").Style.DateFormat.Format = "dd.MM.yyyy.";
+                sheet.Cells("C14").Value = prijava.datum.Value;
+                sheet.Cells("C14").DataType = XLDataType.DateTime;
+                sheet.Cells("C14").Style.NumberFormat.Format = "dd.MM.yyyy";
                 sheet.Cells("A23").Value = prijava.predmet;
                 sheet.Cells("A23").DataType = XLDataType.Text;
                 sheet.Cells("D37").Value = prijava.serviser;
