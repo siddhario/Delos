@@ -74,6 +74,21 @@ namespace WebApplication3.Controllers
         }
 
 
+        [HttpPost]
+        [Route("reprogram")]
+        public IActionResult Reprogram(string brojUgovora)
+        {
+            var ugovor = _dbContext.ugovor.FirstOrDefault(p => p.broj == brojUgovora);
+            if (ugovor != null)
+            {
+
+
+                _dbContext.SaveChanges();
+                return Ok();
+            }
+            else
+                return NotFound();
+        }
 
         [HttpPost]
         public IActionResult InsertUgovor(ugovor ugovor)
@@ -152,7 +167,24 @@ namespace WebApplication3.Controllers
                     ugovorRata.uplaceno = rata.uplaceno;
                     ugovorRata.datum_placanja = rata.datum_placanja;
                     _dbContext.SaveChanges();
-                    return Ok();
+
+                    var ugovor = _dbContext.ugovor.FirstOrDefault(u => u.broj == rata.ugovorbroj);
+
+                    var rate = _dbContext.ugovor_rata.Where(r => r.ugovorbroj == ugovor.broj && r.uplaceno == 0).ToList();
+
+                    decimal iznosRate = Math.Round(ugovor.preostalo_za_uplatu / rate.Count,2);
+                    decimal sumaRata = 0;
+                    for (int i = 0; i < rate.Count - 1; i++)
+                    {
+                        rate[i].iznos = iznosRate;
+                        sumaRata += iznosRate;
+                    }
+
+                    rate[rate.Count - 1].iznos = ugovor.preostalo_za_uplatu - sumaRata;
+                    _dbContext.SaveChanges();
+                    
+                    ugovor = _dbContext.ugovor.Include(p => p.partner).Include(p => p.Korisnik).Include(u=>u.rate).FirstOrDefault(u=>u.broj==ugovor.broj);
+                    return Ok(ugovor);
                 }
                 catch (Exception ex)
                 {

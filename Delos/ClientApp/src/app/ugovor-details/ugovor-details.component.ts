@@ -22,6 +22,8 @@ import { Ugovor } from '../model/ugovor';
 import { UgovorRata } from '../model/ugovorRata';
 import { PregledUplataComponent } from '../pregledUplata/pregledUplata.component';
 
+import * as _ from 'lodash'
+
 @Component({
   selector: 'app-ugovor-details',
   templateUrl: './ugovor-details.component.html'
@@ -94,19 +96,23 @@ export class UgovorDetailsComponent {
       console.log("OK");
       this.toastr.success("Uspješno...");
 
-      let modalRef = this.modalService.open(NgbdModalConfirm);
-      modalRef.result.then((data) => {
+      this.selectedUgovor = result;
+      let sorted:UgovorRata[]=[];
+      this.selectedUgovor.rate = this.selectedUgovor.rate.sort((a,b)=>(a.broj_rate > b.broj_rate) ? 1 : ((b.broj_rate > a.broj_rate) ? -1 : 0));
+ 
+        let modalRef = this.modalService.open(NgbdModalConfirm);
+        modalRef.result.then((data) => {
 
-        this.http.get(this.baseUrl + 'ugovor/potvrda?broj=' + rata.ugovorbroj + "&broj_rate=" + rata.broj_rate
-          , {
-            responseType: 'arraybuffer'
-          }
-        ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-      }, (reason) => {
-      });
+          this.http.get(this.baseUrl + 'ugovor/potvrda?broj=' + rata.ugovorbroj + "&broj_rate=" + rata.broj_rate
+            , {
+              responseType: 'arraybuffer'
+            }
+          ).subscribe(response => this.downLoadFile(response, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        }, (reason) => {
+        });
 
-      modalRef.componentInstance.confirmText = "Štampati potvrdu ?";
-
+        modalRef.componentInstance.confirmText = "Štampati potvrdu ?";
+      
     }, error => {
       this.toastr.error("Greška..");
       console.error(error)
@@ -412,7 +418,5 @@ export class UgovorDetailsComponent {
 
 
 }
-
-
 
 

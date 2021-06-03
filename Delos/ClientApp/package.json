@@ -31,6 +31,7 @@
     "is-url": "^1.2.4",
     "jquery": "^3.5.0",
     "json-ignore": "^0.4.0",
+    "lodash": "^4.17.21",
     "ngb-modal": "^2.0.3",
     "ngx-infinite-scroll": "^10.0.1",
     "ngx-toastr": "^11.1.2",
